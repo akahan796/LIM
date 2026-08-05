@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Line Item Modeler — Prototype</title>
+<link rel="icon" href="logo.png" />
+<style>
+  @font-face{font-family:'OneStream Sans';src:url('fonts/OneStreamSans-Regular.otf') format('opentype');font-weight:400;font-style:normal;font-display:swap;}
+  @font-face{font-family:'OneStream Sans';src:url('fonts/OneStreamSans-Medium.otf') format('opentype');font-weight:500;font-style:normal;font-display:swap;}
+  @font-face{font-family:'OneStream Sans';src:url('fonts/OneStreamSans-Bold.otf') format('opentype');font-weight:700;font-style:normal;font-display:swap;}
+  :root{ --font:'OneStream Sans',Arial,Helvetica,sans-serif;
+         --brand:#0A5DFF; --brand-hover:#0847c9; --text:#141414; --muted:#6E6E6E; }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;}
+  body{font-family:var(--font);color:var(--text);display:flex;align-items:center;justify-content:center;
+    padding:24px;text-align:center;-webkit-font-smoothing:antialiased;
+    background:radial-gradient(1200px 620px at 50% -10%,#eef2fb 0%,#f4f5f8 55%,#eef0f4 100%);}
+  .card{max-width:520px;}
+  .brand{width:210px;max-width:64%;height:auto;display:block;margin:0 auto 26px;}
+  .badge{display:inline-block;font-size:12px;font-weight:600;line-height:16px;padding:4px 11px;border-radius:999px;
+    background:#FDF1DC;color:#8A5A00;margin:0 0 18px;letter-spacing:.02em;}
+  h1{font-size:26px;font-weight:700;letter-spacing:-.01em;margin:0 0 10px;}
+  p{font-size:15px;line-height:22px;color:#5A5A5A;margin:0 auto 26px;max-width:440px;}
+  .back{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 20px;border-radius:6px;
+    background:var(--brand);color:#fff;font-size:14px;font-weight:700;text-decoration:none;
+    transition:background .15s ease;}
+  .back:hover{background:var(--brand-hover);}
+  .back svg{width:16px;height:16px;}
+</style>
+</head>
+<body>
+  <div class="card">
+    <img class="brand" src="brandmark.svg" alt="OneStream" onerror="this.style.display='none'">
+    <div class="badge">Coming soon</div>
+    <h1>Line Item Modeler prototype</h1>
+    <p>The interactive HTML prototype and its review frame will live here. In the meantime, review the source design in Figma from the UX Review portal.</p>
+    <a class="back" href="/portal.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      Back to UX Review portal
+    </a>
+  </div>
+</body>
+</html>
