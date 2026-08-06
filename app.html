@@ -6,9 +6,6 @@
 <title>Line Item Modeler — Formula Builder</title>
 <link rel="icon" href="logo.png" />
 <style>
-  @font-face{font-family:'OneStream Sans';src:url('fonts/OneStreamSans-Regular.otf') format('opentype');font-weight:400;font-style:normal;font-display:swap;}
-  @font-face{font-family:'OneStream Sans';src:url('fonts/OneStreamSans-Medium.otf') format('opentype');font-weight:500;font-style:normal;font-display:swap;}
-  @font-face{font-family:'OneStream Sans';src:url('fonts/OneStreamSans-Bold.otf') format('opentype');font-weight:700;font-style:normal;font-display:swap;}
   :root{
     --dark:#373737; --brand:#1656d6; --brand-hover:#124bbd; --link:#1a66d6;
     --text:#141414; --field-label:#6e6e6e; --border:#c4c4c4; --input-bg:#ffffff;
@@ -17,7 +14,7 @@
     --green:#99d5bc; --beige:#fbcb99; --blue:#abc6ff; --yellow:#f6e29a; --op:#fbcb99;
     --t-text:#5564ff; --t-register:#009858; --t-globals:#6e26c1; --t-cube:#bc8f8f;
     --t-lookup:#7493cb; --t-functions:#f08f95; --t-accounts:#737373;
-    --font:"OneStream Sans","Segoe UI",Arial,Helvetica,sans-serif;
+    --font:Arial, Helvetica, "Helvetica Neue", sans-serif;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;height:100%;}
@@ -64,13 +61,7 @@
   .acc-lbl{font-size:15px;line-height:1;}
   .acc-caret{position:absolute;right:15px;width:10px;height:10px;}
   .nav-body{flex:1 1 auto;background:#fff;overflow-y:auto;position:relative;padding:4px 0;}
-  .tnode{display:flex;align-items:center;gap:6px;height:26px;padding:0 8px 0 12px;font-size:13px;color:#2a2a2a;cursor:pointer;white-space:nowrap;overflow:hidden;}
-  .tnode:hover{background:#eef0f2;}
-  .tnode .tchev{width:10px;height:10px;flex:0 0 10px;display:inline-flex;align-items:center;justify-content:center;}
-  .tnode .ticon{width:15px;height:15px;flex:0 0 15px;display:inline-flex;align-items:center;justify-content:center;}
-  .tnode .tlbl{overflow:hidden;text-overflow:ellipsis;}
-  .tnode.leaf{padding-left:37px;}
-  .tnode.leaf.active{background:#dbe7f6;}
+  .skrow{height:16px;background:var(--skeleton);border-radius:2px;margin:4px 14px;}
   /* thin scrollbar to echo the WinApp look */
   .nav-body::-webkit-scrollbar{width:8px;}
   .nav-body::-webkit-scrollbar-thumb{background:#c9d6ea;border-radius:4px;}
@@ -206,8 +197,8 @@
   <div class="topbar">
     <div class="tb-top">
       <span class="ic tb-logo" data-icon="logo"></span>
-      <span class="tb-badge">Prod930</span>
-      <span class="tb-title">Admin, GolfStreamDemo_2025 (http://os930.localhost:50001/OneStreamWeb)</span>
+      <span class="tb-appname">OneStream_AppName</span>
+      <span class="tb-title">GolfStreamDemo_2023_UAT (https://stkhint3.onestreamtest.com/OneStreamWeb)</span>
       <div class="tb-winctl">
         <div class="tb-winbtn" title="Minimize"><svg viewBox="0 0 12 12"><path d="M1 11h10" stroke="currentColor" stroke-width="1.2"/></svg></div>
         <div class="tb-winbtn" title="Maximize"><svg viewBox="0 0 12 12"><rect x="1.5" y="1.5" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></div>
@@ -217,8 +208,10 @@
     <div class="tb-bottom">
       <div class="tb-group">
         <span class="ic tb-ic" data-icon="menu"></span>
-        <span class="ic tb-ic" data-icon="globe"></span>
-        <span class="ic tb-ic" data-icon="copyw"></span>
+        <span class="ic tb-ic" data-icon="navLeft"></span>
+        <span class="ic tb-ic" data-icon="compass"></span>
+        <span class="ic tb-ic" data-icon="folder"></span>
+        <span class="ic tb-ic" data-icon="navRight"></span>
       </div>
       <div class="tb-spacer"></div>
       <div class="tb-cluster">
@@ -251,16 +244,16 @@
       </div>
       <div class="acc-row gray"><span class="ic acc-ic" data-icon="workflow"></span><span class="acc-lbl">Workflow</span><span class="ic acc-caret" data-icon="caretClosed"></span></div>
       <div class="acc-row gray"><span class="ic acc-ic" data-icon="cube"></span><span class="acc-lbl">Cube Views</span><span class="ic acc-caret" data-icon="caretClosed"></span></div>
-      <div class="acc-row active"><span class="ic acc-ic" data-icon="dashboard"></span><span class="acc-lbl">Dashboards</span><span class="ic acc-caret" data-icon="caretOpen"></span></div>
+      <div class="acc-row gray"><span class="ic acc-ic" data-icon="dashboard"></span><span class="acc-lbl">Dashboards</span><span class="ic acc-caret" data-icon="caretClosed"></span></div>
+      <div class="acc-row active"><span class="ic acc-ic" data-icon="documents"></span><span class="acc-lbl">Documents</span><span class="ic acc-caret" data-icon="caretOpen"></span></div>
       <div class="nav-body" id="navBody"></div>
-      <div class="acc-row gray"><span class="ic acc-ic" data-icon="documents"></span><span class="acc-lbl">Documents</span><span class="ic acc-caret" data-icon="caretClosed"></span></div>
     </div>
 
     <!-- Content -->
     <div class="content">
       <div class="content-top">
         <span class="ic ct-symbol" data-icon="symbol"></span>
-        <span class="ct-title">Dashboard - Workforce Planning 13</span>
+        <span class="ct-title">People Planning</span>
         <div class="ct-right">
           <div class="ct-zoom"><span class="zbar"></span><span class="zbar"></span><span class="zpct">100%</span></div>
           <span class="ic ct-ic" data-icon="refresh2"></span>
@@ -269,105 +262,13 @@
         </div>
       </div>
 
-      <div class="subtoolbar">
-        <span class="ic" data-icon="ttFilter"></span>
-        <span class="ic" data-icon="ttSave"></span>
-        <span class="ic" data-icon="ttEdit"></span>
-      </div>
-      <div class="app-header">
-        <span class="app-title">Workforce Planning</span>
-        <nav class="app-tabs" id="appTabs">
-          <a>Register</a><a class="active">Formulas</a><a>Settings</a><a>Help</a>
-        </nav>
-      </div>
-      <div class="app-sub">Formulas</div>
-
-      <div class="cb-scroll">
-        <div class="fb">
-          <!-- Row 1 -->
-          <div class="row1">
-            <div class="field"><span class="flabel">Formula Name:</span><div class="ctrl">MthlySalary</div></div>
-            <div class="field"><span class="flabel">Formula Description:</span><div class="ctrl">MthlySalary</div></div>
-            <div class="field"><span class="flabel">Register Group:</span><div class="ctrl dd"><span class="cv">All Employees</span><span class="caret"><svg viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></span></div></div>
-            <div class="field"><span class="flabel">Value Type:</span><div class="ctrl dd"><span class="cv">Periodic</span><span class="caret"><svg viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></span></div></div>
-            <div class="btns">
-              <button class="btn stroked">Cancel</button>
-              <button class="btn primary">Save</button>
-            </div>
-          </div>
-          <!-- Row 2 -->
-          <div class="row2">
-            <div class="field"><span class="flabel">Account:</span><div class="ctrl dd"><span class="cv">50200 - Monthly Salary</span><span class="caret"><svg viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></span></div></div>
-            <div class="field"><span class="flabel">Scenario Type:</span><span class="linkctrl">All Scenario Types</span></div>
-            <div class="field"><span class="flabel">Periods:</span><span class="linkctrl">Period(s) Selected</span></div>
-          </div>
-
-          <!-- Main row -->
-          <div class="mainrow">
-            <div class="leftcol">
-              <!-- Formula preview -->
-              <div class="preview">
-                <div class="pv-band"><span class="pv-title">FTE*Salary/12</span></div>
-                <div class="pv-body">
-                  <div class="pv-toolbar">
-                    <div class="tool"><span class="ic tic" data-icon="toolLeft"></span><span class="tlbl">Move Left</span></div>
-                    <div class="tool"><span class="ic tic" data-icon="toolRight"></span><span class="tlbl">Move Right</span></div>
-                    <div class="tool"><span class="ic tic" data-icon="deleteBlock"></span><span class="tlbl">Delete Block</span></div>
-                    <div class="tool"><span class="ic tic" data-icon="clearAll"></span><span class="tlbl">Clear All Blocks</span></div>
-                  </div>
-                  <div class="blocks">
-                    <div class="blk g">FTE</div>
-                    <div class="blk b">*</div>
-                    <div class="blk g">Salary</div>
-                    <div class="blk u">/12</div>
-                    <div class="blk empty"><span class="dots"><i></i><i></i><i></i></span></div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Operators -->
-              <div class="operators">
-                <div class="op">+</div><div class="op">-</div><div class="op">*</div><div class="op">/</div>
-                <div class="op">=</div><div class="op">(</div><div class="op">)</div><div class="op">&lt;</div>
-                <div class="op">&gt;</div><div class="op">&lt;=</div><div class="op">&gt;=</div><div class="op">&lt;&gt;</div><div class="op">,</div>
-              </div>
-
-              <!-- Tabs + table -->
-              <div class="tile">
-                <div class="tabbar" id="tabbar">
-                  <div class="tab-hl" style="left:81.554%;width:11.700%"></div>
-                  <span class="ftab text"      style="left:7.003%">Text</span>
-                  <span class="ftab register"  style="left:17.421%">Register</span>
-                  <span class="ftab globals"   style="left:31.170%">Globals</span>
-                  <span class="ftab cube"      style="left:44.321%">Cube</span>
-                  <span class="ftab lookup"    style="left:55.594%">Lookup</span>
-                  <span class="ftab functions" style="left:68.574%">Functions</span>
-                  <span class="ftab accounts active" style="left:83.433%">Accounts</span>
-                </div>
-                <div class="tab-actions">
-                  <div class="acctname"><span class="flabel">Account Name</span><div class="ctrl dd"><span class="cv"></span><span class="caret"><svg viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></span></div></div>
-                  <button class="addblk">Add Block</button>
-                </div>
-                <div class="tbl-wrap">
-                  <div class="tbl-head" id="tblHead"></div>
-                  <div class="tbl-body"></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Recently Used -->
-            <div class="recently">
-              <div class="ru-head"><span class="ru-title">Recently Used</span><span class="ic ru-gear" data-icon="gear"></span></div>
-              <div class="ru-body"></div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <!-- content area (Formula Builder removed — intentionally blank) -->
+      <div class="cb-scroll"></div>
 
       <!-- bottom tabs -->
       <div class="content-bottom">
-        <div class="btab active">Dashboard - Workforce Planning</div>
-        <div class="btab">Dimension Library</div>
+        <div class="btab">Tab 01</div>
+        <div class="btab active">Tab 02</div>
         <div class="baddtab">+</div>
       </div>
     </div>
@@ -375,7 +276,7 @@
 </div>
 
 <script>
-  console.log('%cLIM Formula Builder','font-weight:bold;color:#1656d6','· build 2026-08-05d · OneStream Sans font + globe/copy + green status icons');
+  console.log('%cOneStream app frame','font-weight:bold;color:#1656d6','· build 2026-08-05e · chrome-only, Formula Builder removed (blank content)');
   var ICONS = {
     logo: `<svg width="168" height="24" viewBox="0 0 168 24" fill="none" xmlns="http://www.w3.org/2000/svg"><mask id="mlogo" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="168" height="24"><path d="M168 0H0V24H168V0Z" fill="white"/></mask><g mask="url(#mlogo)"><path d="M12.0471 23.9939C11.9694 23.9885 11.8859 23.9832 11.8086 23.9832C11.0431 23.9555 10.2817 23.859 9.53366 23.695C9.51834 23.6885 9.50195 23.6849 9.48532 23.6843C9.46774 23.6788 9.44979 23.6744 9.43161 23.6713C9.21972 23.6232 9.01535 23.5669 8.8083 23.5085C8.77338 23.4975 8.73605 23.4898 8.70087 23.4791C8.48845 23.4178 8.27951 23.3457 8.07246 23.2737L7.98921 23.2443C7.76899 23.1696 7.55415 23.0816 7.34199 22.9908C7.32963 22.9826 7.31603 22.9764 7.30171 22.9724C6.17682 22.4857 5.13207 21.8336 4.2026 21.0379C4.18537 21.0249 4.16921 21.0106 4.15426 20.9952C3.40304 20.3478 2.73471 19.6111 2.16427 18.8018H3.83737C5.41337 18.828 6.95466 18.3407 8.22553 17.4142C9.50128 16.4464 10.3993 15.0684 10.7661 13.5158L11.5986 9.99086C11.9503 8.52919 12.6585 7.17591 13.6607 6.05029C14.6629 4.92466 15.9284 4.06124 17.3456 3.53611C15.2488 2.31819 12.7805 1.89172 10.393 2.33481C8.49901 2.67798 6.74543 3.55848 5.34394 4.87004C3.94244 6.1816 2.95294 7.86816 2.49486 9.72616C2.02664 11.6712 2.1758 13.7125 2.92187 15.5699H0.553221C0.345156 14.9072 0.195985 14.2278 0.107422 13.5392C0.0993649 13.4859 0.0945309 13.4378 0.0888913 13.3845C0.0589923 13.155 0.0374185 12.9229 0.0241698 12.688C0.0107422 12.4906 0 12.2905 0 12.0877V11.9969C0 11.946 0.0107422 11.8926 0.0107422 11.8395C0.0163818 11.53 0.0292724 11.2231 0.0590818 10.9162C0.0647215 10.8522 0.069824 10.7855 0.0751951 10.7185C0.110107 10.4037 0.163549 10.0915 0.223168 9.77392C0.246801 9.65385 0.271239 9.53911 0.295409 9.41903C0.30642 9.37634 0.308837 9.33631 0.319579 9.29362C0.338378 9.20823 0.367919 9.12551 0.392357 9.04013C0.464598 8.76021 0.537108 8.48244 0.631101 8.21293C0.668699 8.09286 0.719724 7.97812 0.762693 7.86338C0.854001 7.61255 0.953097 7.36466 1.06616 7.11891C1.12524 6.98816 1.19238 6.86568 1.25683 6.73467C1.36962 6.51319 1.48269 6.29172 1.60595 6.08092C1.6841 5.9451 1.76708 5.81675 1.8506 5.686C1.97441 5.48561 2.10573 5.28842 2.24296 5.09629C2.33123 4.97622 2.42244 4.85614 2.51662 4.73607C2.66459 4.54394 2.8174 4.35449 2.97853 4.17304C3.07252 4.07431 3.16383 3.97825 3.25756 3.87659C3.43239 3.68447 3.62064 3.49795 3.81105 3.3189C3.8943 3.24152 3.97755 3.16947 4.0608 3.09743C4.27565 2.90531 4.49586 2.72386 4.72708 2.54508C4.791 2.49171 4.85841 2.44368 4.9285 2.39565C5.18336 2.20887 5.43875 2.03542 5.70731 1.86732C5.76639 1.83236 5.82037 1.80594 5.87381 1.77126C6.15848 1.60315 6.44314 1.44572 6.74151 1.29629C6.79522 1.26694 6.84893 1.24292 6.90264 1.21891C7.20315 1.08015 7.50124 0.949401 7.81035 0.829325C7.87749 0.799706 7.94973 0.775958 8.01929 0.751676C8.30959 0.650279 8.605 0.551549 8.90256 0.469097C9.00998 0.439478 9.12304 0.41573 9.23073 0.386111C9.49633 0.316734 9.7622 0.255362 10.0308 0.207331C10.1919 0.17878 10.3554 0.160101 10.5166 0.136086C10.7422 0.106734 10.9624 0.0720456 11.1933 0.0533671C11.4055 0.037357 11.6096 0.0346886 11.822 0.0240152C11.9748 0.0133418 12.1142 0 12.2675 0C12.3371 0 12.3989 0.00533671 12.469 0.00533671C12.5468 0.00533671 12.622 0.0106734 12.6999 0.0106734C13.4709 0.035667 14.2378 0.132147 14.9907 0.298856C15.0032 0.307593 15.0185 0.311397 15.0336 0.309529C15.0498 0.309529 15.0659 0.320203 15.0793 0.320203C15.2941 0.37357 15.5117 0.426937 15.7209 0.488309C15.7529 0.493318 15.7844 0.501359 15.8149 0.512324C16.0297 0.573697 16.2472 0.645742 16.4621 0.723125C16.4858 0.729879 16.5091 0.737896 16.5319 0.74714C16.7602 0.829859 16.9804 0.920583 17.1952 1.01131C17.2015 1.01784 17.2101 1.02167 17.2191 1.02198C18.3467 1.50697 19.3937 2.15926 20.3242 2.95654C20.3398 2.96753 20.3543 2.98004 20.3674 2.9939C20.6813 3.26874 20.9851 3.56199 21.2697 3.86378L21.3178 3.91181C21.6953 4.31336 22.0444 4.74043 22.3625 5.18995H20.6813C19.1069 5.16299 17.5671 5.65047 16.2985 6.5775C15.0259 7.54728 14.1302 8.92468 13.7634 10.476L12.9309 14.0009C12.5793 15.4626 11.8711 16.816 10.8689 17.9416C9.86666 19.0673 8.60111 19.9306 7.18381 20.4556C7.23752 20.4903 7.28586 20.5277 7.33984 20.557C7.349 20.5641 7.3588 20.5704 7.36912 20.5757C8.88059 21.4061 10.581 21.8378 12.3081 21.8298C17.6577 21.8058 22.1476 17.5124 22.301 12.2771C22.3382 10.9602 22.1034 9.64977 21.6108 8.42667H23.9794C24.1867 9.09132 24.3358 9.7725 24.4252 10.4626C24.4333 10.516 24.4384 10.564 24.4438 10.6174C24.4736 10.8442 24.4948 11.071 24.5082 11.3008C24.5216 11.5009 24.5324 11.709 24.5324 11.9145V12.0052C24.5324 12.0559 24.5214 12.1093 24.5214 12.1626C24.5184 12.4695 24.5028 12.7764 24.4733 13.0886C24.4704 13.1499 24.4647 13.2193 24.4599 13.2807C24.4247 13.5955 24.371 13.9131 24.3119 14.2306C24.2904 14.3478 24.2665 14.4625 24.2421 14.5775C24.2313 14.6229 24.2287 14.6656 24.2179 14.7082C24.1937 14.7936 24.1642 14.882 24.14 14.9671C24.0702 15.2446 23.9923 15.5141 23.9037 15.7836C23.8607 15.909 23.81 16.0291 23.7667 16.1492C23.6757 16.3976 23.5761 16.6428 23.4686 16.883C23.4042 17.019 23.3371 17.1471 23.2726 17.2779C23.1598 17.494 23.0524 17.7101 22.9289 17.9209C22.8507 18.0597 22.7624 18.1905 22.6788 18.3239C22.558 18.5213 22.4291 18.7188 22.2921 18.9056C22.1981 19.031 22.1041 19.1564 22.0077 19.2767L21.9994 19.2711L21.9886 19.2527C21.8409 19.4448 21.6879 19.6314 21.5321 19.8104C21.4378 19.9145 21.3465 20.0159 21.2472 20.1173C21.0729 20.3094 20.8903 20.4908 20.6993 20.6696C20.6161 20.747 20.5274 20.8191 20.4442 20.8964C20.2294 21.0886 20.0091 21.27 19.7838 21.4434C19.7167 21.4968 19.6439 21.5448 19.5741 21.5982C19.3216 21.7797 19.0692 21.9584 18.8033 22.1212C18.7442 22.1612 18.6852 22.1933 18.6261 22.2279C18.3438 22.3961 18.0592 22.5535 17.7667 22.6973C17.7074 22.7267 17.6537 22.7507 17.5946 22.7803C17.3072 22.9188 17.0064 23.0498 16.703 23.1645C16.6305 23.1939 16.5499 23.2179 16.4774 23.2473C16.1927 23.3513 15.903 23.4474 15.61 23.5301C15.4972 23.5621 15.379 23.5861 15.2665 23.6155C15.0057 23.6795 14.7476 23.7412 14.482 23.7892C14.3158 23.8239 14.1439 23.8426 13.9772 23.8666C13.7572 23.8986 13.537 23.9277 13.3168 23.9466C13.1073 23.968 12.8898 23.9706 12.6747 23.9816C12.5326 23.9869 12.3903 24 12.2426 24C12.1784 24 12.1112 23.9939 12.0465 23.9939M83.9752 14.2944H86.3196C86.4029 15.9328 87.8823 17.1335 90.2513 17.1335C92.2625 17.1335 93.6834 16.285 93.6834 15.0018C93.6834 13.254 92.1201 13.1152 90.0012 12.8698C86.8191 12.4906 84.284 11.8608 84.284 8.96568C84.284 6.42567 86.6526 4.75768 89.8589 4.78703C93.0947 4.81665 95.4341 6.29199 95.6597 9.18742H93.3152C93.149 7.76759 91.8408 6.70051 89.8589 6.70051C87.877 6.70051 86.5393 7.5197 86.5393 8.80318C86.5393 10.3292 88.0432 10.5213 90.1087 10.7668V10.7695C93.3447 11.1484 95.9387 11.7488 95.9387 14.8363C95.9387 17.4353 93.4038 19.0443 90.251 19.0443C86.5694 19.0443 84.0286 17.3521 83.9752 14.2944ZM131.173 14.9724C131.173 12.1867 133.155 10.6313 136.891 10.6313H141.071V9.67546C141.071 7.87432 139.763 6.78029 137.532 6.78029C135.526 6.78029 134.189 7.70621 133.909 9.12845H131.624C131.957 6.40139 134.213 4.78703 137.645 4.78703C141.267 4.78703 143.362 6.56149 143.362 9.81155V15.9007H143.36C143.36 16.6345 143.639 16.8267 144.281 16.8267H145.006V18.876H143.751C141.853 18.876 141.217 18.0835 141.187 16.7199C140.293 17.9714 138.867 19.0387 136.415 19.0387C133.292 19.0387 131.173 17.5124 131.173 14.9721M133.493 14.8363C133.493 16.2052 134.691 17.1311 136.587 17.1311C139.431 17.1311 141.077 15.5168 141.077 13.198V12.5173H136.671C134.635 12.5173 133.494 13.2511 133.494 14.8361L133.493 14.8363ZM115.592 11.9115C115.592 7.6806 118.322 4.78703 122.335 4.78436H122.338C126.351 4.78436 128.969 7.26593 129.081 11.3912C129.081 11.6901 129.057 12.0212 129.028 12.3465H117.985V12.5386C118.069 15.1856 119.768 17.0428 122.475 17.0428C124.484 17.0428 126.044 16.0048 126.52 14.2037H128.835C128.281 16.9921 125.937 19.0387 122.647 19.0387C118.383 19.0387 115.592 16.1436 115.592 11.9115ZM126.627 10.492C126.407 8.09046 124.731 6.75094 122.363 6.75094C121.313 6.73423 120.296 7.10934 119.512 7.80207C118.728 8.4948 118.234 9.45472 118.127 10.492H126.627ZM68.5011 11.9115C68.5011 7.6806 71.2312 4.78703 75.2445 4.78436H75.2472C79.2604 4.78436 81.8778 7.26593 81.9903 11.3912C81.9903 11.6901 81.9664 12.0212 81.9366 12.3465H70.8936V12.5386C70.9769 15.1856 72.6768 17.0428 75.3836 17.0428C77.3926 17.0428 78.9524 16.0048 79.4283 14.2037H81.7432C81.19 16.9921 78.8455 19.0387 75.5557 19.0387C71.2911 19.0387 68.5008 16.1436 68.5008 11.9115M79.5357 10.492C79.3155 8.09046 77.6397 6.75094 75.2711 6.75094C74.2219 6.73423 73.2046 7.10934 72.4204 7.80207C71.6361 8.4948 71.1421 9.45472 71.036 10.492H79.5357ZM36.798 11.9115C36.798 7.67953 39.7011 4.78436 43.853 4.78436C48.0102 4.78436 50.9079 7.67953 50.9079 11.9115C50.9079 16.1436 48.0102 19.0387 43.853 19.0387C39.6957 19.0387 36.798 16.1436 36.798 11.9115ZM39.1425 11.9089C39.1425 14.8868 41.0385 17.0428 43.853 17.0428C46.6674 17.0428 48.5634 14.8868 48.5634 11.9089C48.5634 8.93099 46.6647 6.77496 43.853 6.77496C41.0412 6.77496 39.1425 8.93099 39.1425 11.9089ZM63.9542 18.8813V11.2605C63.9542 8.36263 62.587 6.83633 60.1056 6.83633C57.4283 6.83633 55.8117 8.77623 55.8117 11.9169V18.8786H53.5263V4.95247H55.5082L55.817 6.83393C56.6522 5.76899 58.1024 4.78436 60.5006 4.78436L60.4977 4.78703L60.4923 4.79264C63.6988 4.79264 66.2393 6.51346 66.2393 11.127V18.8813H63.9542ZM107.696 18.8786V4.95247H109.678L109.984 7.03726C110.655 5.97685 111.739 4.94713 114.27 4.94713H114.912V7.13252H113.771C110.79 7.13252 109.981 9.56072 109.981 11.7755V18.8786H107.696ZM165.714 18.876V10.9803C165.714 8.25349 164.49 6.83126 162.342 6.83126C159.973 6.83126 158.523 8.57877 158.523 11.4182V18.876H156.237V10.9803C156.237 8.25349 154.983 6.83126 152.805 6.83126C150.46 6.83126 149.04 8.7418 149.04 11.5276V18.8733H146.755V4.94713H148.737L149.045 6.85768C149.506 6.19337 150.128 5.65516 150.854 5.29275C151.58 4.93034 152.385 4.7554 153.197 4.7841C155.176 4.7841 156.879 5.65692 157.688 7.43404C158.558 5.93176 160.086 4.7841 162.626 4.7841V4.78676H162.615C165.572 4.78676 168 6.44942 168 10.8469V18.876H165.714ZM103.238 18.8733C100.507 18.8733 99.5322 17.6992 99.5322 15.2417V6.99643H96.9675V4.94713H99.5322V1.04333H101.818V4.94713H105.499V6.99643H101.818V15.2176L101.815 15.2203C101.815 16.3874 102.236 16.824 103.458 16.824H105.72V18.8733H103.238Z" fill="white"/></g></svg>`,
     menu: `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.125 3.375H16.875V5.625H1.125V3.375Z" fill="white"/><path d="M1.125 7.875H16.875V10.125H1.125V7.875Z" fill="white"/><path d="M1.125 12.375H16.875V14.625H1.125V12.375Z" fill="white"/></svg>`,
@@ -420,76 +321,14 @@
     var svg = ICONS[el.getAttribute('data-icon')];
     if(svg) el.innerHTML = svg;
   });
-  // the People Planning bar sits on dark chrome — force its dark-filled glyphs white
-  document.querySelectorAll('.ct-ic[data-icon="gear"] path, .ct-ic[data-icon="filter"] path').forEach(function(p){ p.setAttribute('fill','#ffffff'); });
-  // green status icons (loading spinner + refresh), matching the reference accents
-  document.querySelectorAll('.tb-ic[data-icon="spinner"] path, .tb-ic[data-icon="refresh"] path').forEach(function(p){ p.setAttribute('fill','#3aa76d'); });
-
   // accordion icons: white on the active (dark) row, dark on the gray rows
   document.querySelectorAll('.acc-row.active .acc-ic svg path').forEach(function(p){p.setAttribute('fill','#ffffff');});
   document.querySelectorAll('.acc-row.gray .acc-ic svg path').forEach(function(p){p.setAttribute('fill','#1a1a1a');});
 
-  // OnePlace > Dashboards tree (matches the Workforce Planning reference)
-  var TREE=[
-    {n:'Duration Based Planning 3'},
-    {n:'Duration Based Planning 4'},
-    {n:'Fixed Term Planning 4', open:1},
-    {n:'Genesis Designer'},
-    {n:'Genesis Navigation'},
-    {n:'Line Item Modeling'},
-    {n:'Workforce Planning 1', open:1},
-    {n:'Workforce Planning 10'},
-    {n:'Workforce Planning 11'},
-    {n:'Workforce Planning 12', open:1},
-    {n:'Workforce Planning 13', open:1, active:1}
-  ];
-  var CHEV_R='<svg viewBox="0 0 12 12" width="10" height="10" fill="none"><path d="M4.2 2.2l3.6 3.8-3.6 3.8" stroke="#777" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  var CHEV_D='<svg viewBox="0 0 12 12" width="10" height="10" fill="none"><path d="M2.2 4.2l3.8 3.6 3.8-3.6" stroke="#777" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  var FOLDER='<svg viewBox="0 0 16 16" width="15" height="15" fill="none"><rect x="1.5" y="4" width="13" height="9.5" rx="1" fill="#e6edf6" stroke="#7d97b8" stroke-width="1"/><path d="M1.5 4V3a1 1 0 0 1 1-1h3.2l1.3 1.6" stroke="#7d97b8" stroke-width="1"/><path d="M4 7h8M4 9.3h8M4 11.6h5" stroke="#7d97b8" stroke-width="1"/></svg>';
-  var DOC='<svg viewBox="0 0 16 16" width="15" height="15" fill="none"><path d="M4 1.6h5l3 3v9.8H4z" fill="#fff" stroke="#5a7a9a" stroke-width="1.1"/><path d="M9 1.6v3h3" stroke="#5a7a9a" stroke-width="1.1"/><path d="M9.5 10.5l1.6 1.6 2.3-2.6" stroke="#3aa76d" stroke-width="1.2"/></svg>';
+  // OnePlace > Documents data placeholders (skeleton rows), matching the Figma
+  var widths=[256,189,219,149,202,234,189,122,256,189,219,202,234,189,122,256,256,189,219,149,202,234,189,122,256,189,219,149,202,234,189,219,149,202];
   var nb=document.getElementById('navBody');
-  TREE.forEach(function(it){
-    var p=document.createElement('div'); p.className='tnode';
-    p.innerHTML='<span class="tchev">'+(it.open?CHEV_D:CHEV_R)+'</span><span class="ticon">'+FOLDER+'</span><span class="tlbl">'+it.n+'</span>';
-    nb.appendChild(p);
-    if(it.open){
-      var c=document.createElement('div'); c.className='tnode leaf'+(it.active?' active':'');
-      c.innerHTML='<span class="ticon">'+DOC+'</span><span class="tlbl">'+it.n+'</span>';
-      nb.appendChild(c);
-    }
-  });
-
-  // table header (6 columns, left-packed with filter funnels)
-  var cols=['Account Name','Calculation Name','Description','Register Group','Calculation Description','Period'];
-  var th=document.getElementById('tblHead');
-  cols.forEach(function(c){
-    var d=document.createElement('div'); d.className='th';
-    d.innerHTML='<span class="thl">'+c+'</span><span class="ic thf">'+ICONS.filter+'</span>';
-    th.appendChild(d);
-  });
-
-  // formula tab switching — moves the white highlight to wrap the clicked tab
-  (function(){
-    var bar=document.getElementById('tabbar'), hl=bar.querySelector('.tab-hl');
-    bar.addEventListener('click', function(e){
-      var t=e.target.closest('.ftab'); if(!t) return;
-      bar.querySelectorAll('.ftab').forEach(function(x){x.classList.remove('active');});
-      t.classList.add('active');
-      var pad=13;
-      hl.style.left=(t.offsetLeft-pad)+'px';
-      hl.style.width=(t.offsetWidth+pad*2)+'px';
-    });
-  })();
-
-  // dashboard tabs (Register / Formulas / Settings / Help)
-  (function(){
-    var t=document.getElementById('appTabs'); if(!t) return;
-    t.addEventListener('click', function(e){
-      var a=e.target.closest('a'); if(!a) return; e.preventDefault();
-      t.querySelectorAll('a').forEach(function(x){x.classList.remove('active');});
-      a.classList.add('active');
-    });
-  })();
+  widths.forEach(function(w){ var d=document.createElement('div'); d.className='skrow'; d.style.width=w+'px'; nb.appendChild(d); });
 </script>
 </body>
 </html>
