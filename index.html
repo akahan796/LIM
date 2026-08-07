@@ -109,7 +109,8 @@
       <a class="dsb-item" id="open-ext" href="/app.html" target="_blank" rel="noopener"><span class="ic" data-ic="external"></span><span class="lbl">Open prototype in new tab</span></a>
 
       <div class="dsb-cat">Screens</div>
-      <button class="dsb-item ver active" type="button" data-ver="app.html"><span class="ic vic" data-ic="grid"></span><span class="lbl">Formula Builder</span></button>
+      <button class="dsb-item ver active" type="button" data-ver="app.html"><span class="ic vic" data-ic="grid"></span><span class="lbl">WinApp Preview</span></button>
+      <button class="dsb-item ver" type="button" data-ver="formula-builder.html"><span class="ic vic" data-ic="grid"></span><span class="lbl">Formula Builder</span></button>
 
       <div class="dsb-cat">Review Tools</div>
       <div class="dsb-item dsb-toggle" id="ux-notes-row" role="button" tabindex="0" aria-label="Toggle UX Notes">
@@ -175,6 +176,21 @@
   }
   setCollapsed((()=>{ try{ return localStorage.getItem('lim_dsb_collapsed')==='1'; }catch(_){ return false; } })());
   collapseBtn.addEventListener('click', ()=> setCollapsed(!dsb.classList.contains('collapsed')));
+
+  // Screen switcher — swap the framed prototype (WinApp Preview / Formula Builder)
+  (function(){
+    var proto = document.getElementById('proto');
+    var extEl = document.getElementById('open-ext');
+    var btns = document.querySelectorAll('.dsb-item.ver');
+    btns.forEach(function(b){
+      b.addEventListener('click', function(){
+        var src = b.dataset.ver;
+        if(proto.getAttribute('src') !== src) proto.setAttribute('src', src);
+        if(extEl) extEl.setAttribute('href', '/' + src);
+        btns.forEach(function(x){ x.classList.toggle('active', x === b); });
+      });
+    });
+  })();
 
   // UX Notes — Figma-style comment pins over the prototype.
   function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
