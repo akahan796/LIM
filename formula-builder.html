@@ -318,7 +318,13 @@
   .main > .page{display:none !important;}
   /* "Sustainability Solution" side menu panel removed */
   #nav{display:none !important;}
-  .main{background:#fff !important;padding:0 !important;}
+  .main{background:#fff !important;padding:0 !important;overflow-y:auto !important;overflow-x:hidden !important;}
+  .fb-form{padding-bottom:32px;}
+  /* responsive: stack the Recently Used panel below the left column on narrow viewports */
+  @media (max-width:1000px){
+    .fb-mainrow{flex-direction:column;}
+    .fb-recently{flex:0 0 auto;width:100%;min-height:220px;}
+  }
 
   /* ---- Formula Builder header (Figma node 1998-10298) ---- */
   /* Figma: breadcrumb at x=64 (rail=42px → 22px inset), y=60 (topbar=39px → ~12px below) */
