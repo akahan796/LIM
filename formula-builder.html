@@ -318,10 +318,11 @@
   .main > .page{display:none !important;}
   /* "Sustainability Solution" side menu panel removed */
   #nav{display:none !important;}
-  .main{background:#fff !important;}
+  .main{background:#fff !important;padding:0 !important;}
 
   /* ---- Formula Builder header (Figma node 1998-10298) ---- */
-  .fbh{padding:12px 24px 0;font-family:Arial,Helvetica,sans-serif;}
+  /* Figma: breadcrumb at x=64 (rail=42px → 22px inset), y=60 (topbar=39px → ~12px below) */
+  .fbh{padding:12px 22px 0;font-family:Arial,Helvetica,sans-serif;}
   .fbh-top{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;}
   .fb-crumb{display:flex;align-items:center;gap:10px;line-height:1;}
   .fb-crumb span{font-size:14px;line-height:1;white-space:nowrap;}
