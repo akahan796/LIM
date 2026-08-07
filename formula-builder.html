@@ -416,6 +416,10 @@
               -webkit-appearance:none;-moz-appearance:none;appearance:none;}
   .fb-acctdd .cr{position:absolute;right:8px;top:50%;transform:translateY(-50%);pointer-events:none;color:#333;display:flex;align-items:center;}
   .fb-acctdd .cr svg{width:8px;height:5px;display:block;}
+  .fb-acctdd.lb{width:200px;}
+  .fb-acctsel:disabled{background:#f2f2f2;color:#9e9e9e;cursor:not-allowed;border-color:#d0d0d0;}
+  .fb-acctsel:disabled ~ .cr{color:#c2c2c2;}
+  .fb-lb-group.is-disabled .lb{color:#bdbdbd;}
   .fb-addblk{margin-left:auto;height:28px;padding:0 14px;background:#0a5dff;color:#fff;font-size:12px;
              font-weight:700;border:0;border-radius:2px;cursor:pointer;}
   .fb-addblk:hover{background:#0048d6;}
@@ -532,7 +536,7 @@
             <div class="fb-acctname">
               <span class="lb">Account Name</span>
               <div class="fb-acctdd">
-                <select class="fb-acctsel" aria-label="Account Name">
+                <select class="fb-acctsel" id="fbAcct" aria-label="Account Name">
                   <option value="" disabled selected hidden>Select account name</option>
                   <option>Account 1</option>
                   <option>Account 2</option>
@@ -540,6 +544,21 @@
                   <option>Account 4</option>
                   <option>Account 5</option>
                   <option>Account 6</option>
+                </select>
+                <span class="cr"><svg viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="currentColor"/></svg></span>
+              </div>
+            </div>
+            <div class="fb-acctname fb-lb-group is-disabled">
+              <span class="lb">Look Back Period</span>
+              <div class="fb-acctdd lb">
+                <select class="fb-acctsel" id="fbLookback" aria-label="Look Back Period" disabled>
+                  <option value="" disabled selected hidden>—</option>
+                  <option>0 - Current period</option>
+                  <option>1 period</option>
+                  <option>2 periods</option>
+                  <option>3 periods</option>
+                  <option>6 periods</option>
+                  <option>12 periods</option>
                 </select>
                 <span class="cr"><svg viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="currentColor"/></svg></span>
               </div>
@@ -1372,6 +1391,21 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
   $$('.d-tab').forEach(t=>t.classList.remove('active')); tab.classList.add('active');
   $$('.d-pane').forEach(p=> p.hidden = p.dataset.pane!==tab.dataset.tab);
 }));
+</script>
+<script>
+  /* Look Back Period is inactive until an account is chosen */
+  (function(){
+    var acct = document.getElementById('fbAcct');
+    var lb = document.getElementById('fbLookback');
+    var group = lb && lb.closest('.fb-lb-group');
+    if(!acct || !lb) return;
+    acct.addEventListener('change', function(){
+      var on = !!acct.value;
+      lb.disabled = !on;
+      if(group) group.classList.toggle('is-disabled', !on);
+      if(!on) lb.selectedIndex = 0;
+    });
+  })();
 </script>
 </body>
 </html>
