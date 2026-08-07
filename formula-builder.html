@@ -336,6 +336,24 @@
   .fb-tabs a:hover{color:#5a5a5a;}
   .fb-tabs a.active{color:#373737;border-bottom-color:#0A5DFF;}
   .fb-title{font-size:16px;font-weight:700;color:#373737;margin-top:14px;line-height:1.3;}
+
+  /* ---- Formula Builder form (ESG design tokens) ---- */
+  .fb-form{padding:0 22px 24px;font-family:Arial,Helvetica,sans-serif;}
+  .fb-sub{font-size:14px;font-weight:700;color:#373737;margin:18px 0 14px;}
+  .fb-grid{display:grid;gap:18px 24px;align-items:start;justify-content:start;
+           grid-template-columns:repeat(2,minmax(180px,300px)) minmax(140px,220px) minmax(120px,190px);}
+  .fb-field{display:flex;flex-direction:column;gap:6px;min-width:0;}
+  .fb-label{font-size:13px;color:var(--field-muted);}
+  .fb-ctrl{height:30px;border:1px solid #c4c4c4;border-radius:2px;background:#fff;
+           display:flex;align-items:center;padding:0 10px;font-size:13px;color:var(--ink);}
+  .fb-ctrl.dd{padding-right:2px;}
+  .fb-ctrl.dd .cv{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .fb-ctrl.dd .cr{width:22px;height:28px;display:flex;align-items:center;justify-content:center;
+                  flex:0 0 22px;color:#333;border-left:1px solid #d6d6d6;margin-left:8px;}
+  .fb-ctrl.dd .cr svg{width:9px;height:6px;}
+  .fb-acct .fb-ctrl{width:220px;max-width:100%;}
+  .fb-link{font-size:13px;color:var(--accent-blue);cursor:pointer;height:30px;display:flex;align-items:center;}
+  .fb-link:hover{text-decoration:underline;}
 </style>
 </head>
 <body>
@@ -371,6 +389,18 @@
           </nav>
         </div>
         <div class="fb-title">Workforce Planning</div>
+      </div>
+      <div class="fb-form">
+        <div class="fb-sub">Formulas</div>
+        <div class="fb-grid">
+          <div class="fb-field"><span class="fb-label">Formula Name</span><div class="fb-ctrl">MthlySalary</div></div>
+          <div class="fb-field"><span class="fb-label">Formula Description</span><div class="fb-ctrl">MthlySalary</div></div>
+          <div class="fb-field"><span class="fb-label">Register Group</span><div class="fb-ctrl dd"><span class="cv">All Employees</span><span class="cr"><svg viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></span></div></div>
+          <div class="fb-field"><span class="fb-label">Value Type</span><div class="fb-ctrl dd"><span class="cv">Periodic</span><span class="cr"><svg viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></span></div></div>
+          <div class="fb-field fb-acct"><span class="fb-label">Account</span><div class="fb-ctrl dd"><span class="cv">50200 - Monthly Salary</span><span class="cr"><svg viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></span></div></div>
+          <div class="fb-field"><span class="fb-label">Scenario Type</span><span class="fb-link">All Scenario Types</span></div>
+          <div class="fb-field"><span class="fb-label">Periods</span><span class="fb-link">Period(s) Selected</span></div>
+        </div>
       </div>
       <div id="page-home" class="page">
       <div class="welcome">
