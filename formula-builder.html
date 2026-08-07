@@ -382,6 +382,33 @@
   .fb-operators{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:12px 32px;max-width:1072px;margin-top:16px;padding-bottom:16px;border-bottom:1px solid #e2e2e2;}
   .fb-op{width:28px;height:28px;padding:0;flex:0 0 auto;background:#f7d9a0;border:1px solid #7d7d7d;box-sizing:border-box;
          display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#141414;cursor:pointer;}
+
+  /* bottom tabbed tile */
+  .fb-tile{max-width:1072px;margin-top:16px;border:1px solid #d9d9d9;background:#fff;display:flex;flex-direction:column;}
+  .fb-tabbar{display:flex;height:34px;background:#eef0f2;border-bottom:1px solid #d9d9d9;}
+  .fb-ftab{flex:1 1 0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;
+           cursor:pointer;border-right:1px solid #dcdcdc;white-space:nowrap;}
+  .fb-ftab:last-child{border-right:0;}
+  .fb-ftab.active{background:#fff;height:35px;margin-bottom:-1px;}
+  .ft-text{color:#6d7a90;} .ft-register{color:#2fa35f;} .ft-globals{color:#d63c9e;}
+  .ft-cube{color:#3f7fd6;} .ft-lookup{color:#16a5bd;} .ft-functions{color:#ef7a72;} .ft-accounts{color:#1c1c1c;}
+  .fb-tabact{display:flex;align-items:flex-end;gap:16px;padding:12px 20px 0;}
+  .fb-acctname{display:flex;flex-direction:column;gap:6px;}
+  .fb-acctname .lb{font-size:12px;color:#3a3a3a;}
+  .fb-acctdd{width:320px;height:30px;border:1px solid #4a90d9;background:#fff;box-sizing:border-box;
+             display:flex;align-items:center;padding:0 8px;font-size:12px;color:#000;}
+  .fb-acctdd .cr{margin-left:auto;color:#333;display:flex;align-items:center;}
+  .fb-acctdd .cr svg{width:8px;height:5px;display:block;}
+  .fb-addblk{margin-left:auto;height:28px;padding:0 14px;background:#3f7fd6;color:#fff;font-size:13px;
+             font-weight:700;border:0;border-radius:2px;cursor:pointer;}
+  .fb-addblk:hover{background:#356fc0;}
+  .fb-tbl{margin:14px 20px 18px;border:1px solid #d9d9d9;flex:1 1 auto;display:flex;flex-direction:column;min-height:170px;background:#fff;}
+  .fb-thead{display:flex;height:30px;background:#f2f2f2;border-bottom:1px solid #d9d9d9;flex:0 0 auto;}
+  .fb-th{width:118px;flex:0 0 118px;display:flex;align-items:center;gap:6px;padding:0 8px;
+         border-right:1px solid #e4e4e4;font-size:11px;font-weight:700;color:#222;overflow:hidden;}
+  .fb-th .thl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .fb-th .thf{margin-left:auto;width:12px;height:12px;flex:0 0 12px;color:#555;}
+  .fb-tbody{flex:1 1 auto;background:#fff;}
 </style>
 </head>
 <body>
@@ -472,6 +499,35 @@
           <span class="fb-op">&gt;=</span>
           <span class="fb-op">&lt;&gt;</span>
           <span class="fb-op">,</span>
+        </div>
+        <div class="fb-tile">
+          <div class="fb-tabbar">
+            <div class="fb-ftab ft-text">Text</div>
+            <div class="fb-ftab ft-register">Register</div>
+            <div class="fb-ftab ft-globals">Globals</div>
+            <div class="fb-ftab ft-cube">Cube</div>
+            <div class="fb-ftab ft-lookup">Lookup</div>
+            <div class="fb-ftab ft-functions">Functions</div>
+            <div class="fb-ftab ft-accounts active">Accounts</div>
+          </div>
+          <div class="fb-tabact">
+            <div class="fb-acctname">
+              <span class="lb">Account Name</span>
+              <div class="fb-acctdd"><span class="cv"></span><span class="cr"><svg viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="currentColor"/></svg></span></div>
+            </div>
+            <button class="fb-addblk" type="button">Add Block</button>
+          </div>
+          <div class="fb-tbl">
+            <div class="fb-thead">
+              <div class="fb-th"><span class="thl">Account Name</span><span class="thf"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"><path d="M1.5 2.5h11L8 7.5v4L6 10.5v-3L1.5 2.5z"/></svg></span></div>
+              <div class="fb-th"><span class="thl">Calculation Name</span><span class="thf"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"><path d="M1.5 2.5h11L8 7.5v4L6 10.5v-3L1.5 2.5z"/></svg></span></div>
+              <div class="fb-th"><span class="thl">Description</span><span class="thf"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"><path d="M1.5 2.5h11L8 7.5v4L6 10.5v-3L1.5 2.5z"/></svg></span></div>
+              <div class="fb-th"><span class="thl">Register Group</span><span class="thf"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"><path d="M1.5 2.5h11L8 7.5v4L6 10.5v-3L1.5 2.5z"/></svg></span></div>
+              <div class="fb-th"><span class="thl">Calculation Description</span><span class="thf"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"><path d="M1.5 2.5h11L8 7.5v4L6 10.5v-3L1.5 2.5z"/></svg></span></div>
+              <div class="fb-th"><span class="thl">Period</span><span class="thf"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"><path d="M1.5 2.5h11L8 7.5v4L6 10.5v-3L1.5 2.5z"/></svg></span></div>
+            </div>
+            <div class="fb-tbody"></div>
+          </div>
         </div>
       </div>
       <div id="page-home" class="page">
