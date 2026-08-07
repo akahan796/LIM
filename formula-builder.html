@@ -314,10 +314,27 @@
   .fw-act:hover .fw-ic{background:#eceff1;}
 </style>
 <style>
-  /* Formula Builder shell — top bar + icon rail only; main content intentionally blank for now */
+  /* Formula Builder shell — top bar + icon rail only; ESG demo content hidden */
   .main > .page{display:none !important;}
   /* "Sustainability Solution" side menu panel removed */
   #nav{display:none !important;}
+  .main{background:#fff !important;}
+
+  /* ---- Formula Builder header (Figma node 1998-10298) ---- */
+  .fbh{padding:12px 24px 0;font-family:Arial,Helvetica,sans-serif;}
+  .fbh-top{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+  .fb-crumb{display:flex;align-items:center;gap:10px;line-height:1;}
+  .fb-crumb span{font-size:14px;line-height:1;white-space:nowrap;}
+  .fbc-mut{color:#929292;}
+  .fbc-cur{color:#222222;}
+  .fbc-chev{width:10px;height:10px;color:#929292;flex:0 0 auto;}
+  .fbc-x{width:10px;height:10px;color:#929292;flex:0 0 auto;cursor:pointer;}
+  .fb-tabs{display:flex;align-items:center;gap:44px;}
+  .fb-tabs a{font-size:12px;font-weight:700;color:#929292;text-decoration:none;cursor:pointer;
+             padding-bottom:10px;border-bottom:4px solid #fff;line-height:normal;white-space:nowrap;}
+  .fb-tabs a:hover{color:#5a5a5a;}
+  .fb-tabs a.active{color:#373737;border-bottom-color:#0A5DFF;}
+  .fb-title{font-size:16px;font-weight:700;color:#373737;margin-top:14px;line-height:1.3;}
 </style>
 </head>
 <body>
@@ -340,6 +357,20 @@
       </div>
     </nav>
     <main class="main">
+      <div class="fbh">
+        <div class="fbh-top">
+          <div class="fb-crumb">
+            <span class="fbc-mut">Dashboards</span>
+            <svg class="fbc-chev" viewBox="0 0 10 10" fill="none"><path d="M3.5 2.2L6.3 5 3.5 7.8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="fbc-cur">Workforce Planning</span>
+            <svg class="fbc-x" viewBox="0 0 10 10" fill="none"><path d="M2.4 2.4l5.2 5.2M7.6 2.4l-5.2 5.2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          </div>
+          <nav class="fb-tabs">
+            <a>Register</a><a>Formulas</a><a class="active">Settings</a><a>Help</a>
+          </nav>
+        </div>
+        <div class="fb-title">Workforce Planning</div>
+      </div>
       <div id="page-home" class="page">
       <div class="welcome">
         <h1>Welcome back, Alex</h1>
