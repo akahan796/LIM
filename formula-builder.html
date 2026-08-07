@@ -424,12 +424,17 @@
              font-weight:700;border:0;border-radius:2px;cursor:pointer;}
   .fb-addblk:hover{background:#0048d6;}
   .fb-tbl{margin:14px 20px 18px;border:3px solid rgba(240,240,240,0.94);border-radius:3px;flex:1 1 auto;display:flex;flex-direction:column;min-height:170px;background:#fff;}
-  .fb-thead{display:flex;height:30px;background:#f2f2f2;border-bottom:1px solid #d9d9d9;flex:0 0 auto;}
-  .fb-th{width:118px;flex:0 0 118px;display:flex;align-items:center;gap:6px;padding:0 8px;
+  .fb-tbl{--fbcols:110px 150px 130px 145px 175px 340px;overflow-x:auto;}
+  .fb-thead{display:grid;grid-template-columns:var(--fbcols);height:30px;background:#f2f2f2;border-bottom:1px solid #d9d9d9;flex:0 0 auto;min-width:max-content;}
+  .fb-th{display:flex;align-items:center;gap:6px;padding:0 8px;
          border-right:1px solid #d9d9d9;font-size:11px;font-weight:700;color:#222;overflow:hidden;}
   .fb-th .thl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .fb-th .thf{margin-left:auto;width:12px;height:12px;flex:0 0 12px;color:#555;}
-  .fb-tbody{flex:1 1 auto;background:#fff;}
+  .fb-tbody{flex:1 1 auto;background:#fff;min-width:max-content;}
+  .fb-trow{display:grid;grid-template-columns:var(--fbcols);min-height:30px;border-bottom:1px solid #d9d9d9;}
+  .fb-trow:hover{background:#f5f8ff;}
+  .fb-td{display:flex;align-items:center;padding:0 8px;font-size:11px;color:#222;border-right:1px solid #d9d9d9;overflow:hidden;}
+  .fb-td span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 </style>
 </head>
 <body>
@@ -538,12 +543,12 @@
               <div class="fb-acctdd">
                 <select class="fb-acctsel" id="fbAcct" aria-label="Account Name">
                   <option value="" disabled selected hidden>Select account name</option>
-                  <option>Account 1</option>
-                  <option>Account 2</option>
-                  <option>Account 3</option>
-                  <option>Account 4</option>
-                  <option>Account 5</option>
-                  <option>Account 6</option>
+                  <option>1 - 1</option>
+                  <option>2 - 2</option>
+                  <option>3 - 3</option>
+                  <option>4 - 4</option>
+                  <option>5 - 5</option>
+                  <option>6 - 6</option>
                 </select>
                 <span class="cr"><svg viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="currentColor"/></svg></span>
               </div>
@@ -563,6 +568,18 @@
                 <span class="cr"><svg viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="currentColor"/></svg></span>
               </div>
             </div>
+            <div class="fb-acctname fb-bp-group is-disabled">
+              <span class="lb">Base Period</span>
+              <div class="fb-acctdd lb">
+                <select class="fb-acctsel" id="fbBasePeriod" aria-label="Base Period" disabled>
+                  <option value="" disabled selected hidden>—</option>
+                  <option>Current period</option>
+                  <option>Prior period</option>
+                  <option>Same period last year</option>
+                </select>
+                <span class="cr"><svg viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="currentColor"/></svg></span>
+              </div>
+            </div>
             <button class="fb-addblk" type="button">Add Block</button>
           </div>
           <div class="fb-tbl">
@@ -571,7 +588,7 @@
               <div class="fb-th"><span class="thl">Calculation Name</span><span class="thf"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"><path d="M1.5 2.5h11L8 7.5v4L6 10.5v-3L1.5 2.5z"/></svg></span></div>
               <div class="fb-th"><span class="thl">Description</span><span class="thf"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"><path d="M1.5 2.5h11L8 7.5v4L6 10.5v-3L1.5 2.5z"/></svg></span></div>
               <div class="fb-th"><span class="thl">Register Group</span><span class="thf"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"><path d="M1.5 2.5h11L8 7.5v4L6 10.5v-3L1.5 2.5z"/></svg></span></div>
-              <div class="fb-th"><span class="thl">Calculation Description</span><span class="thf"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"><path d="M1.5 2.5h11L8 7.5v4L6 10.5v-3L1.5 2.5z"/></svg></span></div>
+              <div class="fb-th"><span class="thl">Calculation Definition</span><span class="thf"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"><path d="M1.5 2.5h11L8 7.5v4L6 10.5v-3L1.5 2.5z"/></svg></span></div>
               <div class="fb-th"><span class="thl">Period</span><span class="thf"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"><path d="M1.5 2.5h11L8 7.5v4L6 10.5v-3L1.5 2.5z"/></svg></span></div>
             </div>
             <div class="fb-tbody"></div>
@@ -1393,18 +1410,56 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
 }));
 </script>
 <script>
-  /* Look Back Period is inactive until an account is chosen */
   (function(){
     var acct = document.getElementById('fbAcct');
-    var lb = document.getElementById('fbLookback');
-    var group = lb && lb.closest('.fb-lb-group');
-    if(!acct || !lb) return;
+    var lb   = document.getElementById('fbLookback');
+    var base = document.getElementById('fbBasePeriod');
+    var lbGroup = lb && lb.closest('.fb-lb-group');
+    var bpGroup = base && base.closest('.fb-bp-group');
+    var addBtn = document.querySelector('.fb-addblk');
+    var tbody  = document.querySelector('.fb-tbody');
+    if(!acct) return;
+
+    var P = 'M1,M2,M3,M4,M5,M6,M7,M8,M9,M10,M11,M12';
+    var ACCOUNTS = {
+      '1 - 1':{calc:'WageFormula',      desc:'WageFormula',      reg:'All Employees', def:'Wage',       period:P},
+      '2 - 2':{calc:'SalaryFormula',    desc:'SalaryFormula',    reg:'All Employees', def:'Salary',     period:P},
+      '3 - 3':{calc:'BonusFormula',     desc:'BonusFormula',     reg:'All Employees', def:'Bonus',      period:P},
+      '4 - 4':{calc:'BenefitsFormula',  desc:'BenefitsFormula',  reg:'All Employees', def:'Benefits',   period:P},
+      '5 - 5':{calc:'OvertimeFormula',  desc:'OvertimeFormula',  reg:'All Employees', def:'Overtime',   period:P},
+      '6 - 6':{calc:'CommissionFormula',desc:'CommissionFormula',reg:'All Employees', def:'Commission', period:P}
+    };
+
+    function setBase(on){
+      base.disabled = !on;
+      if(bpGroup) bpGroup.classList.toggle('is-disabled', !on);
+      if(on){ base.value = 'Current period'; } else { base.selectedIndex = 0; }
+    }
+    // Account chosen -> Look Back Period becomes active
     acct.addEventListener('change', function(){
       var on = !!acct.value;
       lb.disabled = !on;
-      if(group) group.classList.toggle('is-disabled', !on);
-      if(!on) lb.selectedIndex = 0;
+      if(lbGroup) lbGroup.classList.toggle('is-disabled', !on);
+      if(!on){ lb.selectedIndex = 0; setBase(false); }
     });
+    // Any Look Back Period chosen -> Base Period activates and defaults to Current period
+    lb.addEventListener('change', function(){ setBase(!!lb.value); });
+
+    // Add Block -> build a single row for the selected account (no duplicates)
+    if(addBtn && tbody){
+      addBtn.addEventListener('click', function(){
+        var acc = acct.value;
+        if(!acc || !ACCOUNTS[acc]) return;
+        if(tbody.querySelector('[data-acc="'+acc+'"]')) return;
+        var d = ACCOUNTS[acc];
+        var cell = function(t){ return '<div class="fb-td"><span>'+t+'</span></div>'; };
+        var row = document.createElement('div');
+        row.className = 'fb-trow';
+        row.setAttribute('data-acc', acc);
+        row.innerHTML = cell(acc)+cell(d.calc)+cell(d.desc)+cell(d.reg)+cell(d.def)+cell(d.period);
+        tbody.appendChild(row);
+      });
+    }
   })();
 </script>
 </body>
