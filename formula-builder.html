@@ -568,18 +568,6 @@
                 <span class="cr"><svg viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="currentColor"/></svg></span>
               </div>
             </div>
-            <div class="fb-acctname fb-bp-group is-disabled">
-              <span class="lb">Base Period</span>
-              <div class="fb-acctdd lb">
-                <select class="fb-acctsel" id="fbBasePeriod" aria-label="Base Period" disabled>
-                  <option value="" disabled selected hidden>—</option>
-                  <option>Current period</option>
-                  <option>Prior period</option>
-                  <option>Same period last year</option>
-                </select>
-                <span class="cr"><svg viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="currentColor"/></svg></span>
-              </div>
-            </div>
             <button class="fb-addblk" type="button">Add Block</button>
           </div>
           <div class="fb-tbl">
@@ -1413,9 +1401,7 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
   (function(){
     var acct = document.getElementById('fbAcct');
     var lb   = document.getElementById('fbLookback');
-    var base = document.getElementById('fbBasePeriod');
     var lbGroup = lb && lb.closest('.fb-lb-group');
-    var bpGroup = base && base.closest('.fb-bp-group');
     var addBtn = document.querySelector('.fb-addblk');
     var tbody  = document.querySelector('.fb-tbody');
     if(!acct) return;
@@ -1430,36 +1416,29 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
       '6 - 6':{calc:'CommissionFormula',desc:'CommissionFormula',reg:'All Employees', def:'Commission', period:P}
     };
 
-    function setBase(on){
-      base.disabled = !on;
-      if(bpGroup) bpGroup.classList.toggle('is-disabled', !on);
-      if(on){ base.value = 'Current period'; } else { base.selectedIndex = 0; }
+    function addRow(acc){
+      if(!acc || !ACCOUNTS[acc] || !tbody) return;
+      if(tbody.querySelector('[data-acc="'+acc+'"]')) return;   // no duplicates
+      var d = ACCOUNTS[acc];
+      var cell = function(t){ return '<div class="fb-td"><span>'+t+'</span></div>'; };
+      var row = document.createElement('div');
+      row.className = 'fb-trow';
+      row.setAttribute('data-acc', acc);
+      row.innerHTML = cell(acc)+cell(d.calc)+cell(d.desc)+cell(d.reg)+cell(d.def)+cell(d.period);
+      tbody.appendChild(row);
     }
-    // Account chosen -> Look Back Period becomes active
+
+    // Selecting an account: activate Look Back (default to Current period) AND add its row to the grid
     acct.addEventListener('change', function(){
       var on = !!acct.value;
       lb.disabled = !on;
       if(lbGroup) lbGroup.classList.toggle('is-disabled', !on);
-      if(!on){ lb.selectedIndex = 0; setBase(false); }
+      if(on){ lb.value = '0 - Current period'; addRow(acct.value); }
+      else  { lb.selectedIndex = 0; }
     });
-    // Any Look Back Period chosen -> Base Period activates and defaults to Current period
-    lb.addEventListener('change', function(){ setBase(!!lb.value); });
 
-    // Add Block -> build a single row for the selected account (no duplicates)
-    if(addBtn && tbody){
-      addBtn.addEventListener('click', function(){
-        var acc = acct.value;
-        if(!acc || !ACCOUNTS[acc]) return;
-        if(tbody.querySelector('[data-acc="'+acc+'"]')) return;
-        var d = ACCOUNTS[acc];
-        var cell = function(t){ return '<div class="fb-td"><span>'+t+'</span></div>'; };
-        var row = document.createElement('div');
-        row.className = 'fb-trow';
-        row.setAttribute('data-acc', acc);
-        row.innerHTML = cell(acc)+cell(d.calc)+cell(d.desc)+cell(d.reg)+cell(d.def)+cell(d.period);
-        tbody.appendChild(row);
-      });
-    }
+    // Add Block also adds the selected account's row (deduped)
+    if(addBtn){ addBtn.addEventListener('click', function(){ addRow(acct.value); }); }
   })();
 </script>
 </body>
