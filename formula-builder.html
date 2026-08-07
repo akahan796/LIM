@@ -378,6 +378,10 @@
   .fbp-grip{display:flex;flex-direction:column;gap:2.5px;padding:0 1px;}
   .fbp-grip i{width:2.5px;height:2.5px;border-radius:50%;background:#8a8a8a;}
   .fbp-blk.empty .fbp-grip i{background:#3a3a3a;}
+  /* operator palette */
+  .fb-operators{display:flex;justify-content:space-between;align-items:center;gap:6px;max-width:1072px;margin-top:16px;padding-bottom:16px;border-bottom:1px solid #e2e2e2;}
+  .fb-op{min-width:30px;height:26px;padding:0 8px;background:#f7d9a0;border:1px solid #7d7d7d;box-sizing:border-box;
+         display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#141414;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -453,6 +457,21 @@
               <div class="fbp-blk empty"><span class="fbp-grip"><i></i><i></i><i></i></span></div>
             </div>
           </div>
+        </div>
+        <div class="fb-operators">
+          <span class="fb-op">+</span>
+          <span class="fb-op">-</span>
+          <span class="fb-op">*</span>
+          <span class="fb-op">/</span>
+          <span class="fb-op">=</span>
+          <span class="fb-op">(</span>
+          <span class="fb-op">)</span>
+          <span class="fb-op">&lt;</span>
+          <span class="fb-op">&gt;</span>
+          <span class="fb-op">&lt;=</span>
+          <span class="fb-op">&gt;=</span>
+          <span class="fb-op">&lt;&gt;</span>
+          <span class="fb-op">,</span>
         </div>
       </div>
       <div id="page-home" class="page">
