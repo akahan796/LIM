@@ -340,12 +340,13 @@
   /* ---- Formula Builder form (Figma node 1998-10532) ---- */
   .fb-form{padding:0 22px 24px;font-family:Arial,Helvetica,sans-serif;}
   .fb-sub{font-size:14px;font-weight:700;color:#373737;margin:18px 0 16px;}
-  .fb-grid{display:grid;gap:16px 24px;align-items:start;justify-content:start;
-           grid-template-columns:repeat(4,minmax(0,250px));}
+  .fb-grid{display:grid;gap:16px 15px;align-items:start;justify-content:start;
+           grid-template-columns:minmax(0,379px) minmax(0,379px) minmax(0,250px) minmax(0,200px);}
   .fb-field{display:flex;flex-direction:column;gap:6px;min-width:0;}
-  .fb-label{font-size:11px;color:#373737;}
-  .fb-ctrl{height:22px;border:1px solid #737373;background:#fff;
-           display:flex;align-items:center;padding:0 4px;font-size:12px;color:#000;}
+  .fb-acct .fb-ctrl{max-width:250px;}
+  .fb-label{font-size:14px;color:#666e7f;}
+  .fb-ctrl{height:26px;border:1px solid #a3b7dc;background:#fff;
+           display:flex;align-items:center;padding:0 6px;font-size:14px;color:#000;}
   .fb-ctrl.dd .cv{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .fb-ctrl.dd .cr{flex:0 0 auto;display:flex;align-items:center;justify-content:center;margin-left:6px;color:#000;}
   .fb-ctrl.dd .cr svg{width:8px;height:5px;display:block;}
@@ -362,9 +363,9 @@
   .fb-btn.ghost:hover{background:var(--accent-blue-soft);}
 
   /* ---- formula preview (Figma icons node 1966-2550) ---- */
-  .fb-preview{margin-top:22px;border:1px solid #e6e6e6;border-radius:2px;background:#fff;overflow:hidden;max-width:1072px;}
-  .fbp-band{background:#efefef;padding:18px 22px;}
-  .fbp-title{font-size:20px;font-weight:700;color:#141414;}
+  .fb-preview{margin-top:22px;border:1px solid #a3b7dc;border-radius:2px;background:#fff;overflow:hidden;}
+  .fbp-band{background:#f0f0f0;padding:9px 22px;}
+  .fbp-title{font-size:22px;font-weight:700;color:#373737;}
   .fbp-body{padding:16px 22px 20px;}
   .fbp-toolbar{display:flex;gap:34px;margin-bottom:20px;}
   .fbp-tool{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;}
@@ -372,26 +373,26 @@
   .fbp-tool .tic svg{display:block;width:100%;height:100%;}
   .fbp-tool .tlbl{font-size:9px;color:#373737;white-space:nowrap;}
   .fbp-blocks{display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
-  .fbp-blk{height:28px;border-radius:0;border:1px solid #7d7d7d;display:flex;align-items:center;justify-content:center;padding:0 14px;font-size:13px;color:#1a1a1a;}
-  .fbp-blk.g{background:#8fbc72;} .fbp-blk.b{background:#f7d9a0;} .fbp-blk.u{background:#8b93c6;}
-  .fbp-blk.empty{background:#f4e04d;width:28px;padding:0;border:2px solid #141414;}
+  .fbp-blk{height:34px;border-radius:0;border:1px solid #a3b7dc;display:flex;align-items:center;justify-content:center;padding:0 12px;font-size:16px;color:#000;}
+  .fbp-blk.g{background:#8fbc8f;} .fbp-blk.b{background:#ffdead;} .fbp-blk.u{background:#8b93c6;}
+  .fbp-blk.empty{background:#f4e04d;width:30px;padding:0;border:2px solid #141414;}
   .fbp-grip{display:flex;flex-direction:column;gap:2.5px;padding:0 1px;}
-  .fbp-grip i{width:2.5px;height:2.5px;border-radius:50%;background:#8a8a8a;}
+  .fbp-grip i{width:2.5px;height:2.5px;border-radius:50%;background:#808080;}
   .fbp-blk.empty .fbp-grip i{background:#3a3a3a;}
   /* operator palette */
-  .fb-operators{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:12px 32px;max-width:1072px;margin-top:16px;padding-bottom:16px;border-bottom:1px solid #e2e2e2;}
-  .fb-op{width:28px;height:28px;padding:0;flex:0 0 auto;background:#f7d9a0;border:1px solid #7d7d7d;box-sizing:border-box;
-         display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#141414;cursor:pointer;}
+  .fb-operators{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-top:20px;padding:0 8% 16px;border-bottom:1px solid #e2e2e2;}
+  .fb-op{width:40px;height:35px;padding:0;flex:0 0 auto;background:#ffdead;border:1px solid #a3b7dc;box-sizing:border-box;
+         display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#000;cursor:pointer;}
 
   /* bottom tabbed tile */
-  .fb-tile{max-width:1072px;margin-top:16px;border:1px solid #d9d9d9;background:#fff;display:flex;flex-direction:column;}
-  .fb-tabbar{display:flex;height:34px;background:#eef0f2;border-bottom:1px solid #d9d9d9;}
-  .fb-ftab{flex:1 1 0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;
-           cursor:pointer;border-right:1px solid #dcdcdc;white-space:nowrap;}
+  .fb-tile{max-width:1088px;margin-top:16px;border:1px solid #d9d9d9;background:#fff;display:flex;flex-direction:column;}
+  .fb-tabbar{display:flex;height:30px;background:#fbfbfc;border-bottom:1px solid #d9d9d9;}
+  .fb-ftab{flex:1 1 0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;
+           cursor:pointer;border-right:1px solid #eaeaea;white-space:nowrap;}
   .fb-ftab:last-child{border-right:0;}
-  .fb-ftab.active{background:#fff;height:35px;margin-bottom:-1px;}
-  .ft-text{color:#6d7a90;} .ft-register{color:#2fa35f;} .ft-globals{color:#d63c9e;}
-  .ft-cube{color:#3f7fd6;} .ft-lookup{color:#16a5bd;} .ft-functions{color:#ef7a72;} .ft-accounts{color:#1c1c1c;}
+  .fb-ftab.active{background:#fff;height:31px;margin-bottom:-1px;}
+  .ft-text{color:#7493cb;} .ft-register{color:#8fbc8f;} .ft-globals{color:#dda0dd;}
+  .ft-cube{color:#bc8f8f;} .ft-lookup{color:#51e5ff;} .ft-functions{color:#f08080;} .ft-accounts{color:#606060;}
   .fb-tabact{display:flex;align-items:flex-end;gap:16px;padding:12px 20px 0;}
   .fb-acctname{display:flex;flex-direction:column;gap:6px;}
   .fb-acctname .lb{font-size:12px;color:#3a3a3a;}
@@ -399,9 +400,9 @@
              display:flex;align-items:center;padding:0 8px;font-size:12px;color:#000;}
   .fb-acctdd .cr{margin-left:auto;color:#333;display:flex;align-items:center;}
   .fb-acctdd .cr svg{width:8px;height:5px;display:block;}
-  .fb-addblk{margin-left:auto;height:28px;padding:0 14px;background:#3f7fd6;color:#fff;font-size:13px;
+  .fb-addblk{margin-left:auto;height:28px;padding:0 14px;background:#0a5dff;color:#fff;font-size:12px;
              font-weight:700;border:0;border-radius:2px;cursor:pointer;}
-  .fb-addblk:hover{background:#356fc0;}
+  .fb-addblk:hover{background:#0048d6;}
   .fb-tbl{margin:14px 20px 18px;border:1px solid #d9d9d9;flex:1 1 auto;display:flex;flex-direction:column;min-height:170px;background:#fff;}
   .fb-thead{display:flex;height:30px;background:#f2f2f2;border-bottom:1px solid #d9d9d9;flex:0 0 auto;}
   .fb-th{width:118px;flex:0 0 118px;display:flex;align-items:center;gap:6px;padding:0 8px;
@@ -453,7 +454,7 @@
           <div class="fb-field"><span class="fb-label">Formula Description:</span><div class="fb-ctrl">MthlySalary</div></div>
           <div class="fb-field"><span class="fb-label">Register Group:</span><div class="fb-ctrl dd"><span class="cv">All Employees</span><span class="cr"><svg viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="currentColor"/></svg></span></div></div>
           <div class="fb-field"><span class="fb-label">Value Type:</span><div class="fb-ctrl dd"><span class="cv">Periodic</span><span class="cr"><svg viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="currentColor"/></svg></span></div></div>
-          <div class="fb-field"><span class="fb-label">Account:</span><div class="fb-ctrl dd"><span class="cv">50200 - Monthly Salary</span><span class="cr"><svg viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="currentColor"/></svg></span></div></div>
+          <div class="fb-field fb-acct"><span class="fb-label">Account:</span><div class="fb-ctrl dd"><span class="cv">50200 - Monthly Salary</span><span class="cr"><svg viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="currentColor"/></svg></span></div></div>
           <div class="fb-field"><span class="fb-label">Scenario Type:</span><span class="fb-link">All Scenario Types</span></div>
           <div class="fb-field"><span class="fb-label">Periods:</span><span class="fb-link">Period(s) Selected</span></div>
         </div>
