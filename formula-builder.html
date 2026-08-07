@@ -389,6 +389,7 @@
   .fbp-blocks{display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
   .fbp-blk{height:34px;border-radius:0;border:1px solid #a3b7dc;display:flex;align-items:center;justify-content:center;padding:0 12px;font-size:16px;color:#000;}
   .fbp-blk.g{background:#8fbc8f;} .fbp-blk.b{background:#ffdead;} .fbp-blk.u{background:#8b93c6;}
+  .fbp-blk.acc{background:#c0c0c0;}
   .fbp-blk.empty{background:#f4e04d;width:30px;padding:0;border:1px solid #141414;}
   .fbp-grip{display:flex;flex-direction:column;gap:2.5px;padding:0 1px;}
   .fbp-grip i{width:2.5px;height:2.5px;border-radius:50%;background:#808080;}
@@ -1449,7 +1450,45 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
     // Any look-back period other than the default -> button says "Add Look-Back Block"
     lb.addEventListener('change', updateAddBtn);
 
-    if(addBtn){ addBtn.addEventListener('click', function(){ if(acct.value) setRow(acct.value); }); }
+    // ---- Look-back block on the formula canvas ----
+    var blocksRow = document.querySelector('.fbp-blocks');
+    var emptyBlk  = blocksRow && blocksRow.querySelector('.fbp-blk.empty');
+    function makeGrip(){ var g=document.createElement('span'); g.className='fbp-grip'; g.innerHTML='<i></i><i></i><i></i>'; return g; }
+    function addLookBackBlock(text){
+      if(!blocksRow || !emptyBlk) return;
+      var gripBeforeEmpty = emptyBlk.previousElementSibling;  // keep empty slot last
+      var blk = document.createElement('div');
+      blk.className = 'fbp-blk acc lookback-block';
+      blk.textContent = text;
+      blocksRow.insertBefore(makeGrip(), gripBeforeEmpty);
+      blocksRow.insertBefore(blk, gripBeforeEmpty);
+    }
+    function deleteLastLookBack(){
+      if(!blocksRow) return;
+      var blocks = blocksRow.querySelectorAll('.fbp-blk.lookback-block');
+      if(!blocks.length) return;
+      var last = blocks[blocks.length-1];
+      var grip = last.previousElementSibling;
+      if(grip && grip.classList.contains('fbp-grip')) grip.remove();
+      last.remove();
+    }
+    // Delete Block toolbar icon removes the added look-back block (so you can do it over)
+    var delTool = [].slice.call(document.querySelectorAll('.fbp-tool')).filter(function(t){
+      var l=t.querySelector('.tlbl'); return l && l.textContent.trim()==='Delete Block';
+    })[0];
+    if(delTool){ delTool.style.cursor='pointer'; delTool.addEventListener('click', deleteLastLookBack); }
+
+    if(addBtn){
+      addBtn.addEventListener('click', function(){
+        if(!acct.value) return;
+        var n = parseInt(lb.value, 10);
+        if(lb.value && lb.value !== '0 - Current period' && !isNaN(n)){
+          addLookBackBlock('A#'+acct.value+'-'+n);   // e.g. A#3-12
+        } else {
+          setRow(acct.value);
+        }
+      });
+    }
 
     // Clicking a row shows a selected state (single selection)
     if(tbody){
