@@ -1428,6 +1428,13 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
       tbody.appendChild(row);
     }
 
+    // Button label reflects whether a non-default look-back period is chosen
+    function updateAddBtn(){
+      if(!addBtn) return;
+      var isLookBack = lb.value && lb.value !== '0 - Current period';
+      addBtn.textContent = isLookBack ? 'Add Look-Back Block' : 'Add Block';
+    }
+
     // Selecting an account: activate Look Back (default to Current period) AND show that account's row
     acct.addEventListener('change', function(){
       var on = !!acct.value;
@@ -1435,7 +1442,11 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
       if(lbGroup) lbGroup.classList.toggle('is-disabled', !on);
       if(on){ lb.value = '0 - Current period'; setRow(acct.value); }
       else  { lb.selectedIndex = 0; tbody.innerHTML = ''; }
+      updateAddBtn();
     });
+
+    // Any look-back period other than the default -> button says "Add Look-Back Block"
+    lb.addEventListener('change', updateAddBtn);
 
     if(addBtn){ addBtn.addEventListener('click', function(){ if(acct.value) setRow(acct.value); }); }
   })();
