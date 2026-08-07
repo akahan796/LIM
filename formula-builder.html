@@ -328,8 +328,7 @@
   .fb-crumb span{font-size:14px;line-height:1;white-space:nowrap;}
   .fbc-mut{color:#929292;}
   .fbc-cur{color:#222222;}
-  .fbc-chev{width:10px;height:10px;color:#929292;flex:0 0 auto;}
-  .fbc-x{width:10px;height:10px;color:#929292;flex:0 0 auto;cursor:pointer;}
+  .fbc-sep{color:#929292;}
   .fb-tabs{display:flex;align-items:center;gap:44px;}
   .fb-tabs a{font-size:12px;font-weight:700;color:#929292;text-decoration:none;cursor:pointer;
              padding-bottom:10px;border-bottom:4px solid #fff;line-height:normal;white-space:nowrap;}
@@ -363,7 +362,16 @@
   .fb-btn.ghost:hover{background:var(--accent-blue-soft);}
 
   /* ---- formula preview (Figma icons node 1966-2550) ---- */
-  .fb-preview{margin-top:22px;border:1px solid #a3b7dc;border-radius:2px;background:#fff;overflow:hidden;}
+  /* two-column main row: left (preview/operators/tile) + Recently Used */
+  .fb-mainrow{display:flex;align-items:stretch;gap:26px;margin-top:22px;}
+  .fb-leftcol{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;}
+  .fb-recently{flex:0 0 320px;width:320px;border:1px solid #d9d9d9;background:#fff;display:flex;flex-direction:column;}
+  .fb-ru-head{height:44px;background:#f0f0f0;display:flex;align-items:center;padding:0 14px;flex:0 0 auto;}
+  .fb-ru-title{font-size:14px;font-weight:700;color:#666e7f;}
+  .fb-ru-gear{margin-left:auto;width:18px;height:16px;color:#666e7f;display:flex;align-items:center;}
+  .fb-ru-gear svg{width:100%;height:100%;display:block;}
+  .fb-ru-body{flex:1 1 auto;background:#fff;}
+  .fb-preview{border:1px solid #d9d9d9;border-radius:2px;background:#fff;overflow:hidden;}
   .fbp-band{background:#f0f0f0;padding:9px 22px;}
   .fbp-title{font-size:22px;font-weight:700;color:#373737;}
   .fbp-body{padding:16px 22px 20px;}
@@ -385,7 +393,7 @@
          display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#000;cursor:pointer;}
 
   /* bottom tabbed tile */
-  .fb-tile{max-width:1088px;margin-top:16px;border:1px solid #d9d9d9;background:#fff;display:flex;flex-direction:column;}
+  .fb-tile{margin-top:16px;border:1px solid #d9d9d9;background:#fff;display:flex;flex-direction:column;}
   .fb-tabbar{display:flex;height:30px;background:#fbfbfc;border-bottom:1px solid #d9d9d9;}
   .fb-ftab{flex:1 1 0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;
            cursor:pointer;border-right:1px solid #eaeaea;white-space:nowrap;}
@@ -436,12 +444,11 @@
         <div class="fbh-top">
           <div class="fb-crumb">
             <span class="fbc-mut">Dashboards</span>
-            <svg class="fbc-chev" viewBox="0 0 10 10" fill="none"><path d="M3.5 2.2L6.3 5 3.5 7.8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <span class="fbc-cur">Workforce Planning</span>
-            <svg class="fbc-x" viewBox="0 0 10 10" fill="none"><path d="M2.4 2.4l5.2 5.2M7.6 2.4l-5.2 5.2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+            <span class="fbc-sep">/</span>
+            <span class="fbc-cur">Workforce Planning 1</span>
           </div>
           <nav class="fb-tabs">
-            <a>Register</a><a>Formulas</a><a class="active">Settings</a><a>Help</a>
+            <a>Register</a><a class="active">Formulas</a><a>Settings</a><a>Help</a>
           </nav>
         </div>
         <div class="fb-title">Workforce Planning</div>
@@ -450,19 +457,21 @@
         <div class="fb-sub">Formulas</div>
         <div class="fb-body">
         <div class="fb-grid">
-          <div class="fb-field"><span class="fb-label">Formula Name:</span><div class="fb-ctrl">MthlySalary</div></div>
-          <div class="fb-field"><span class="fb-label">Formula Description:</span><div class="fb-ctrl">MthlySalary</div></div>
-          <div class="fb-field"><span class="fb-label">Register Group:</span><div class="fb-ctrl dd"><span class="cv">All Employees</span><span class="cr"><svg viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="currentColor"/></svg></span></div></div>
-          <div class="fb-field"><span class="fb-label">Value Type:</span><div class="fb-ctrl dd"><span class="cv">Periodic</span><span class="cr"><svg viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="currentColor"/></svg></span></div></div>
-          <div class="fb-field fb-acct"><span class="fb-label">Account:</span><div class="fb-ctrl dd"><span class="cv">50200 - Monthly Salary</span><span class="cr"><svg viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="currentColor"/></svg></span></div></div>
-          <div class="fb-field"><span class="fb-label">Scenario Type:</span><span class="fb-link">All Scenario Types</span></div>
-          <div class="fb-field"><span class="fb-label">Periods:</span><span class="fb-link">Period(s) Selected</span></div>
+          <div class="fb-field"><span class="fb-label">Formula Name</span><div class="fb-ctrl">MthlySalary</div></div>
+          <div class="fb-field"><span class="fb-label">Formula Description</span><div class="fb-ctrl">MthlySalary</div></div>
+          <div class="fb-field"><span class="fb-label">Register Group</span><div class="fb-ctrl dd"><span class="cv">All Employees</span><span class="cr"><svg viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="currentColor"/></svg></span></div></div>
+          <div class="fb-field"><span class="fb-label">Value Type</span><div class="fb-ctrl dd"><span class="cv">Periodic</span><span class="cr"><svg viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="currentColor"/></svg></span></div></div>
+          <div class="fb-field fb-acct"><span class="fb-label">Account</span><div class="fb-ctrl dd"><span class="cv">50200 - Monthly Salary</span><span class="cr"><svg viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="currentColor"/></svg></span></div></div>
+          <div class="fb-field"><span class="fb-label">Scenario Type</span><span class="fb-link">All Scenario Types</span></div>
+          <div class="fb-field"><span class="fb-label">Periods</span><span class="fb-link">Period(s) Selected</span></div>
         </div>
         <div class="fb-actions">
           <button class="fb-btn ghost" type="button">Cancel</button>
           <button class="fb-btn primary" type="button">Save</button>
         </div>
         </div>
+        <div class="fb-mainrow">
+        <div class="fb-leftcol">
         <div class="fb-preview">
           <div class="fbp-band"><span class="fbp-title">FTE*Salary/12</span></div>
           <div class="fbp-body">
@@ -529,6 +538,15 @@
             </div>
             <div class="fb-tbody"></div>
           </div>
+        </div>
+        </div>
+        <div class="fb-recently">
+          <div class="fb-ru-head">
+            <span class="fb-ru-title">Recently Used</span>
+            <span class="fb-ru-gear"><svg viewBox="0 0 18 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M1 4h11M15 4h2M1 12h2M6 12h11"/><circle cx="13.5" cy="4" r="2" fill="#f0f0f0"/><circle cx="4.5" cy="12" r="2" fill="#f0f0f0"/></svg></span>
+          </div>
+          <div class="fb-ru-body"></div>
+        </div>
         </div>
       </div>
       <div id="page-home" class="page">
