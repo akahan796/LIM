@@ -431,8 +431,9 @@
   .fb-th .thl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .fb-th .thf{margin-left:auto;width:12px;height:12px;flex:0 0 12px;color:#555;}
   .fb-tbody{flex:1 1 auto;background:#fff;min-width:max-content;}
-  .fb-trow{display:grid;grid-template-columns:var(--fbcols);min-height:30px;border-bottom:1px solid #d9d9d9;}
+  .fb-trow{display:grid;grid-template-columns:var(--fbcols);min-height:30px;border-bottom:1px solid #d9d9d9;cursor:pointer;}
   .fb-trow:hover{background:#f5f8ff;}
+  .fb-trow.selected,.fb-trow.selected:hover{background:#e6e6e6;}
   .fb-td{display:flex;align-items:center;padding:0 8px;font-size:13px;color:#222;border-right:1px solid #d9d9d9;overflow:hidden;}
   .fb-td span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 </style>
@@ -1449,6 +1450,17 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
     lb.addEventListener('change', updateAddBtn);
 
     if(addBtn){ addBtn.addEventListener('click', function(){ if(acct.value) setRow(acct.value); }); }
+
+    // Clicking a row shows a selected state (single selection)
+    if(tbody){
+      tbody.addEventListener('click', function(e){
+        var row = e.target.closest('.fb-trow');
+        if(!row || !tbody.contains(row)) return;
+        var sel = tbody.querySelectorAll('.fb-trow.selected');
+        for(var i=0;i<sel.length;i++) sel[i].classList.remove('selected');
+        row.classList.add('selected');
+      });
+    }
   })();
 </script>
 </body>
