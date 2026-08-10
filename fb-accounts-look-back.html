@@ -441,6 +441,22 @@
   .fb-trow.selected,.fb-trow.selected:hover{background:#e6e6e6;}
   .fb-td{display:flex;align-items:center;padding:0 8px;font-size:13px;color:#222;border-right:1px solid #d9d9d9;overflow:hidden;}
   .fb-td span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  /* Accounts tab: left content + right About panel */
+  .fb-tabrow{display:flex;align-items:stretch;}
+  .fb-tableft{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;}
+  .fb-about{flex:0 0 300px;width:300px;box-sizing:border-box;margin:14px 20px 18px 0;
+            border:3px solid rgba(240,240,240,0.94);border-radius:3px;background:#fff;padding:14px 16px;
+            overflow-y:auto;font-family:Arial,Helvetica,sans-serif;}
+  .fb-about-title{font-size:14px;font-weight:700;color:#373737;margin:0 0 10px;}
+  .fb-about ul{margin:0 0 4px;padding:0 0 0 16px;list-style:none;}
+  .fb-about ul + .fb-about-title{margin-top:18px;}
+  .fb-about li{font-size:13px;color:#333;line-height:1.5;margin-bottom:12px;position:relative;}
+  .fb-about li::before{content:'▪';position:absolute;left:-14px;color:#333;}
+  .fb-addblk{white-space:nowrap;flex-shrink:0;}
+  @media (max-width:1300px){
+    .fb-tabrow{flex-direction:column;}
+    .fb-about{flex:0 0 auto;width:auto;margin:0 20px 18px;}
+  }
 </style>
 </head>
 <body>
@@ -543,6 +559,8 @@
             <div class="fb-ftab ft-functions">Functions</div>
             <div class="fb-ftab ft-accounts active">Accounts</div>
           </div>
+          <div class="fb-tabrow">
+          <div class="fb-tableft">
           <div class="fb-tabact">
             <div class="fb-acctname">
               <span class="lb">Account Name</span>
@@ -577,6 +595,22 @@
               <div class="fb-th"><span class="thl">Period</span><span class="thf"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"><path d="M1.5 2.5h11L8 7.5v4L6 10.5v-3L1.5 2.5z"/></svg></span></div>
             </div>
             <div class="fb-tbody"></div>
+          </div>
+          </div>
+          <div class="fb-about">
+            <div class="fb-about-title">About Accounts</div>
+            <ul>
+              <li>Select an account to reference another formula's calculated value as a dependency.</li>
+              <li>The grid lists the selected account's calculation, register group, definition, and periods.</li>
+              <li>Click a row to select it.</li>
+            </ul>
+            <div class="fb-about-title">About Look Back Period</div>
+            <ul>
+              <li>Enter a value from 0 to 24 to pull the referenced value from that many periods back.</li>
+              <li>0 uses the current period — the default behavior.</li>
+              <li>A value greater than 0 adds a look-back block (for example A#3-12) and relabels the button to "Add Look-Back Block."</li>
+            </ul>
+          </div>
           </div>
         </div>
         </div>
