@@ -390,6 +390,7 @@
   .fbp-blk{height:34px;border-radius:0;border:1px solid #a3b7dc;display:flex;align-items:center;justify-content:center;padding:0 12px;font-size:16px;color:#000;}
   .fbp-blk.g{background:#8fbc8f;} .fbp-blk.b{background:#ffdead;} .fbp-blk.u{background:#8b93c6;}
   .fbp-blk.acc{background:#c0c0c0;}
+  .fbp-blk .lbb-ico{width:14px;height:14px;margin-left:5px;flex:0 0 auto;display:block;}
   .fbp-blk.empty{background:#f4e04d;width:30px;padding:0;border:1px solid #141414;}
   .fbp-grip{display:flex;flex-direction:column;gap:2.5px;padding:0 1px;}
   .fbp-grip i{width:2.5px;height:2.5px;border-radius:50%;background:#808080;}
@@ -1500,7 +1501,7 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
       var gripBeforeEmpty = emptyBlk.previousElementSibling;  // keep empty slot last
       var blk = document.createElement('div');
       blk.className = 'fbp-blk acc lookback-block';
-      blk.textContent = text;
+      blk.innerHTML = '<span>'+text+'</span><svg class="lbb-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 18.75C7.76389 18.75 5.81539 18.0087 4.15451 16.526C2.49363 15.0434 1.54167 13.1921 1.29861 10.9722H3.29167C3.51852 12.6574 4.26794 14.0509 5.53993 15.1528C6.81192 16.2546 8.29861 16.8056 10 16.8056C11.8958 16.8056 13.5041 16.1453 14.8247 14.8247C16.1453 13.5041 16.8056 11.8958 16.8056 10C16.8056 8.10417 16.1453 6.49595 14.8247 5.17535C13.5041 3.85475 11.8958 3.19444 10 3.19444C8.88194 3.19444 7.83681 3.4537 6.86458 3.97222C5.89236 4.49074 5.07407 5.2037 4.40972 6.11111H7.08333V8.05556H1.25V2.22222H3.19444V4.50694C4.02083 3.46991 5.02951 2.66782 6.22049 2.10069C7.41146 1.53356 8.6713 1.25 10 1.25C11.2153 1.25 12.3536 1.4809 13.4149 1.94271C14.4763 2.40451 15.3999 3.02836 16.1858 3.81424C16.9716 4.60012 17.5955 5.52373 18.0573 6.58507C18.5191 7.64641 18.75 8.78472 18.75 10C18.75 11.2153 18.5191 12.3536 18.0573 13.4149C17.5955 14.4763 16.9716 15.3999 16.1858 16.1858C15.3999 16.9716 14.4763 17.5955 13.4149 18.0573C12.3536 18.5191 11.2153 18.75 10 18.75ZM12.7222 14.0833L9.02778 10.3889V5.13889H10.9722V9.61111L14.0833 12.7222L12.7222 14.0833Z" fill="#373737"/></svg>';
       blocksRow.insertBefore(makeGrip(), gripBeforeEmpty);
       blocksRow.insertBefore(blk, gripBeforeEmpty);
     }
