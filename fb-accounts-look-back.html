@@ -445,8 +445,8 @@
   .fb-tabrow{display:flex;align-items:stretch;}
   .fb-tableft{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;}
   .fb-about{flex:0 0 300px;width:300px;box-sizing:border-box;margin:14px 20px 18px 0;
-            border:3px solid rgba(240,240,240,0.94);border-radius:3px;background:#fff;padding:14px 16px;
-            overflow-y:auto;font-family:Arial,Helvetica,sans-serif;}
+            background:#fff;position:relative;overflow:hidden;min-height:0;}
+  .fb-about-inner{position:absolute;inset:0;overflow-y:auto;padding:14px 16px;font-family:Arial,Helvetica,sans-serif;}
   .fb-about-title{font-size:14px;font-weight:700;color:#373737;margin:0 0 10px;}
   .fb-about ul{margin:0 0 4px;padding:0 0 0 16px;list-style:none;}
   .fb-about ul + .fb-about-title{margin-top:18px;}
@@ -455,7 +455,8 @@
   .fb-addblk{white-space:nowrap;flex-shrink:0;}
   @media (max-width:1300px){
     .fb-tabrow{flex-direction:column;}
-    .fb-about{flex:0 0 auto;width:auto;margin:0 20px 18px;}
+    .fb-about{flex:0 0 auto;width:auto;margin:0 20px 18px;position:static;overflow:visible;}
+    .fb-about-inner{position:static;}
   }
 </style>
 </head>
@@ -598,6 +599,7 @@
           </div>
           </div>
           <div class="fb-about">
+            <div class="fb-about-inner">
             <div class="fb-about-title">About Accounts</div>
             <ul>
               <li>Select an account to reference another formula's calculated value as a dependency.</li>
@@ -610,6 +612,7 @@
               <li>0 uses the current period — the default behavior.</li>
               <li>A value greater than 0 adds a look-back block (for example A#3-12) and relabels the button to "Add Look-Back Block."</li>
             </ul>
+            </div>
           </div>
           </div>
         </div>
