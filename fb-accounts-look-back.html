@@ -421,6 +421,10 @@
   .fb-acctsel:disabled{background:#f2f2f2;color:#9e9e9e;cursor:not-allowed;border-color:#d0d0d0;}
   .fb-acctsel:disabled ~ .cr{color:#c2c2c2;}
   .fb-lb-group.is-disabled .lb{color:#bdbdbd;}
+  .fb-acctinput{width:100%;height:100%;border:1px solid #a3b7dc;background:#fff;box-sizing:border-box;
+                padding:0 8px;font-size:14px;color:#000;font-family:inherit;-moz-appearance:textfield;}
+  .fb-acctinput::-webkit-outer-spin-button,.fb-acctinput::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  .fb-acctinput:disabled{background:#f2f2f2;color:#9e9e9e;cursor:not-allowed;border-color:#d0d0d0;}
   .fb-addblk{margin-left:auto;height:28px;padding:0 14px;background:#0a5dff;color:#fff;font-size:12px;
              font-weight:700;border:0;border-radius:2px;cursor:pointer;}
   .fb-addblk:hover{background:#0048d6;}
@@ -556,18 +560,9 @@
               </div>
             </div>
             <div class="fb-acctname fb-lb-group is-disabled">
-              <span class="lb">Look Back Period</span>
+              <span class="lb">Look Back Period (0-24)</span>
               <div class="fb-acctdd lb">
-                <select class="fb-acctsel" id="fbLookback" aria-label="Look Back Period" disabled>
-                  <option value="" disabled selected hidden>—</option>
-                  <option>0 - Current period</option>
-                  <option>1 period</option>
-                  <option>2 periods</option>
-                  <option>3 periods</option>
-                  <option>6 periods</option>
-                  <option>12 periods</option>
-                </select>
-                <span class="cr"><svg viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="currentColor"/></svg></span>
+                <input class="fb-acctinput" id="fbLookback" type="number" min="0" max="24" step="1" inputmode="numeric" aria-label="Look Back Period (0-24)" placeholder="—" disabled>
               </div>
             </div>
             <button class="fb-addblk" type="button">Add Block</button>
@@ -1433,22 +1428,28 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
     // Button label reflects whether a non-default look-back period is chosen
     function updateAddBtn(){
       if(!addBtn) return;
-      var isLookBack = lb.value && lb.value !== '0 - Current period';
+      var n = parseInt(lb.value, 10);
+      var isLookBack = !isNaN(n) && n > 0;
       addBtn.textContent = isLookBack ? 'Add Look-Back Block' : 'Add Block';
     }
 
-    // Selecting an account: activate Look Back (default to Current period) AND show that account's row
+    // Selecting an account: activate Look Back (default 0 = current period) AND show that account's row
     acct.addEventListener('change', function(){
       var on = !!acct.value;
       lb.disabled = !on;
       if(lbGroup) lbGroup.classList.toggle('is-disabled', !on);
-      if(on){ lb.value = '0 - Current period'; setRow(acct.value); }
-      else  { lb.selectedIndex = 0; tbody.innerHTML = ''; }
+      if(on){ lb.value = '0'; setRow(acct.value); }
+      else  { lb.value = ''; tbody.innerHTML = ''; }
       updateAddBtn();
     });
 
-    // Any look-back period other than the default -> button says "Add Look-Back Block"
-    lb.addEventListener('change', updateAddBtn);
+    // Numbers only, clamp to 0-24; a value > 0 flips the button to "Add Look-Back Block"
+    lb.addEventListener('input', function(){
+      var v = lb.value.replace(/[^0-9]/g,'');
+      if(v !== '' && parseInt(v,10) > 24) v = '24';
+      if(lb.value !== v) lb.value = v;
+      updateAddBtn();
+    });
 
     // ---- Look-back block on the formula canvas ----
     var blocksRow = document.querySelector('.fbp-blocks');
@@ -1482,7 +1483,7 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
       addBtn.addEventListener('click', function(){
         if(!acct.value) return;
         var n = parseInt(lb.value, 10);
-        if(lb.value && lb.value !== '0 - Current period' && !isNaN(n)){
+        if(!isNaN(n) && n > 0){
           addLookBackBlock('A#'+acct.value+'-'+n);   // e.g. A#3-12
         } else {
           setRow(acct.value);
