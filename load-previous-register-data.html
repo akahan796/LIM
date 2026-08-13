@@ -498,6 +498,10 @@
   .imp-btn.primary:hover{background:#0048d6;}
   .reg-tools{display:flex;align-items:flex-end;gap:26px;}
   .imp-src-lbl{font-size:14px;color:#222;flex:0 0 auto;}
+  .imp-plan-field{display:none;margin-top:16px;}
+  .imp-plan-field.show{display:block;}
+  .imp-plan-label{font-size:14px;color:#666e7f;margin-bottom:6px;}
+  .imp-plan-select{height:26px;width:250px;max-width:100%;font-size:14px;color:#000;font-family:Arial,Helvetica,sans-serif;border:1px solid #a3b7dc;border-radius:0;background:#fff;padding:0 6px;}
 </style>
 </head>
 <body>
@@ -1477,6 +1481,16 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
             <label class="imp-radio"><input type="radio" name="imp-type"> Load from connector</label>
             <label class="imp-radio"><input type="radio" name="imp-type"> Load Register Data From Plan</label>
           </div>
+          <div class="imp-plan-field" data-plan-field>
+            <div class="imp-plan-label">Select plan</div>
+            <select class="imp-plan-select">
+              <option>Workforce Planning 1</option>
+              <option>Workforce Planning 2</option>
+              <option>Capital Planning</option>
+              <option>Operating Expense Plan</option>
+              <option>Revenue Plan</option>
+            </select>
+          </div>
         </div>
         <div class="imp-method-field">
           <div class="imp-label">Import Method</div>
@@ -1511,6 +1525,16 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
             <label class="imp-radio"><input type="radio" name="imp2-source"> Connector</label>
             <label class="imp-radio"><input type="radio" name="imp2-source"> Register Data From Plan</label>
           </div>
+          <div class="imp-plan-field" data-plan-field>
+            <div class="imp-plan-label">Select plan</div>
+            <select class="imp-plan-select">
+              <option>Workforce Planning 1</option>
+              <option>Workforce Planning 2</option>
+              <option>Capital Planning</option>
+              <option>Operating Expense Plan</option>
+              <option>Revenue Plan</option>
+            </select>
+          </div>
         </div>
         <div class="imp-method-field">
           <div class="imp-label">Import Method</div>
@@ -1540,6 +1564,18 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
       }
       wire('regImport','impOverlay');
       wire('regImportV2','impOverlay2');
+      // "Select plan" dropdown appears only while the Register-Data-From-Plan radio in its row is selected.
+      document.querySelectorAll('.imp-type-field').forEach(function(field){
+        var planField=field.querySelector('[data-plan-field]');
+        if(!planField) return;
+        var radios=field.querySelectorAll('.imp-radios input[type="radio"]');
+        var planRadio=Array.prototype.filter.call(radios,function(r){
+          return /Register Data From Plan/i.test(r.parentNode.textContent);
+        })[0];
+        function sync(){ planField.classList.toggle('show', !!(planRadio && planRadio.checked)); }
+        radios.forEach(function(r){ r.addEventListener('change',sync); });
+        sync();
+      });
     })();
   </script>
 </body>
