@@ -498,10 +498,12 @@
   .imp-btn.primary:hover{background:#0048d6;}
   .reg-tools{display:flex;align-items:flex-end;gap:26px;}
   .imp-src-lbl{font-size:14px;color:#222;display:block;margin-top:13px;}
-  .imp-plan-field{display:none;flex-direction:column;align-items:flex-start;margin-top:16px;gap:6px;}
+  .imp-plan-field{display:none;align-items:flex-start;margin-top:16px;gap:28px;}
   .imp-plan-field.show{display:flex;}
+  .imp-plan-col{display:flex;flex-direction:column;gap:6px;}
   .imp-plan-label{font-size:14px;color:#222;}
   .imp-plan-select{height:26px;width:250px;max-width:100%;font-size:14px;color:#000;font-family:Arial,Helvetica,sans-serif;border:1px solid #a3b7dc;border-radius:0;background:#fff;padding:0 6px;}
+  .imp-plan-info{height:26px;display:flex;align-items:center;font-size:14px;color:#222;font-family:Arial,Helvetica,sans-serif;white-space:nowrap;}
 </style>
 </head>
 <body>
@@ -1482,14 +1484,20 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
             <label class="imp-radio"><input type="radio" name="imp-type"> Load Register Data From Plan</label>
           </div>
           <div class="imp-plan-field" data-plan-field>
-            <div class="imp-plan-label">Select plan:</div>
-            <select class="imp-plan-select">
-              <option>Workforce Planning 1</option>
-              <option>Workforce Planning 2</option>
-              <option>Capital Planning</option>
-              <option>Operating Expense Plan</option>
-              <option>Revenue Plan</option>
-            </select>
+            <div class="imp-plan-col">
+              <div class="imp-plan-label">Select plan:</div>
+              <select class="imp-plan-select">
+                <option>Workforce Planning 1</option>
+                <option>Workforce Planning 2</option>
+                <option>Capital Planning</option>
+                <option>Operating Expense Plan</option>
+                <option>Revenue Plan</option>
+              </select>
+            </div>
+            <div class="imp-plan-col">
+              <div class="imp-plan-label">Plan information:</div>
+              <div class="imp-plan-info" data-plan-info></div>
+            </div>
           </div>
         </div>
         <div class="imp-method-field">
@@ -1526,14 +1534,20 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
             <label class="imp-radio"><input type="radio" name="imp2-source"> Register Data From Plan</label>
           </div>
           <div class="imp-plan-field" data-plan-field>
-            <div class="imp-plan-label">Select plan:</div>
-            <select class="imp-plan-select">
-              <option>Workforce Planning 1</option>
-              <option>Workforce Planning 2</option>
-              <option>Capital Planning</option>
-              <option>Operating Expense Plan</option>
-              <option>Revenue Plan</option>
-            </select>
+            <div class="imp-plan-col">
+              <div class="imp-plan-label">Select plan:</div>
+              <select class="imp-plan-select">
+                <option>Workforce Planning 1</option>
+                <option>Workforce Planning 2</option>
+                <option>Capital Planning</option>
+                <option>Operating Expense Plan</option>
+                <option>Revenue Plan</option>
+              </select>
+            </div>
+            <div class="imp-plan-col">
+              <div class="imp-plan-label">Plan information:</div>
+              <div class="imp-plan-info" data-plan-info></div>
+            </div>
           </div>
         </div>
         <div class="imp-method-field">
@@ -1575,6 +1589,22 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
         function sync(){ planField.classList.toggle('show', !!(planRadio && planRadio.checked)); }
         radios.forEach(function(r){ r.addEventListener('change',sync); });
         sync();
+      });
+      // Plan information column mirrors the calculation timestamp - Run ID for the selected plan.
+      var PLAN_INFO={
+        'Workforce Planning 1':'2026-08-13 09:42:15 - RUN-004821',
+        'Workforce Planning 2':'2026-08-12 16:07:53 - RUN-004798',
+        'Capital Planning':'2026-08-11 08:15:30 - RUN-004755',
+        'Operating Expense Plan':'2026-08-08 14:22:41 - RUN-004690',
+        'Revenue Plan':'2026-08-05 11:03:09 - RUN-004612'
+      };
+      document.querySelectorAll('.imp-plan-field').forEach(function(pf){
+        var sel=pf.querySelector('.imp-plan-select');
+        var info=pf.querySelector('[data-plan-info]');
+        if(!sel||!info) return;
+        function upd(){ info.textContent=PLAN_INFO[sel.value]||''; }
+        sel.addEventListener('change',upd);
+        upd();
       });
     })();
   </script>
