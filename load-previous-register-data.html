@@ -473,7 +473,7 @@
 </style>
 <style>
   .imp-overlay{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;background:transparent;}
-  .imp-modal{width:420px;height:550px;max-width:94vw;max-height:94vh;background:#fff;border:1px solid #d5d5d5;box-shadow:none;display:flex;flex-direction:column;font-family:Arial,Helvetica,sans-serif;overflow:hidden;}
+  .imp-modal{width:580px;height:550px;max-width:94vw;max-height:94vh;background:#fff;border:1px solid #d5d5d5;box-shadow:none;display:flex;flex-direction:column;font-family:Arial,Helvetica,sans-serif;overflow:hidden;}
   .imp-titlebar{flex:0 0 40px;height:40px;background:#373737;display:flex;align-items:center;padding:0 13px;}
   .imp-tb-logo{width:20px;height:20px;display:block;flex:0 0 auto;}
   .imp-tb-logo svg{width:100%;height:100%;display:block;}
@@ -487,8 +487,8 @@
   .imp-type-field{margin-bottom:18px;}
   .imp-type-label{font-size:13px;color:#8a8a8a;padding-bottom:6px;border-bottom:1px solid #cfcfcf;}
   .imp-method-field{margin-bottom:22px;}
-  .imp-label{font-size:13px;color:#8a8a8a;}
-  .imp-radios{display:flex;align-items:center;gap:24px;margin-top:13px;}
+  .imp-label{font-size:13px;color:#8a8a8a;padding-bottom:6px;border-bottom:1px solid #cfcfcf;}
+  .imp-radios{display:flex;align-items:center;flex-wrap:wrap;gap:12px 24px;margin-top:13px;}
   .imp-radio{display:flex;align-items:center;gap:7px;font-size:14px;color:#222;cursor:pointer;}
   .imp-radio input{width:15px;height:15px;accent-color:#373737;margin:0;cursor:pointer;}
   .imp-buttons{display:flex;align-items:center;gap:13px;}
@@ -1473,6 +1473,7 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
           <div class="imp-radios">
             <label class="imp-radio"><input type="radio" name="imp-type" checked> Load file</label>
             <label class="imp-radio"><input type="radio" name="imp-type"> Load from connector</label>
+            <label class="imp-radio"><input type="radio" name="imp-type"> Load Register Data From Plan</label>
           </div>
         </div>
         <div class="imp-method-field">
