@@ -504,6 +504,7 @@
   .imp-plan-label{font-size:14px;color:#222;}
   .imp-plan-select{height:26px;width:250px;max-width:100%;font-size:14px;color:#000;font-family:Arial,Helvetica,sans-serif;border:1px solid #a3b7dc;border-radius:0;background:#fff;padding:0 6px;}
   .imp-plan-info{height:26px;display:flex;align-items:center;font-size:14px;color:#222;font-family:Arial,Helvetica,sans-serif;white-space:nowrap;}
+  .imp-src-help{font-size:13px;color:#666e7f;margin-top:12px;line-height:1.45;}
 </style>
 </head>
 <body>
@@ -1533,6 +1534,7 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
             <label class="imp-radio"><input type="radio" name="imp2-source"> Connector</label>
             <label class="imp-radio"><input type="radio" name="imp2-source"> Register Data From Plan</label>
           </div>
+          <div class="imp-src-help" data-src-help></div>
           <div class="imp-plan-field" data-plan-field>
             <div class="imp-plan-col">
               <div class="imp-plan-label">Select plan:</div>
@@ -1604,6 +1606,23 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
         if(!sel||!info) return;
         function upd(){ info.textContent=PLAN_INFO[sel.value]||''; }
         sel.addEventListener('change',upd);
+        upd();
+      });
+      // Helper text describing the currently selected Source choice.
+      var SRC_HELP={
+        'File':'Load register data from a file on your computer or a network location, such as a CSV or Excel workbook.',
+        'Connector':'Load register data through a configured connector that pulls from an external source system.',
+        'Register Data From Plan':'Load register data from a previously calculated plan already stored in this application.'
+      };
+      document.querySelectorAll('.imp-type-field').forEach(function(field){
+        var help=field.querySelector('[data-src-help]');
+        if(!help) return;
+        var radios=field.querySelectorAll('.imp-radios input[type="radio"]');
+        function upd(){
+          var sel=Array.prototype.filter.call(radios,function(r){ return r.checked; })[0];
+          help.textContent=sel?(SRC_HELP[sel.parentNode.textContent.trim()]||''):'';
+        }
+        radios.forEach(function(r){ r.addEventListener('change',upd); });
         upd();
       });
     })();
