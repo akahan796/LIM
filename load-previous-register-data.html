@@ -452,15 +452,20 @@
   .reg-import-ic svg{width:100%;height:100%;display:block;}
   .reg-import-lbl{font-size:11px;color:#373737;}
   .reg-save{height:28px;padding:0 14px;background:#b6b6b6;color:#fff;font-size:13px;font-weight:700;border:0;border-radius:2px;cursor:not-allowed;font-family:inherit;}
-  .reg-grid{border:3px solid rgba(240,240,240,0.94);border-radius:3px;background:#fff;display:flex;flex-direction:column;overflow:hidden;}
+  .reg-grid{border:1px solid #e0e0e0;background:#fff;display:flex;flex-direction:column;overflow:hidden;}
   .reg-scroll{overflow-x:auto;}
-  .reg-thead{display:flex;height:36px;background:#fff;border-bottom:1px solid #d9d9d9;min-width:max-content;}
-  .reg-th{width:155px;flex:0 0 155px;display:flex;align-items:center;gap:6px;padding:0 10px;border-right:1px solid #ededed;font-size:14px;font-weight:700;color:#222;}
+  .reg-thead{display:flex;height:30px;background:#fff;border-bottom:1px solid #e0e0e0;box-shadow:0 2px 4px -2px rgba(0,0,0,.16);position:relative;z-index:2;min-width:max-content;}
+  .reg-th{width:155px;flex:0 0 155px;display:flex;align-items:center;gap:6px;padding:0 8px;border-right:1px solid #e0e0e0;font-size:14px;font-weight:700;color:#212121;}
   .reg-th:last-child{border-right:0;}
   .reg-thl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1 1 auto;}
   .reg-thm{color:#9a9a9a;flex:0 0 auto;cursor:pointer;font-size:14px;line-height:1;}
   .reg-tbody{min-height:440px;background:#fff;min-width:max-content;}
-  .reg-foot{display:flex;align-items:center;justify-content:space-between;height:40px;padding:0 16px;border-top:1px solid #d9d9d9;background:#fafafa;flex:0 0 auto;}
+  .reg-foot{display:flex;align-items:center;justify-content:space-between;height:40px;padding:0 16px;border-top:1px solid #e0e0e0;background:#fafafa;flex:0 0 auto;}
+  .reg-row{display:flex;height:29px;border-bottom:1px solid #e0e0e0;background:#fff;cursor:pointer;min-width:max-content;}
+  .reg-row:hover:not(.selected){background:#f5f5f5;}
+  .reg-row.selected{background:#ededed;}
+  .reg-td{width:155px;flex:0 0 155px;display:flex;align-items:center;padding:0 8px;font-size:13px;color:#212121;border-right:1px solid #e0e0e0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .reg-td:last-child{border-right:0;}
   .reg-pager{display:flex;align-items:center;gap:16px;color:#7a7a7a;}
   .reg-pager span{display:flex;width:12px;height:12px;cursor:pointer;}
   .reg-pager svg{width:12px;height:12px;display:block;}
