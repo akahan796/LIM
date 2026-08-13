@@ -472,27 +472,27 @@
   .reg-count{font-size:13px;color:#7a7a7a;}
 </style>
 <style>
-  .imp-overlay{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.12);}
-  .imp-modal{width:460px;max-width:92vw;background:#fff;box-shadow:0 10px 40px rgba(0,0,0,.28);display:flex;flex-direction:column;font-family:Arial,Helvetica,sans-serif;overflow:hidden;}
-  .imp-titlebar{flex:0 0 44px;height:44px;background:#373737;display:flex;align-items:center;padding:0 14px;}
-  .imp-tb-logo{width:22px;height:22px;display:block;flex:0 0 auto;}
+  .imp-overlay{position:fixed;inset:0;z-index:1000;display:none;background:transparent;}
+  .imp-modal{position:absolute;top:48px;left:80px;width:500px;background:#fff;border:1px solid #d5d5d5;box-shadow:none;display:flex;flex-direction:column;font-family:Arial,Helvetica,sans-serif;overflow:hidden;}
+  .imp-titlebar{flex:0 0 46px;height:46px;background:#373737;display:flex;align-items:center;padding:0 15px;}
+  .imp-tb-logo{width:24px;height:24px;display:block;flex:0 0 auto;}
   .imp-tb-logo svg{width:100%;height:100%;display:block;}
-  .imp-tb-title{font-size:16px;margin-left:9px;color:#fff;font-weight:400;}
-  .imp-tb-icons{margin-left:auto;display:flex;align-items:center;gap:15px;}
-  .imp-tb-icons .ic{width:17px;height:17px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .imp-tb-title{font-size:18px;margin-left:10px;color:#fff;font-weight:400;}
+  .imp-tb-icons{margin-left:auto;display:flex;align-items:center;gap:16px;}
+  .imp-tb-icons .ic{width:19px;height:19px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
   .imp-tb-icons .ic svg{width:100%;height:100%;display:block;}
   .imp-spin svg{animation:impspin 1s linear infinite;transform-origin:50% 50%;}
   @keyframes impspin{to{transform:rotate(360deg);}}
-  .imp-body{padding:20px 24px 22px;}
-  .imp-type-field{margin-bottom:18px;}
-  .imp-type-label{font-size:13px;color:#8a8a8a;padding-bottom:6px;border-bottom:1px solid #cfcfcf;}
-  .imp-method-field{margin-bottom:22px;}
-  .imp-label{font-size:13px;color:#8a8a8a;}
-  .imp-radios{display:flex;align-items:center;gap:24px;margin-top:12px;}
-  .imp-radio{display:flex;align-items:center;gap:7px;font-size:14px;color:#222;cursor:pointer;}
-  .imp-radio input{width:15px;height:15px;accent-color:#373737;margin:0;cursor:pointer;}
-  .imp-buttons{display:flex;align-items:center;gap:12px;}
-  .imp-btn{height:36px;min-width:112px;padding:0 18px;font-size:13px;border-radius:2px;cursor:pointer;font-family:inherit;}
+  .imp-body{padding:24px 30px 26px;}
+  .imp-type-field{margin-bottom:20px;}
+  .imp-type-label{font-size:15px;color:#8a8a8a;padding-bottom:7px;border-bottom:1px solid #cfcfcf;}
+  .imp-method-field{margin-bottom:26px;}
+  .imp-label{font-size:15px;color:#8a8a8a;}
+  .imp-radios{display:flex;align-items:center;gap:28px;margin-top:16px;}
+  .imp-radio{display:flex;align-items:center;gap:8px;font-size:16px;color:#222;cursor:pointer;}
+  .imp-radio input{width:17px;height:17px;accent-color:#373737;margin:0;cursor:pointer;}
+  .imp-buttons{display:flex;align-items:center;gap:16px;}
+  .imp-btn{height:42px;min-width:148px;padding:0 20px;font-size:15px;border-radius:2px;cursor:pointer;font-family:inherit;}
   .imp-btn.cancel{background:#fff;color:#0a5dff;border:1px solid #0a5dff;}
   .imp-btn.primary{background:#0a5dff;color:#fff;border:0;font-weight:700;}
   .imp-btn.primary:hover{background:#0048d6;}
@@ -1498,7 +1498,7 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
       var mlogo=document.getElementById('impLogo');
       if(mlogo && logoSrc) mlogo.innerHTML=logoSrc.innerHTML;
       var tool=document.querySelector('.reg-import');
-      if(tool){ tool.style.cursor='pointer'; tool.addEventListener('click',function(){ overlay.style.display='flex'; }); }
+      if(tool){ tool.style.cursor='pointer'; tool.addEventListener('click',function(){ overlay.style.display='block'; }); }
       document.querySelectorAll('[data-imp-close]').forEach(function(c){ c.addEventListener('click',function(){ overlay.style.display='none'; }); });
       overlay.addEventListener('click',function(e){ if(e.target===overlay) overlay.style.display='none'; });
     })();
