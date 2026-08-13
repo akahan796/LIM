@@ -497,6 +497,7 @@
   .imp-btn.primary{background:#0a5dff;color:#fff;border:1px solid #0a5dff;}
   .imp-btn.primary:hover{background:#0048d6;}
   .reg-tools{display:flex;align-items:flex-end;gap:26px;}
+  .imp-src-lbl{font-size:14px;color:#222;flex:0 0 auto;}
 </style>
 </head>
 <body>
@@ -1503,8 +1504,9 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
       </div>
       <div class="imp-body">
         <div class="imp-type-field">
-          <div class="imp-type-label">Load source:</div>
+          <div class="imp-type-label">Load Source</div>
           <div class="imp-radios">
+            <span class="imp-src-lbl">Source:</span>
             <label class="imp-radio"><input type="radio" name="imp2-source" checked> File</label>
             <label class="imp-radio"><input type="radio" name="imp2-source"> Connector</label>
             <label class="imp-radio"><input type="radio" name="imp2-source"> Register Data From Plan</label>
