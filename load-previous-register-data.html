@@ -471,6 +471,32 @@
   .reg-pager svg{width:12px;height:12px;display:block;}
   .reg-count{font-size:13px;color:#7a7a7a;}
 </style>
+<style>
+  .imp-overlay{position:fixed;inset:0;z-index:1000;display:none;}
+  .imp-modal{position:absolute;top:6%;left:7%;width:80%;height:88%;background:#fff;box-shadow:0 8px 34px rgba(0,0,0,.32);display:flex;flex-direction:column;font-family:Arial,Helvetica,sans-serif;overflow:hidden;}
+  .imp-titlebar{flex:0 0 48px;height:48px;background:#373737;display:flex;align-items:center;padding:0 16px;}
+  .imp-tb-logo{width:26px;height:26px;display:block;flex:0 0 auto;}
+  .imp-tb-logo svg{width:100%;height:100%;display:block;}
+  .imp-tb-title{font-size:18px;margin-left:10px;color:#fff;font-weight:400;}
+  .imp-tb-icons{margin-left:auto;display:flex;align-items:center;gap:18px;}
+  .imp-tb-icons .ic{width:20px;height:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .imp-tb-icons .ic svg{width:100%;height:100%;display:block;}
+  .imp-spin svg{animation:impspin 1s linear infinite;transform-origin:50% 50%;}
+  @keyframes impspin{to{transform:rotate(360deg);}}
+  .imp-body{flex:1 1 auto;padding:28px 40px;overflow:auto;}
+  .imp-type-field{margin-bottom:24px;}
+  .imp-type-label{font-size:16px;color:#8a8a8a;padding-bottom:8px;border-bottom:1px solid #cfcfcf;}
+  .imp-method-field{margin-bottom:30px;}
+  .imp-label{font-size:16px;color:#8a8a8a;}
+  .imp-radios{display:flex;align-items:center;gap:30px;margin-top:18px;}
+  .imp-radio{display:flex;align-items:center;gap:9px;font-size:17px;color:#222;cursor:pointer;}
+  .imp-radio input{width:18px;height:18px;accent-color:#373737;margin:0;cursor:pointer;}
+  .imp-buttons{display:flex;align-items:center;gap:28px;}
+  .imp-btn{height:44px;min-width:172px;padding:0 20px;font-size:15px;border-radius:2px;cursor:pointer;font-family:inherit;}
+  .imp-btn.cancel{background:#fff;color:#0a5dff;border:1px solid #0a5dff;}
+  .imp-btn.primary{background:#0a5dff;color:#fff;border:0;font-weight:700;}
+  .imp-btn.primary:hover{background:#0048d6;}
+</style>
 </head>
 <body>
 <div class="app" id="app">
@@ -1430,5 +1456,52 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
     }
   })();
 </script>
+
+  <div class="imp-overlay" id="impOverlay">
+    <div class="imp-modal">
+      <div class="imp-titlebar">
+        <span class="imp-tb-logo" id="impLogo"></span>
+        <span class="imp-tb-title">Import</span>
+        <span class="imp-tb-icons">
+          <span class="ic imp-spin"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="12" r="1.7" fill="#7cc142" opacity="1"/><circle cx="17.66" cy="17.66" r="1.7" fill="#7cc142" opacity=".82"/><circle cx="12" cy="20" r="1.7" fill="#7cc142" opacity=".66"/><circle cx="6.34" cy="17.66" r="1.7" fill="#7cc142" opacity=".5"/><circle cx="4" cy="12" r="1.7" fill="#7cc142" opacity=".38"/><circle cx="6.34" cy="6.34" r="1.7" fill="#7cc142" opacity=".28"/><circle cx="12" cy="4" r="1.7" fill="#7cc142" opacity=".2"/><circle cx="17.66" cy="6.34" r="1.7" fill="#7cc142" opacity=".14"/></svg></span>
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="4" width="12" height="17" rx="1.6"/><path d="M9 4V3.3A1.3 1.3 0 0 1 10.3 2h3.4A1.3 1.3 0 0 1 15 3.3V4"/></svg></span>
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg"><rect x="5.5" y="5.5" width="13" height="13" rx="1"/></svg></span>
+          <span class="ic" data-imp-close><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+        </span>
+      </div>
+      <div class="imp-body">
+        <div class="imp-type-field">
+          <div class="imp-type-label">Import Type</div>
+          <div class="imp-radios">
+            <label class="imp-radio"><input type="radio" name="imp-type" checked> Load file</label>
+            <label class="imp-radio"><input type="radio" name="imp-type"> Load from connector</label>
+          </div>
+        </div>
+        <div class="imp-method-field">
+          <div class="imp-label">Import Method</div>
+          <div class="imp-radios">
+            <label class="imp-radio"><input type="radio" name="imp-method" checked> Replace all</label>
+            <label class="imp-radio"><input type="radio" name="imp-method"> Append new rows</label>
+          </div>
+        </div>
+        <div class="imp-buttons">
+          <button class="imp-btn cancel" data-imp-close type="button">Cancel</button>
+          <button class="imp-btn primary" data-imp-close type="button">Import</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function(){
+      var overlay=document.getElementById('impOverlay');
+      var logoSrc=document.getElementById('logo');
+      var mlogo=document.getElementById('impLogo');
+      if(mlogo && logoSrc) mlogo.innerHTML=logoSrc.innerHTML;
+      var tool=document.querySelector('.reg-import');
+      if(tool){ tool.style.cursor='pointer'; tool.addEventListener('click',function(){ overlay.style.display='block'; }); }
+      document.querySelectorAll('[data-imp-close]').forEach(function(c){ c.addEventListener('click',function(){ overlay.style.display='none'; }); });
+      overlay.addEventListener('click',function(e){ if(e.target===overlay) overlay.style.display='none'; });
+    })();
+  </script>
 </body>
 </html>
