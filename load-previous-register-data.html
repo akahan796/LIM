@@ -505,6 +505,7 @@
   .imp-plan-select{height:26px;width:250px;max-width:100%;font-size:14px;color:#000;font-family:Arial,Helvetica,sans-serif;border:1px solid #a3b7dc;border-radius:0;background:#fff;padding:0 6px;}
   .imp-plan-info{height:26px;display:flex;align-items:center;font-size:14px;color:#222;font-family:Arial,Helvetica,sans-serif;white-space:nowrap;}
   .imp-src-help{font-size:13px;color:#666e7f;margin-top:12px;line-height:1.45;}
+  .imp-plan-select.wide{width:480px;}
 </style>
 </head>
 <body>
@@ -543,7 +544,7 @@
       <div class="reg-form">
         <div class="reg-crumb"><a class="reg-link">Import &amp; Modify</a><svg class="reg-chev" viewBox="0 0 10 10" fill="none"><path d="M3.5 2.2L6.3 5 3.5 7.8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="reg-cur">Add Data</span><svg class="reg-x" viewBox="0 0 10 10" fill="none"><path d="M2.4 2.4l5.2 5.2M7.6 2.4l-5.2 5.2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div>
         <div class="reg-toolbar">
-          <div class="reg-tools"><div class="reg-import" id="regImport"><span class="reg-import-ic"><svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></span><span class="reg-import-lbl">Import</span></div><div class="reg-import" id="regImportV2"><span class="reg-import-ic"><svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></span><span class="reg-import-lbl">Import V2</span></div></div>
+          <div class="reg-tools"><div class="reg-import" id="regImport"><span class="reg-import-ic"><svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></span><span class="reg-import-lbl">Import</span></div><div class="reg-import" id="regImportV2"><span class="reg-import-ic"><svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></span><span class="reg-import-lbl">Import V2</span></div><div class="reg-import" id="regImportV3"><span class="reg-import-ic"><svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></span><span class="reg-import-lbl">Import V3</span></div></div>
           <button class="reg-save" type="button" disabled>Save To Register</button>
         </div>
         <div class="reg-grid">
@@ -1566,6 +1567,51 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
       </div>
     </div>
   </div>
+  <div class="imp-overlay" id="impOverlay3">
+    <div class="imp-modal">
+      <div class="imp-titlebar">
+        <span class="imp-tb-logo"></span>
+        <span class="imp-tb-title">Import</span>
+        <span class="imp-tb-icons">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg"><rect x="5.5" y="5.5" width="13" height="13" rx="1"/></svg></span>
+          <span class="ic" data-imp-close><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+        </span>
+      </div>
+      <div class="imp-body">
+        <div class="imp-type-field">
+          <div class="imp-type-label">Import Type</div>
+          <div class="imp-radios">
+            <label class="imp-radio"><input type="radio" name="imp3-type" checked> Load file</label>
+            <label class="imp-radio"><input type="radio" name="imp3-type"> Load from connector</label>
+            <label class="imp-radio"><input type="radio" name="imp3-type"> Load Register Data From Plan</label>
+          </div>
+          <div class="imp-plan-field" data-plan-field>
+            <div class="imp-plan-col">
+              <div class="imp-plan-label">Select plan:</div>
+              <select class="imp-plan-select wide">
+                <option>Workforce Planning 1 - 2026-08-13 09:42:15 - RUN-004821</option>
+                <option>Workforce Planning 2 - 2026-08-12 16:07:53 - RUN-004798</option>
+                <option>Capital Planning - 2026-08-11 08:15:30 - RUN-004755</option>
+                <option>Operating Expense Plan - 2026-08-08 14:22:41 - RUN-004690</option>
+                <option>Revenue Plan - 2026-08-05 11:03:09 - RUN-004612</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="imp-method-field">
+          <div class="imp-label">Import Method</div>
+          <div class="imp-radios">
+            <label class="imp-radio"><input type="radio" name="imp3-method" checked> Replace all</label>
+            <label class="imp-radio"><input type="radio" name="imp3-method"> Append new rows</label>
+          </div>
+        </div>
+        <div class="imp-buttons">
+          <button class="imp-btn cancel" data-imp-close type="button">Cancel</button>
+          <button class="imp-btn primary" data-imp-close type="button">Import</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <script>
     (function(){
       var logoSrc=document.getElementById('logo');
@@ -1580,6 +1626,7 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
       }
       wire('regImport','impOverlay');
       wire('regImportV2','impOverlay2');
+      wire('regImportV3','impOverlay3');
       // "Select plan" dropdown appears only while the Register-Data-From-Plan radio in its row is selected.
       document.querySelectorAll('.imp-type-field').forEach(function(field){
         var planField=field.querySelector('[data-plan-field]');
