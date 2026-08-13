@@ -496,6 +496,7 @@
   .imp-btn.cancel{background:#fff;color:#0a5dff;border:1px solid #0a5dff;}
   .imp-btn.primary{background:#0a5dff;color:#fff;border:1px solid #0a5dff;}
   .imp-btn.primary:hover{background:#0048d6;}
+  .reg-tools{display:flex;align-items:flex-end;gap:26px;}
 </style>
 </head>
 <body>
@@ -534,7 +535,7 @@
       <div class="reg-form">
         <div class="reg-crumb"><a class="reg-link">Import &amp; Modify</a><svg class="reg-chev" viewBox="0 0 10 10" fill="none"><path d="M3.5 2.2L6.3 5 3.5 7.8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="reg-cur">Add Data</span><svg class="reg-x" viewBox="0 0 10 10" fill="none"><path d="M2.4 2.4l5.2 5.2M7.6 2.4l-5.2 5.2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div>
         <div class="reg-toolbar">
-          <div class="reg-import"><span class="reg-import-ic"><svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></span><span class="reg-import-lbl">Import</span></div>
+          <div class="reg-tools"><div class="reg-import" id="regImport"><span class="reg-import-ic"><svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></span><span class="reg-import-lbl">Import</span></div><div class="reg-import" id="regImportV2"><span class="reg-import-ic"><svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></span><span class="reg-import-lbl">Import V2</span></div></div>
           <button class="reg-save" type="button" disabled>Save To Register</button>
         </div>
         <div class="reg-grid">
@@ -1490,16 +1491,53 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
       </div>
     </div>
   </div>
+  <div class="imp-overlay" id="impOverlay2">
+    <div class="imp-modal">
+      <div class="imp-titlebar">
+        <span class="imp-tb-logo"></span>
+        <span class="imp-tb-title">Import</span>
+        <span class="imp-tb-icons">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg"><rect x="5.5" y="5.5" width="13" height="13" rx="1"/></svg></span>
+          <span class="ic" data-imp-close><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+        </span>
+      </div>
+      <div class="imp-body">
+        <div class="imp-type-field">
+          <div class="imp-type-label">Load source:</div>
+          <div class="imp-radios">
+            <label class="imp-radio"><input type="radio" name="imp2-source" checked> File</label>
+            <label class="imp-radio"><input type="radio" name="imp2-source"> Connector</label>
+            <label class="imp-radio"><input type="radio" name="imp2-source"> Register Data From Plan</label>
+          </div>
+        </div>
+        <div class="imp-method-field">
+          <div class="imp-label">Import Method</div>
+          <div class="imp-radios">
+            <label class="imp-radio"><input type="radio" name="imp2-method" checked> Replace all</label>
+            <label class="imp-radio"><input type="radio" name="imp2-method"> Append new rows</label>
+          </div>
+        </div>
+        <div class="imp-buttons">
+          <button class="imp-btn cancel" data-imp-close type="button">Cancel</button>
+          <button class="imp-btn primary" data-imp-close type="button">Import</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <script>
     (function(){
-      var overlay=document.getElementById('impOverlay');
       var logoSrc=document.getElementById('logo');
-      var mlogo=document.getElementById('impLogo');
-      if(mlogo && logoSrc) mlogo.innerHTML=logoSrc.innerHTML;
-      var tool=document.querySelector('.reg-import');
-      if(tool){ tool.style.cursor='pointer'; tool.addEventListener('click',function(){ overlay.style.display='flex'; }); }
-      document.querySelectorAll('[data-imp-close]').forEach(function(c){ c.addEventListener('click',function(){ overlay.style.display='none'; }); });
-      overlay.addEventListener('click',function(e){ if(e.target===overlay) overlay.style.display='none'; });
+      document.querySelectorAll('.imp-tb-logo').forEach(function(m){ if(logoSrc) m.innerHTML=logoSrc.innerHTML; });
+      function wire(toolId, overlayId){
+        var overlay=document.getElementById(overlayId);
+        if(!overlay) return;
+        var tool=document.getElementById(toolId);
+        if(tool){ tool.style.cursor='pointer'; tool.addEventListener('click',function(){ overlay.style.display='flex'; }); }
+        overlay.querySelectorAll('[data-imp-close]').forEach(function(c){ c.addEventListener('click',function(){ overlay.style.display='none'; }); });
+        overlay.addEventListener('click',function(e){ if(e.target===overlay) overlay.style.display='none'; });
+      }
+      wire('regImport','impOverlay');
+      wire('regImportV2','impOverlay2');
     })();
   </script>
 </body>
