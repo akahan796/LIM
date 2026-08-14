@@ -1575,12 +1575,14 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
       </div>
       <div class="imp-body">
         <div class="imp-type-field">
-          <div class="imp-type-label">Import Type</div>
+          <div class="imp-type-label">Load Source</div>
+          <span class="imp-src-lbl">Source:</span>
           <div class="imp-radios">
-            <label class="imp-radio"><input type="radio" name="imp3-type" checked> Load file</label>
-            <label class="imp-radio"><input type="radio" name="imp3-type"> Load from connector</label>
-            <label class="imp-radio"><input type="radio" name="imp3-type"> Load Register Data From Plan</label>
+            <label class="imp-radio"><input type="radio" name="imp3-source" checked> File</label>
+            <label class="imp-radio"><input type="radio" name="imp3-source"> Connector</label>
+            <label class="imp-radio"><input type="radio" name="imp3-source"> Register Data From Plan</label>
           </div>
+          <div class="imp-src-help" data-src-help></div>
           <div class="imp-plan-field" data-plan-field>
             <div class="imp-plan-col">
               <div class="imp-plan-label">Select plan:</div>
