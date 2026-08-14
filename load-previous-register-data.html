@@ -1631,7 +1631,12 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
         var planRadio=Array.prototype.filter.call(radios,function(r){
           return /Register Data From Plan/i.test(r.parentNode.textContent);
         })[0];
-        function sync(){ planField.classList.toggle('show', !!(planRadio && planRadio.checked)); }
+        var methodField=field.parentNode.querySelector('.imp-method-field');
+        function sync(){
+          var on=!!(planRadio && planRadio.checked);
+          planField.classList.toggle('show', on);
+          if(methodField) methodField.style.display = on ? 'none' : '';
+        }
         radios.forEach(function(r){ r.addEventListener('change',sync); });
         sync();
       });
