@@ -475,9 +475,10 @@
   .pd-mi{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;}
   .pd-ml{color:#666e7f;}
   .pd-mv{color:#212121;font-weight:700;}
-  .pd-calc{display:flex;align-items:center;gap:16px;flex:0 0 auto;}
+  .pd-calc{display:flex;align-items:center;gap:28px;flex:0 0 auto;}
   .pd-suppress{display:flex;align-items:center;gap:7px;font-size:14px;color:#222;white-space:nowrap;cursor:pointer;}
   .pd-suppress input{width:15px;height:15px;accent-color:#373737;margin:0;cursor:pointer;}
+  #pdBody.pd-suppress-on .pd-zero{display:none;}
   .pd-band{position:relative;display:flex;align-items:center;height:40px;background:#f2f2f2;border-bottom:1px solid #e0e0e0;padding:0 14px;flex:0 0 auto;}
   .pd-bicons{display:flex;align-items:center;gap:16px;position:relative;z-index:1;}
   .pd-bic{width:16px;height:16px;color:#5a5a52;cursor:pointer;display:flex;}
@@ -1499,25 +1500,28 @@ $$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
   <script>
   (function(){
     var COLS=['Entity','AccountName','AccountDescription','Code1','DisplayName','2025M1','2025M2','2025M3','2025M4','2025M5','2025M6','2025M7','2025M8','2025M9','2025M10','2025M11','2025M12'];
-    var ROWS=[['ESG01',105929],['EUK01',83440],['EMX01',152554],['ESG01',121591],['EUK01',53875],['EMX01',99019],['EPE01',136511],['A01',74449],['B01',73385],['EZA01',57944],['ESG01',153630],['EPE01',97490],['EUS01',0],['A01',56292],['B01',130591],['ESG01',55336],['EUK01',88120],['EMX01',141002],['EPE01',102765],['EZA01',60418]];
+    var ROWS=[['ESG01',105929],['EUK01',83440],['ZAF01',0],['EMX01',152554],['ESG01',121591],['EUK01',53875],['EMX01',99019],['NLD01',0],['EPE01',136511],['A01',74449],['B01',73385],['EZA01',57944],['ESG01',153630],['CZE01',0],['EPE01',97490],['EUS01',115809],['A01',56292],['ITA01',0],['B01',130591],['ESG01',55336],['EUK01',88120],['BRA01',0],['EMX01',141002],['EPE01',102765],['EZA01',60418]];
     function fmt(n){ return n.toFixed(3); }
     var head=document.getElementById('pdHead');
     head.innerHTML=COLS.map(function(c){ return '<div class="reg-th"><span class="reg-thl">'+c+'</span><span class="reg-thm">&#8942;</span></div>'; }).join('');
     var body=document.getElementById('pdBody');
     body.innerHTML=ROWS.map(function(r){
-      var ent=r[0], base=r[1];
+      var ent=r[0], base=r[1], allZero=(base===0);
       var cells=['<div class="reg-td">'+ent+'</div>','<div class="reg-td">1</div>','<div class="reg-td">1</div>','<div class="reg-td">USD</div>','<div class="reg-td">WageFormula</div>'];
       for(var m=0;m<12;m++){
-        var v = (ent==='EUS01' && m<4) ? 0 : (ent==='EUS01' ? 115809 : base);
+        var v = allZero ? 0 : (ent==='EUS01' && m<4 ? 0 : base);
         cells.push('<div class="reg-td num">'+fmt(v)+'</div>');
       }
-      return '<div class="reg-row">'+cells.join('')+'</div>';
+      return '<div class="reg-row'+(allZero?' pd-zero':'')+'">'+cells.join('')+'</div>';
     }).join('');
     body.addEventListener('click',function(e){
       var row=e.target.closest('.reg-row'); if(!row||!body.contains(row)) return;
       body.querySelectorAll('.reg-row.selected').forEach(function(x){ x.classList.remove('selected'); });
       row.classList.add('selected');
     });
+    // "Suppress zeros" hides rows whose 2025... columns are all 0.0
+    var suppress=document.querySelector('.pd-suppress input');
+    if(suppress){ suppress.addEventListener('change',function(){ body.classList.toggle('pd-suppress-on', suppress.checked); }); }
   })();
   </script>
 </body>
