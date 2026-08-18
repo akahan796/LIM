@@ -475,6 +475,9 @@
   .pd-mi{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;}
   .pd-ml{color:#666e7f;}
   .pd-mv{color:#212121;font-weight:700;}
+  .pd-calc{display:flex;align-items:center;gap:16px;flex:0 0 auto;}
+  .pd-suppress{display:flex;align-items:center;gap:7px;font-size:14px;color:#222;white-space:nowrap;cursor:pointer;}
+  .pd-suppress input{width:15px;height:15px;accent-color:#373737;margin:0;cursor:pointer;}
   .pd-band{position:relative;display:flex;align-items:center;height:40px;background:#f2f2f2;border-bottom:1px solid #e0e0e0;padding:0 14px;flex:0 0 auto;}
   .pd-bicons{display:flex;align-items:center;gap:16px;position:relative;z-index:1;}
   .pd-bic{width:16px;height:16px;color:#5a5a52;cursor:pointer;display:flex;}
@@ -561,7 +564,7 @@
         <div class="reg-toolbar">
           <div class="reg-tools"><div class="reg-import"><span class="reg-import-ic"><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.5 1H14.5667V3.8L9.9 9.4V15H6.16667V9.4L1.5 3.8V1Z" fill="currentColor"/></svg></span><span class="reg-import-lbl">Filter Results</span></div><div class="reg-import"><span class="reg-import-ic"><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.5 1.5H7.1875V14.5H1.5V1.5Z" fill="currentColor"/><path d="M8.8125 1.5H14.5V14.5H8.8125V1.5Z" fill="currentColor"/></svg></span><span class="reg-import-lbl">Select Columns</span></div><div class="reg-import"><span class="reg-import-ic"><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.2599 3.29004C10.4658 3.39177 10.6641 3.50693 10.8536 3.63379L13.1241 2.98438L14.8741 6.01562L13.1759 7.65723C13.1832 7.77044 13.1876 7.88494 13.1876 8C13.1876 8.11506 13.1832 8.22955 13.1759 8.34277L14.8741 9.98438L13.1241 13.0156L10.8536 12.3662C10.6641 12.4931 10.4658 12.6082 10.2599 12.71L9.68762 15H6.18762L5.61438 12.71C5.40844 12.6082 5.21021 12.4931 5.02063 12.3662L2.75012 13.0156L1.00012 9.98438L2.69836 8.34277C2.69107 8.22955 2.68762 8.11506 2.68762 8C2.68762 7.88494 2.69107 7.77045 2.69836 7.65723L1.00012 6.01562L2.75012 2.98438L5.02063 3.63379C5.21021 3.5069 5.40844 3.3918 5.61438 3.29004L6.18762 1H9.68762L10.2599 3.29004ZM6.75012 11H7.50012L10.5001 8L7.50012 5H6.75012V11Z" fill="currentColor"/></svg></span><span class="reg-import-lbl">Process</span></div></div>
           <div class="pd-meta"><span class="pd-mi"><span class="pd-ml">Plan Name:</span><span class="pd-mv">Test Plan</span></span><span class="pd-mi"><span class="pd-ml">Scenario Type:</span><span class="pd-mv">Budget</span></span><span class="pd-mi"><span class="pd-ml">Scenario:</span><span class="pd-mv">Test</span></span><span class="pd-mi"><span class="pd-ml">Start Period:</span><span class="pd-mv">2025 M1</span></span><span class="pd-mi"><span class="pd-ml">Periods:</span><span class="pd-mv">12</span></span><span class="pd-mi"><span class="pd-ml">Plan Status:</span><span class="pd-mv">Unlocked</span></span></div>
-          <button class="fb-addblk" type="button">Calculate</button>
+          <div class="pd-calc"><label class="pd-suppress"><input type="checkbox">Suppress zeros</label><button class="fb-addblk" type="button">Calculate</button></div>
         </div>
         <div class="reg-grid">
           <div class="pd-band">
