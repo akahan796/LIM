@@ -1,0 +1,1510 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Line Item Modeler — FB (Month Calc...) Option 2</title>
+<link rel="icon" href="logo.png" />
+<style>
+  :root{
+    --font:Arial, Helvetica, "Helvetica Neue", sans-serif;
+    --header:#373737; --rail-bg:#fcfcfc; --rail-border:#e0e0e0; --rail-icon:#929292; --rail-active:#2f7de1;
+    --menu-border:#eeeeee; --menu-divider:#c8c8c8; --menu-hover:#F6F6F6; --menu-active:#373737;
+    --icon:#373737; --label:#222222; --muted:#737373; --field-muted:#757575;
+    --grid-line:#e0e0e0; --row-hover:#f5f5f5; --row-selected:#ededed; --ink:#212121;
+    --tile-border:#eeeeee; --accent-blue:#0a5dff; --accent-blue-hover:#0048d6; --accent-blue-soft:#e6efff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;font-family:var(--font);color:#222;-webkit-font-smoothing:antialiased;background:#fafafa;}
+  button,input,select,textarea{font-family:inherit;}
+  .app{display:flex;flex-direction:column;height:100vh;min-height:520px;background:#fafafa;overflow:hidden;}
+
+  /* ── Header ── */
+  .topbar{flex:0 0 39px;height:39px;background:var(--header);display:flex;align-items:center;padding:0 10px 0 9px;z-index:60;}
+  .topbar .logo{width:24px;height:24px;display:block;}
+  .topbar .logo svg{width:24px;height:24px;display:block;}
+  .topbar .brand{color:#fff;font-weight:700;font-size:14px;margin-left:10px;letter-spacing:.2px;}
+  .topbar .spacer{flex:1;}
+  .topbar .hicon{width:23px;height:23px;margin-left:22px;display:flex;align-items:center;justify-content:center;color:#fcfcfc;cursor:pointer;opacity:.92;transition:opacity .12s;}
+  .topbar .hicon:hover{opacity:1;}
+  .topbar .hicon svg{width:23px;height:23px;display:block;}
+
+  /* ── Body row ── */
+  .body{flex:1;display:flex;min-height:0;}
+
+  /* ── OnePlace rail ── */
+  .rail{flex:0 0 42px;width:42px;background:var(--rail-bg);border-right:1px solid var(--rail-border);padding-top:0;}
+  .rbtn{width:41px;height:41px;display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;color:var(--rail-icon);}
+  .rbtn svg{width:21px;height:21px;display:block;}
+  .rbtn:hover{background:#f0f1f2;}
+  .rbtn.active{background:#e2e2e2;color:#373737;}
+
+  /* ── Side nav ── */
+  .nav{flex:0 0 240px;width:240px;display:flex;flex-direction:column;transition:flex-basis .18s ease,width .18s ease;min-height:0;}
+  .nav-title{flex:0 0 42px;display:flex;align-items:center;padding:0 16px;font-size:16px;font-weight:700;color:var(--label);white-space:nowrap;overflow:hidden;}
+  .nav-panel{flex:1;position:relative;background:#fff;border-top:1px solid var(--menu-border);border-right:1px solid var(--menu-border);display:flex;flex-direction:column;min-height:0;}
+  .nav-collapse{position:absolute;top:9px;right:6px;width:16px;height:16px;border:0;background:none;color:#737373;cursor:pointer;padding:0;display:flex;z-index:2;}
+  .nav-collapse svg{width:16px;height:16px;display:block;}
+  .nav-list{flex:1;overflow-y:auto;overflow-x:hidden;padding-top:32px;}
+  .nav-list::-webkit-scrollbar{width:0;}
+  .nav-foot{flex:0 0 auto;padding-bottom:22px;}
+  .nav-item{display:flex;align-items:center;gap:10px;height:32px;margin-bottom:8px;padding:0 14px 0 16px;cursor:pointer;color:var(--label);}
+  .nav-item .ic{flex:0 0 16px;width:16px;height:16px;color:var(--icon);display:flex;align-items:center;justify-content:center;}
+  .nav-item .ic svg{width:16px;height:16px;display:block;}
+  .nav-item .lbl{flex:1;font-size:12px;font-weight:700;color:var(--label);white-space:nowrap;overflow:hidden;}
+  .nav-item .chev{flex:0 0 8px;width:8px;height:8px;color:var(--label);transition:transform .18s ease;}
+  .nav-item .chev svg{width:8px;height:8px;display:block;}
+  .nav-item:hover{background:var(--menu-hover);}
+  .nav-item.active{background:var(--menu-active);}
+  .nav-item.active .ic,.nav-item.active .lbl,.nav-item.active .chev{color:#fff;}
+  .nav-sub{padding-left:52px;margin-bottom:4px;}   /* tighter gap between child items */
+  .nav-sub .lbl{font-weight:400;font-size:12px;}   /* child text a touch larger (even) */
+  .nav-group[data-open="false"] .chev-reports{transform:rotate(-90deg);}
+  .nav-children{overflow:hidden;transition:max-height .2s ease;}
+  .nav-divider{height:1px;background:var(--menu-divider);margin:12px 0 20px;}
+  /* collapsed rail mode */
+  .app.nav-min .nav{flex-basis:57px;width:57px;}
+  .app.nav-min .nav-title{overflow:visible;white-space:nowrap;position:relative;z-index:65;}
+  .app.nav-min .nav-item .lbl,.app.nav-min .nav-item .chev{display:none;}
+  .app.nav-min .nav-item{justify-content:center;padding:0;gap:0;}
+  .app.nav-min .nav-item .ic{flex:0 0 16px;}
+  .app.nav-min .nav-sub{display:none;}   /* children have no icons — hide them on the collapsed rail */
+  .app.nav-min .nav-divider{margin:12px 12px 20px;}
+  .app.nav-min .nav-collapse svg{transform:scaleX(-1);}  /* flip toggle to point the other way (expand) */
+  /* minimized rail — inverted brand-dark theme (expanded view is unaffected) */
+  .app.nav-min .nav-panel{background:#575757;border-top-color:#3f3f3f;border-right-color:#3f3f3f;}   /* ODS Content Gray-600 */
+  .app.nav-min .nav-item .ic{color:#ffffff;}
+  .app.nav-min .nav-collapse{color:#ffffff;}
+  .app.nav-min .nav-divider{background:#8a8a8a;}
+  .app.nav-min .nav-item:hover{background:#6b6b6b;}
+  .app.nav-min .nav-item.active{background:#ffffff;}
+  .app.nav-min .nav-item.active .ic{color:#373737;}
+  /* minimized: light up the parent icon whose section is active (the active child row is hidden on the rail) */
+  .app.nav-min .nav-group:has(.nav-sub.active) > .nav-item{background:#ffffff;}
+  .app.nav-min .nav-group:has(.nav-sub.active) > .nav-item .ic{color:#373737;}
+
+  /* ── Main content ── */
+  .main{flex:1;min-width:0;display:flex;flex-direction:column;padding:40px 24px 20px 24px;overflow:hidden;}
+  .welcome{flex:0 0 auto;margin-bottom:15px;}
+  .welcome h1{font-size:20px;font-weight:700;color:#222;line-height:23px;margin-bottom:9px;}
+  .welcome p{font-size:13px;font-weight:400;color:var(--muted);line-height:15px;}
+
+  /* ── KPI tiles ── */
+  .kpis{flex:0 0 auto;display:flex;gap:16px;margin-bottom:23px;flex-wrap:wrap;}
+  .kpi{position:relative;flex:0 0 179px;width:179px;height:64px;background:#fff;border:1px solid var(--tile-border);border-radius:4px;cursor:pointer;padding:14px 10px 0 10px;transition:background .12s ease,box-shadow .12s ease;}
+  .kpi:hover{background:#fafafa;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+  .kpi .bar{position:absolute;top:0;left:0;right:0;height:8px;border-radius:4px 4px 0 0;background:var(--accent);}
+  /* selected indicator: separate bar sitting just BELOW the tile (matches Figma) */
+  .kpi.selected::after{content:"";position:absolute;left:0;right:0;top:calc(100% + 2px);height:4px;background:#373737;border-radius:2px;}
+  .kpi .k-label{font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .kpi .k-row{display:flex;align-items:baseline;gap:6px;margin-top:3px;}
+  .kpi .k-num{font-size:20px;font-weight:700;color:#373737;line-height:23px;}
+  .kpi .k-pct{font-size:10px;font-weight:400;color:var(--muted);}
+
+  /* ── Split: grid + detail ── */
+  .split{flex:1 1 auto;display:flex;gap:16px;min-height:0;}
+
+  /* Grid */
+  .grid{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;background:#fff;border:1px solid var(--grid-line);}
+  .grid-head{flex:0 0 29px;display:flex;background:#fff;border-bottom:1px solid var(--grid-line);box-shadow:0 2px 4px -2px rgba(0,0,0,.16);position:relative;z-index:2;}
+  .grid-head .cell{font-size:14px;font-weight:700;color:var(--ink);}
+  .grid-body{flex:1 1 auto;overflow-y:auto;min-height:0;}
+  .grid-row{display:flex;height:29px;border-bottom:1px solid var(--grid-line);cursor:pointer;background:#fff;}
+  .grid-row:hover:not(.selected){background:var(--row-hover);}
+  .grid-row.selected{background:var(--row-selected);}
+  /* Reserve a stable scrollbar gutter on scrolling grids so header columns stay aligned with body columns (homepage .page-grid excluded — its body doesn't scroll) */
+  .grid:not(.page-grid) .grid-body{scrollbar-gutter:stable;}
+  .grid:not(.page-grid) .grid-head{overflow:hidden;scrollbar-gutter:stable;}
+  .cell{display:flex;align-items:center;padding:0 8px;font-size:13px;color:var(--ink);border-right:1px solid var(--grid-line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .cell.c-desc{border-right:0;}
+  .c-status{flex:0 0 160px;}
+  .c-name{flex:0 1 360px;min-width:0;}
+  .c-desc{flex:1 1 0;min-width:0;}   /* basis 0 so column widths never depend on text length (rows stay even) */
+
+  /* Detail panel */
+  .detail{flex:0 0 420px;width:420px;background:#fff;border:1px solid var(--grid-line);padding:20px;overflow-y:auto;display:flex;flex-direction:column;}
+  .d-title{font-size:15px;font-weight:700;color:#222;line-height:17px;}
+  .d-narr{font-size:13px;font-style:italic;color:var(--muted);margin-top:11px;}
+  .d-tabs{display:flex;gap:26px;margin-top:18px;position:relative;}
+  .d-tab{border:0;background:none;font-family:inherit;font-size:13px;font-weight:700;color:#737373;cursor:pointer;padding:0 0 8px;position:relative;}
+  .d-tab:hover{color:#222;}
+  .d-tab.active{color:#222;}
+  .d-tab.active::after{content:"";position:absolute;left:0;right:0;bottom:5px;height:2px;background:#222;border-radius:1px;}
+  .d-sep{height:1px;background:#e6e6e6;margin:0 -20px 0 -20px;}
+  .d-pane{padding-top:16px;}
+  .d-pane[hidden]{display:none;}
+  .d-field{margin-bottom:14px;}
+  .d-label{font-size:12px;color:var(--field-muted);margin-bottom:6px;}
+  .d-select{position:relative;}
+  .d-select select{width:100%;height:30px;border:1px solid #cfcfcf;border-radius:2px;background:#fff;color:#1a1a1a;font-size:13px;padding:0 30px 0 14px;-webkit-appearance:none;appearance:none;cursor:pointer;outline:none;transition:border-color .12s;}
+  .d-select select:hover{border-color:#a9a9a9;}
+  .d-select select:focus{border-color:var(--accent-blue);}
+  .d-select .dchev{position:absolute;right:12px;top:12px;width:10px;height:6px;pointer-events:none;}
+  .d-select .dchev svg{display:block;width:10px;height:6px;}
+  .value-row{display:flex;gap:8px;}
+  .value-row .v-input{flex:1;height:30px;border:1px solid #cfcfcf;border-radius:2px;font-size:13px;color:#1a1a1a;text-align:center;padding:0 10px;outline:none;transition:border-color .12s;}
+  .value-row .v-input:hover{border-color:#a9a9a9;}
+  .value-row .v-input:focus{border-color:var(--accent-blue);}
+  .value-row .more{flex:0 0 30px;width:30px;height:30px;border:1px solid #cfcfcf;border-radius:2px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .12s;}
+  .value-row .more:hover{background:#f4f4f4;}
+  .value-row .more svg{width:16px;height:4px;display:block;}
+  .d-textarea{width:100%;min-height:110px;border:1px solid #cfcfcf;border-radius:2px;font-size:13px;line-height:19px;color:#1a1a1a;padding:9px 14px;resize:vertical;outline:none;transition:border-color .12s;}
+  .d-textarea:hover{border-color:#a9a9a9;}
+  .d-textarea:focus{border-color:var(--accent-blue);}
+  .d-actions{display:flex;gap:12px;margin-top:20px;}
+  .btn{height:33px;border-radius:3px;font-size:13px;font-weight:700;cursor:pointer;padding:0 16px;transition:background .12s ease,color .12s ease;}
+  .btn-primary{background:var(--accent-blue);color:#fff;border:0;}
+  .btn-primary:hover{background:var(--accent-blue-hover);}
+  .btn-secondary{background:#fff;color:var(--accent-blue);border:1px solid var(--accent-blue);}
+  .btn-secondary:hover{background:var(--accent-blue-soft);}
+  .d-placeholder{font-size:13px;color:#9aa0a8;padding:20px 0;}
+  /* workflow timeline */
+  .d-body{flex:1;min-height:0;overflow-y:auto;}
+  .d-foot{flex:0 0 auto;padding-top:16px;}
+  .timeline{display:flex;flex-direction:column;padding-top:4px;}
+  .tl-item{display:flex;gap:14px;position:relative;padding-bottom:30px;}
+  .tl-item:last-child{padding-bottom:0;}
+  .tl-rail{position:relative;flex:0 0 22px;display:flex;justify-content:center;}
+  .tl-item:not(:last-child) .tl-rail::before{content:"";position:absolute;top:11px;height:calc(100% + 30px);left:50%;margin-left:-1px;width:2px;background:#dadce0;z-index:0;}
+  .tl-item.s-done .tl-rail::before{background:var(--accent-blue);}
+  .tl-dot{width:22px;height:22px;border-radius:50%;flex:0 0 22px;display:flex;align-items:center;justify-content:center;background:#fff;position:relative;z-index:1;box-sizing:border-box;}
+  .tl-dot.s-done{background:var(--accent-blue);}
+  .tl-dot.s-done svg{width:12px;height:12px;display:block;}
+  .tl-dot.s-active{border:2.5px solid var(--accent-blue);}
+  .tl-dot.s-active::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent-blue);}
+  .tl-dot.s-todo{border:2.5px solid #bdc1c6;}
+  .tl-title{font-size:14px;font-weight:700;color:#202124;line-height:1.2;}
+  .tl-sub{font-size:13px;color:#5f6368;margin-top:3px;line-height:1.35;}
+  .tl-sub b{font-weight:700;color:#3c4043;}
+  .tl-due{font-size:12px;color:#80868b;margin-top:3px;}
+  .tl-item.s-todo .tl-title{color:#9aa0a6;}
+  .tl-item.s-todo .tl-sub{color:#b4b8bd;}
+  .tl-item.s-todo .tl-sub b{color:#9aa0a6;}
+  .tl-item.s-todo .tl-due{color:#bcc0c5;}
+
+  /* ── Section pages (children) ── */
+  [hidden]{display:none!important;}
+  .page{flex:1;min-height:0;display:flex;flex-direction:column;}
+  #page-section{overflow-y:auto;}
+  .page-head{flex:0 0 auto;margin-bottom:16px;}
+  .page-head .page-eyebrow{font-size:13px;font-weight:400;color:var(--muted);margin-bottom:4px;}
+  .page-head h1{font-size:20px;font-weight:700;color:#222;line-height:23px;}
+  .page-head p{font-size:13px;color:var(--muted);margin-top:6px;}
+  .subtabs{display:flex;gap:36px;border-bottom:1px solid var(--grid-line);margin-bottom:20px;flex:0 0 auto;flex-wrap:wrap;}
+  .stab{border:0;background:none;font-family:inherit;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;padding:0 0 10px;position:relative;white-space:nowrap;}
+  .stab:hover{color:#222;}
+  .stab.active{color:#222;}
+  .stab.active::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:#222;}
+  .section-body{flex:0 0 auto;padding-bottom:8px;}
+  .page-grid{width:100%;}
+  .page-grid .grid-body{overflow:visible;}
+  .page-grid .cell{flex:1 1 0;}
+  .page-grid .cell:last-child{border-right:0;}
+  .ov-kpis{margin-bottom:22px;}
+  .form-panel{max-width:460px;background:#fff;border:1px solid var(--grid-line);padding:20px;}
+  .form-panel .f-input{width:100%;height:30px;border:1px solid #cfcfcf;border-radius:2px;font-size:13px;color:#1a1a1a;padding:0 14px;outline:none;transition:border-color .12s;}
+  .form-panel .f-input:hover{border-color:#a9a9a9;}
+  .form-panel .f-input:focus{border-color:var(--accent-blue);}
+  /* ── Modules marketplace tiles ── */
+  .mkt-grid{display:grid;grid-template-columns:repeat(auto-fill,300px);gap:20px;justify-content:start;align-items:stretch;}
+  .mkt-card{display:flex;flex-direction:column;align-items:center;text-align:center;min-height:272px;background:#fff;border:1px solid var(--grid-line);border-radius:0;padding:18px;}  /* square corners + border match the home side panel */
+  .mkt-ico{width:24px;height:24px;color:#222222;display:flex;align-items:center;justify-content:center;margin-bottom:4px;}  /* black icons */
+  .mkt-ico svg{width:24px;height:24px;display:block;}
+  .mkt-title{font-size:16px;font-weight:700;color:#202124;line-height:1.25;margin-top:8px;}
+  .mkt-cat{font-size:12px;font-weight:700;color:#0c8a55;background:#daf1e6;border-radius:6px;padding:6px 12px;margin-top:10px;}
+  .mkt-desc{font-size:12px;color:#5f6368;line-height:16px;margin-top:12px;}
+  .mkt-foot{margin-top:auto;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:16px;}
+  .mkt-code{font-size:12px;color:#b0b4ba;}
+  .mkt-btn{width:100%;height:32px;border-radius:6px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:background .12s ease,color .12s ease;}
+  .mkt-install{background:var(--accent-blue);color:#fff;border:0;}
+  .mkt-install:hover{background:var(--accent-blue-hover);}
+  .mkt-uninstall{background:#fff;color:var(--accent-blue);border:1px solid var(--accent-blue);}
+  .mkt-uninstall:hover{background:var(--accent-blue-soft);}
+  /* Modules detail — DS slide-out side panel */
+  .side-scrim{position:fixed;top:39px;left:0;right:0;bottom:0;background:rgba(20,20,20,.28);opacity:0;visibility:hidden;transition:opacity .2s ease,visibility .2s;z-index:200;}
+  .side-scrim.open{opacity:1;visibility:visible;}
+  .side-panel{position:fixed;top:39px;right:0;height:calc(100% - 39px);width:480px;max-width:92vw;background:#fff;box-shadow:-8px 0 30px rgba(20,20,20,.16);transform:translateX(100%);transition:transform .24s cubic-bezier(.4,0,.2,1);z-index:201;display:flex;flex-direction:column;}
+  .side-panel.open{transform:translateX(0);}
+  .sp-head{flex:0 0 auto;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 20px 14px;border-bottom:1px solid var(--grid-line);}
+  .sp-title{font-size:16px;font-weight:700;color:var(--header);line-height:20px;}
+  .sp-sub{font-size:12px;color:var(--muted);margin-top:4px;}
+  .sp-close{flex:0 0 auto;width:28px;height:28px;border:0;background:none;color:var(--muted);cursor:pointer;border-radius:4px;display:flex;align-items:center;justify-content:center;}
+  .sp-close svg{width:16px;height:16px;display:block;}
+  .sp-close:hover{background:#f0f0f0;color:var(--header);}
+  .sp-body{flex:1 1 auto;overflow-y:auto;padding:20px;}
+  .rp-rtitle{font-size:15px;font-weight:700;color:#222;line-height:19px;}
+  .rp-rmeta{font-size:12px;color:var(--muted);margin-top:5px;}
+  .rp-rhead{font-size:13px;font-weight:700;color:#222;margin-top:24px;}
+  .rp-rlist{list-style:disc;padding-left:18px;margin-top:12px;}
+  .rp-rlist li{font-size:13px;color:#444;line-height:20px;margin-bottom:11px;}
+  .rp-rlist li:last-child{margin-bottom:0;}
+  .danger-card{max-width:520px;background:#fff;border:1px solid #f0c9c9;border-left:3px solid #c6243a;border-radius:4px;padding:18px 20px;}
+  .danger-card h3{font-size:14px;font-weight:700;color:#c6243a;margin-bottom:8px;}
+  .danger-card p{font-size:13px;color:#5a5a5a;line-height:19px;margin-bottom:14px;}
+  .btn-danger{background:#c6243a;color:#fff;border:0;}
+  .btn-danger:hover{background:#a81b2f;}
+  /* Settings ▸ Global Options form (DS inputs) */
+  .go-form{max-width:392px;padding-top:2px;}
+  .go-field{margin-bottom:20px;}
+  .go-label{font-size:12px;color:var(--muted);margin-bottom:6px;}
+  .go-select{position:relative;}
+  .go-select select{width:100%;height:30px;border:1px solid #737373;border-radius:0;background:#fff;color:#222;font-size:13px;padding:0 30px 0 10px;-webkit-appearance:none;appearance:none;cursor:pointer;outline:none;transition:border-color .12s;}
+  .go-select select:hover{border-color:#555;}
+  .go-select select:focus{border-color:var(--accent-blue);}
+  .go-select .go-chev{position:absolute;right:11px;top:12px;width:10px;height:6px;pointer-events:none;}
+  .go-select .go-chev svg{display:block;width:10px;height:6px;}
+  .go-input{width:100%;height:30px;border:1px solid #737373;border-radius:0;font-size:13px;color:#222;padding:0 10px;outline:none;background:#fff;transition:border-color .12s;}
+  .go-input:hover{border-color:#555;}
+  .go-input:focus{border-color:var(--accent-blue);}
+  .go-chips{display:flex;align-items:center;gap:10px;min-height:30px;border:1px solid #737373;background:#fff;padding:0 8px;}
+  .go-chipwrap{display:flex;align-items:center;gap:16px;flex:1;flex-wrap:wrap;padding:4px 0;}
+  .go-chip{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#222;}
+  .go-chip .x{width:14px;height:14px;border-radius:50%;background:#c4c4c4;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 14px;}
+  .go-chip .x:hover{background:#a9a9a9;}
+  .go-chip .x svg{width:8px;height:8px;display:block;}
+  .go-chips .clear-all{color:#737373;cursor:pointer;display:flex;flex:0 0 13px;}
+  .go-chips .clear-all:hover{color:#222;}
+  .go-chips .clear-all svg{width:13px;height:13px;display:block;}
+  .go-scenario{display:flex;gap:8px;}
+  .go-scenario .go-input{flex:1;}
+  .go-picker{flex:0 0 38px;width:38px;height:30px;border:1px solid #737373;border-radius:0;background:#fff;cursor:pointer;color:#737373;font-size:15px;line-height:1;}
+  .go-picker:hover{background:#f4f4f4;}
+  .go-actions{display:flex;gap:12px;margin-top:26px;}
+  /* Definitions: fill available height (no main-area scroll); confine the panel scroll to the form body */
+  #page-section.sec-fill{overflow:hidden;}
+  #page-section.sec-fill .section-body{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;}
+  .def-detail{overflow:hidden;}
+  .def-detail .d-body{margin-right:-12px;padding-right:12px;}
+
+  /* Responsive: stack detail below grid on narrow screens */
+  @media (max-width:1160px){
+    .split{flex-direction:column;overflow-y:auto;}
+    .detail{flex:0 0 auto;width:100%;}
+    .grid{flex:0 0 auto;height:52vh;min-height:340px;}
+  }
+  @media (max-width:720px){
+    .kpi{flex:1 1 46%;}
+    .main{padding:24px 16px 16px;}
+  }
+  /* Icon hover tooltips (dark chip, like the OneStream rail) */
+  .tip{position:fixed;transform:translateY(-50%);background:#3c4043;color:#fff;font-size:12px;font-weight:600;line-height:1;padding:6px 9px;border-radius:4px;white-space:nowrap;z-index:1000;box-shadow:0 2px 8px rgba(0,0,0,.28);opacity:0;pointer-events:none;transition:opacity .12s ease;}
+  .tip.show{opacity:1;}
+  /* Table header column menu (⋮) */
+  .grid-head .cell{gap:6px;}
+  .th-label{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .th-menu{flex:0 0 auto;width:20px;height:20px;border:0;background:none;color:#737373;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;border-radius:3px;opacity:0;transition:opacity .12s ease,background .12s ease;}
+  .grid-head .cell:hover .th-menu,.th-menu.open{opacity:1;}
+  .th-menu:hover,.th-menu.open{background:#eceff1;color:#3c4043;}
+  .th-menu svg{width:15px;height:15px;display:block;}
+  .thm-pop{position:fixed;min-width:230px;background:#fff;border:1px solid #e0e0e0;border-radius:2px;box-shadow:0 3px 12px rgba(0,0,0,.18);padding:6px 0;z-index:300;display:none;}
+  .thm-pop.open{display:block;}
+  .thm-item{display:flex;align-items:center;gap:14px;width:100%;height:40px;padding:0 16px;border:0;background:none;font-family:inherit;font-size:14px;color:#3c4043;cursor:pointer;text-align:left;}
+  .thm-item:hover{background:#f1f3f4;}
+  .thm-ic{flex:0 0 18px;width:18px;height:18px;color:#5f6368;display:flex;align-items:center;justify-content:center;}
+  .thm-ic svg{width:18px;height:18px;display:block;}
+  .thm-chev{margin-left:auto;flex:0 0 16px;color:#5f6368;display:flex;align-items:center;}
+  .thm-chev svg{width:16px;height:16px;display:block;}
+  .thm-sep{height:1px;background:#e8eaed;margin:6px 0;}
+  /* Resizable grid columns (DS: ESG Grid supports column resize) */
+  .grid-head .cell{position:relative;}
+  .col-resize{position:absolute;top:0;right:-3px;width:7px;height:100%;cursor:col-resize;z-index:4;}
+  .col-resize:hover{background:linear-gradient(to right,transparent 3px,var(--accent-blue) 3px,var(--accent-blue) 4px,transparent 4px);}
+  /* Frameworks action buttons — hover state */
+  .fw-act .fw-ic{transition:background .12s ease;}
+  .fw-act:hover .fw-ic{background:#eceff1;}
+</style>
+<style>
+  /* Formula Builder shell — top bar + icon rail only; ESG demo content hidden */
+  .main > .page{display:none !important;}
+  /* "Sustainability Solution" side menu panel removed */
+  #nav{display:none !important;}
+  .main{background:#fff !important;padding:0 !important;overflow-y:auto !important;overflow-x:hidden !important;}
+  .fb-form{padding-bottom:32px;}
+  /* responsive: stack the Recently Used panel below the left column on narrow viewports */
+  @media (max-width:1000px){
+    .fb-mainrow{flex-direction:column;}
+    .fb-recently{flex:0 0 auto;width:100%;min-height:220px;}
+    .fb-grid{flex-basis:100%;max-width:100%;}
+  }
+
+  /* ---- Formula Builder header (Figma node 1998-10298) ---- */
+  /* Figma: breadcrumb at x=64 (rail=42px → 22px inset), y=60 (topbar=39px → ~12px below) */
+  .fbh{padding:12px 22px 0;font-family:Arial,Helvetica,sans-serif;}
+  .fbh-top{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+  .fb-crumb{display:flex;align-items:center;gap:10px;line-height:1;}
+  .fb-crumb span{font-size:14px;line-height:1;white-space:nowrap;}
+  .fbc-mut{color:#929292;}
+  .fbc-cur{color:#222222;}
+  .fbc-sep{color:#929292;}
+  .fb-tabs{display:flex;align-items:center;gap:44px;}
+  .fb-tabs a{font-size:12px;font-weight:700;color:#929292;text-decoration:none;cursor:pointer;
+             padding-bottom:10px;border-bottom:2px solid #fff;line-height:normal;white-space:nowrap;}
+  .fb-tabs a:hover{color:#5a5a5a;}
+  .fb-tabs a.active{color:#373737;border-bottom-color:#0A5DFF;}
+  .fb-title{font-size:16px;font-weight:700;color:#373737;margin-top:14px;line-height:1.3;}
+
+  /* ---- Formula Builder form (Figma node 1998-10532) ---- */
+  .fb-form{padding:0 22px 24px;font-family:Arial,Helvetica,sans-serif;}
+  .fb-sub{font-size:14px;font-weight:700;color:#373737;margin:18px 0 16px;}
+  .fb-grid{display:grid;gap:16px 15px;align-items:start;justify-content:start;
+           flex:0 0 calc(100% - 346px);max-width:calc(100% - 346px);
+           grid-template-columns:repeat(5,minmax(0,1fr));}
+  .fb-field{display:flex;flex-direction:column;gap:6px;min-width:0;}
+  .fb-acct .fb-ctrl{max-width:250px;}
+  .fb-label{font-size:14px;color:#666e7f;}
+  .fb-ctrl{height:26px;border:1px solid #a3b7dc;background:#fff;
+           display:flex;align-items:center;padding:0 6px;font-size:14px;color:#000;}
+  .fb-ctrl.dd .cv{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .fb-ctrl.dd .cr{flex:0 0 auto;display:flex;align-items:center;justify-content:center;margin-left:6px;color:#000;}
+  .fb-ctrl.dd .cr svg{width:8px;height:5px;display:block;}
+  .fb-ctrl.dd select.fb-sel{flex:1;min-width:0;border:0;background:transparent;font-family:inherit;font-size:14px;color:#000;height:100%;padding:0;margin:0;-webkit-appearance:none;appearance:none;outline:none;cursor:pointer;}
+  .fb-link{font-size:12px;font-weight:700;color:var(--accent-blue);cursor:pointer;height:22px;
+           display:flex;align-items:center;text-decoration:underline;}
+  .fb-body{display:flex;align-items:flex-start;gap:24px;}
+  .fb-actions{margin-left:auto;display:flex;gap:12px;flex:0 0 auto;padding-top:19px;}
+  .fb-btn{min-width:78px;height:24px;padding:0 12px;border-radius:2px;box-sizing:border-box;cursor:pointer;
+          font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:700;line-height:normal;
+          display:inline-flex;align-items:center;justify-content:center;}
+  .fb-btn.primary{background:var(--accent-blue);color:#fff;border:none;}
+  .fb-btn.primary:hover{background:var(--accent-blue-hover);}
+  .fb-btn.ghost{background:#fff;color:var(--accent-blue);border:1px solid var(--accent-blue);}
+  .fb-btn.ghost:hover{background:var(--accent-blue-soft);}
+
+  /* ---- formula preview (Figma icons node 1966-2550) ---- */
+  /* two-column main row: left (preview/operators/tile) + Recently Used */
+  .fb-mainrow{display:flex;align-items:stretch;gap:26px;margin-top:22px;}
+  .fb-leftcol{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;}
+  .fb-recently{flex:0 0 320px;width:320px;border:3px solid rgba(240,240,240,0.94);border-radius:3px;background:#fff;display:flex;flex-direction:column;}
+  .fb-ru-head{height:44px;background:#f0f0f0;display:flex;align-items:center;padding:0 14px;flex:0 0 auto;}
+  .fb-ru-title{font-size:14px;font-weight:700;color:#666e7f;}
+  .fb-ru-gear{margin-left:auto;width:18px;height:16px;color:#666e7f;display:flex;align-items:center;}
+  .fb-ru-gear svg{width:100%;height:100%;display:block;}
+  .fb-ru-body{flex:1 1 auto;background:#fff;}
+  .fb-preview{border:3px solid rgba(240,240,240,0.94);border-radius:3px;background:#fff;overflow:hidden;}
+  .fbp-band{background:#f0f0f0;padding:16px 22px;min-height:82px;box-sizing:border-box;}
+  .fbp-title{font-size:22px;font-weight:700;color:#373737;}
+  .fbp-body{padding:18px 22px 28px;min-height:120px;}
+  .fbp-toolbar{display:flex;gap:34px;margin-bottom:20px;}
+  .fbp-tool{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;}
+  .fbp-tool .tic{width:20px;height:20px;display:block;}
+  .fbp-tool .tic svg{display:block;width:100%;height:100%;}
+  .fbp-tool .tlbl{font-size:9px;color:#373737;white-space:nowrap;}
+  .fbp-blocks{display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+  .fbp-blk{height:34px;border-radius:0;border:1px solid #a3b7dc;display:flex;align-items:center;justify-content:center;padding:0 12px;font-size:16px;color:#000;}
+  .fbp-blk.g{background:#8fbc8f;} .fbp-blk.b{background:#ffdead;} .fbp-blk.u{background:#8b93c6;}
+  .fbp-blk.acc{background:#c0c0c0;}
+  .fbp-blk.empty{background:#f4e04d;width:30px;padding:0;border:1px solid #141414;}
+  .fbp-grip{display:flex;flex-direction:column;gap:2.5px;padding:0 1px;}
+  .fbp-grip i{width:2.5px;height:2.5px;border-radius:50%;background:#808080;}
+  .fbp-blk.empty .fbp-grip i{background:#3a3a3a;}
+  /* operator palette */
+  .fb-operators{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin:16px 0;padding:0 8%;}
+  .fb-op{width:40px;height:35px;padding:0;flex:0 0 auto;background:#ffdead;border:1px solid #a3b7dc;box-sizing:border-box;
+         display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#000;cursor:pointer;}
+
+  /* bottom tabbed tile */
+  .fb-tile{margin-top:16px;border:3px solid rgba(240,240,240,0.94);border-radius:3px;background:#fff;display:flex;flex-direction:column;}
+  .fb-tabbar{display:flex;height:30px;background:#fbfbfc;border-bottom:1px solid #d9d9d9;}
+  .fb-ftab{flex:1 1 0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;
+           cursor:pointer;border-right:1px solid #d9d9d9;white-space:nowrap;}
+  .fb-ftab:last-child{border-right:0;}
+  .fb-ftab.active{background:#fff;height:31px;margin-bottom:-1px;}
+  .ft-text{color:#7493cb;} .ft-register{color:#8fbc8f;} .ft-globals{color:#dda0dd;}
+  .ft-cube{color:#bc8f8f;} .ft-lookup{color:#51e5ff;} .ft-functions{color:#f08080;} .ft-accounts{color:#606060;}
+  .fb-tabact{display:flex;align-items:flex-end;gap:16px;padding:12px 20px 0;}
+  .fb-acctname{display:flex;flex-direction:column;gap:6px;}
+  .fb-acctname .lb{font-size:14px;color:#666e7f;}
+  .fb-acctdd{position:relative;width:250px;height:26px;}
+  .fb-acctsel{width:100%;height:100%;border:1px solid #a3b7dc;background:#fff;box-sizing:border-box;
+              padding:0 22px 0 6px;font-size:14px;color:#000;font-family:inherit;cursor:pointer;
+              -webkit-appearance:none;-moz-appearance:none;appearance:none;}
+  .fb-acctdd .cr{position:absolute;right:6px;top:50%;transform:translateY(-50%);pointer-events:none;color:#000;display:flex;align-items:center;}
+  .fb-acctdd .cr svg{width:8px;height:5px;display:block;}
+  .fb-acctdd.lb{width:250px;}
+  .fb-acctsel:disabled{background:#f2f2f2;color:#9e9e9e;cursor:not-allowed;border-color:#d0d0d0;}
+  .fb-acctsel:disabled ~ .cr{color:#c2c2c2;}
+  .fb-lb-group.is-disabled .lb{color:#bdbdbd;}
+  .fb-addblk{margin-left:auto;height:28px;padding:0 14px;background:#0a5dff;color:#fff;font-size:12px;
+             font-weight:700;border:0;border-radius:2px;cursor:pointer;}
+  .fb-addblk:hover{background:#0048d6;}
+  .fb-tbl{margin:14px 20px 18px;border:3px solid rgba(240,240,240,0.94);border-radius:3px;flex:1 1 auto;display:flex;flex-direction:column;min-height:170px;background:#fff;}
+  .fb-tbl{--fbcols:120px 165px 135px 150px 200px 330px;overflow-x:auto;}
+  .fb-thead{display:grid;grid-template-columns:var(--fbcols);height:30px;background:#f2f2f2;border-bottom:1px solid #d9d9d9;flex:0 0 auto;min-width:max-content;}
+  .fb-th{display:flex;align-items:center;gap:6px;padding:0 8px;
+         border-right:1px solid #d9d9d9;font-size:13px;font-weight:700;color:#222;overflow:hidden;}
+  .fb-th .thl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .fb-th .thf{margin-left:auto;width:12px;height:12px;flex:0 0 12px;color:#555;}
+  .fb-tbody{flex:1 1 auto;background:#fff;min-width:max-content;}
+  .fb-trow{display:grid;grid-template-columns:var(--fbcols);min-height:30px;border-bottom:1px solid #d9d9d9;cursor:pointer;}
+  .fb-trow:hover{background:#f5f8ff;}
+  .fb-trow.selected,.fb-trow.selected:hover{background:#e6e6e6;}
+  .fb-td{display:flex;align-items:center;padding:0 8px;font-size:13px;color:#222;border-right:1px solid #d9d9d9;overflow:hidden;}
+  .fb-td span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="topbar">
+    <span class="logo" id="logo"></span>
+    <span class="brand">OneStream</span>
+    <span class="spacer"></span>
+    <span class="hicon" id="hicon-settings" title="Settings"></span>
+    <span class="hicon" id="hicon-user" title="Account"></span>
+  </header>
+  <div class="body">
+    <div class="rail" id="rail"></div>
+    <nav class="nav" id="nav">
+      <div class="nav-title">Sustainability Solution</div>
+      <div class="nav-panel">
+        <button class="nav-collapse" id="collapse" title="Collapse menu"></button>
+        <div class="nav-list" id="nav-list"></div>
+        <div class="nav-foot"><div class="nav-item" data-key="help"><span class="ic" data-ic="help"></span><span class="lbl">Help</span></div></div>
+      </div>
+    </nav>
+    <main class="main">
+      <div class="fbh">
+        <div class="fbh-top">
+          <div class="fb-crumb">
+            <span class="fbc-mut">Dashboards</span>
+            <span class="fbc-sep">/</span>
+            <span class="fbc-cur">Workforce Planning 1</span>
+          </div>
+          <nav class="fb-tabs">
+            <a>Register</a><a class="active">Formulas</a><a>Settings</a><a>Help</a>
+          </nav>
+        </div>
+        <div class="fb-title">Workforce Planning</div>
+      </div>
+      <div class="fb-form">
+        <div class="fb-sub">Formulas</div>
+        <div class="fb-body">
+        <div class="fb-grid">
+          <div class="fb-field"><span class="fb-label">Formula Name</span><div class="fb-ctrl">MthlySalary</div></div>
+          <div class="fb-field"><span class="fb-label">Formula Description</span><div class="fb-ctrl">MthlySalary</div></div>
+          <div class="fb-field"><span class="fb-label">Register Group</span><div class="fb-ctrl dd"><span class="cv">All Employees</span><span class="cr"><svg viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="currentColor"/></svg></span></div></div>
+          <div class="fb-field"><span class="fb-label">Value Type</span><div class="fb-ctrl dd"><span class="cv">Periodic</span><span class="cr"><svg viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="currentColor"/></svg></span></div></div>
+          <div class="fb-field"><span class="fb-label">Month Calculation</span><div class="fb-ctrl dd"><select class="fb-sel"><option value="Full" selected>Full</option><option value="Partial">Partial</option></select><span class="cr"><svg viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="currentColor"/></svg></span></div></div>
+          <div class="fb-field fb-acct"><span class="fb-label">Account</span><div class="fb-ctrl dd"><span class="cv">50200 - Monthly Salary</span><span class="cr"><svg viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="currentColor"/></svg></span></div></div>
+          <div class="fb-field"><span class="fb-label">Scenario Type</span><span class="fb-link">All Scenario Types</span></div>
+          <div class="fb-field"><span class="fb-label">Periods</span><span class="fb-link">Period(s) Selected</span></div>
+        </div>
+        <div class="fb-actions">
+          <button class="fb-btn ghost" type="button">Cancel</button>
+          <button class="fb-btn primary" type="button">Save</button>
+        </div>
+        </div>
+        <div class="fb-mainrow">
+        <div class="fb-leftcol">
+        <div class="fb-preview">
+          <div class="fbp-band"><span class="fbp-title">FTE*Salary/12</span></div>
+          <div class="fbp-body">
+            <div class="fbp-toolbar">
+              <div class="fbp-tool"><span class="tic"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 12.1875L10 16.5625H7.8125L1.25 10L7.8125 3.4375L10 3.4375V7.8125L18.75 7.8125V12.1875H10Z" fill="#373737"/></svg></span><span class="tlbl">Move Left</span></div>
+              <div class="fbp-tool"><span class="tic"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 7.8125L10 3.4375L12.1875 3.4375L18.75 10L12.1875 16.5625H10V12.1875H1.25L1.25 7.8125H10Z" fill="#373737"/></svg></span><span class="tlbl">Move Right</span></div>
+              <div class="fbp-tool"><span class="tic"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.664 16.1243C7.36682 15.4335 7.17726 14.6875 7.12369 13.8973C7.11718 13.8021 7.10295 13.7096 7.1005 13.6132C7.09901 13.5545 7.08365 13.4998 7.08365 13.4408C7.08365 12.826 7.17342 12.235 7.32492 11.6702C7.40765 11.3617 7.50355 11.0588 7.62562 10.7693C7.82648 10.2927 8.09061 9.85418 8.38812 9.44319C8.81036 8.85991 9.31128 8.3411 9.89227 7.92527C10.2972 7.63539 10.7431 7.40745 11.207 7.2161C11.9495 6.90974 12.7508 6.72328 13.5999 6.72328C14.4647 6.72328 15.2884 6.90083 16.0434 7.2161C16.0454 7.21698 16.0476 7.21758 16.0496 7.21846C16.5065 7.40987 16.9273 7.66727 17.3258 7.95511V1.25H1.25V17.8223H8.73696C8.38023 17.4045 8.05378 16.9591 7.80713 16.4571C7.75409 16.3491 7.71176 16.2352 7.664 16.1243Z" fill="#373737"/><path d="M15.536 8.52305C15.5344 8.52239 15.5328 8.5219 15.5311 8.52124C14.9344 8.27202 14.2835 8.13173 13.6 8.13173C12.9289 8.13173 12.2956 8.27906 11.7087 8.52124C11.3421 8.67241 10.9897 8.8526 10.6697 9.0817C10.2105 9.41032 9.8146 9.82039 9.4809 10.2813C9.24576 10.6062 9.03702 10.9528 8.87827 11.3295C8.78178 11.5583 8.70598 11.7976 8.64063 12.0414C8.52085 12.4878 8.44995 12.955 8.44995 13.4408C8.44995 13.4875 8.4621 13.5307 8.46328 13.577C8.46514 13.6532 8.47644 13.7264 8.48156 13.8016C8.52389 14.4261 8.67373 15.0157 8.9086 15.5617C8.94634 15.6494 8.97977 15.7393 9.02172 15.8247C9.30019 16.3915 9.67989 16.8928 10.1251 17.3218C11.0379 18.2012 12.2503 18.75 13.6 18.75C16.4443 18.75 18.7501 16.3731 18.7501 13.4408C18.7501 11.2152 17.4202 9.31223 15.536 8.52305ZM13.6 17.3464C12.3855 17.3464 11.3146 16.7438 10.6209 15.8247C10.1901 15.254 9.9195 14.5597 9.85021 13.8016C9.84328 13.7262 9.8275 13.6537 9.82489 13.577C9.82329 13.5308 9.81151 13.4874 9.81151 13.4408C9.81151 12.9453 9.9122 12.4768 10.0778 12.0414C10.1726 11.7924 10.2828 11.5513 10.4221 11.3295C10.6778 10.922 11.0047 10.5665 11.3839 10.2813C12.0066 9.81319 12.7714 9.53534 13.6 9.53534C13.9652 9.53534 14.3114 9.60574 14.6458 9.70564C14.9634 9.80049 15.258 9.94628 15.536 10.1175C16.6394 10.797 17.3885 12.0213 17.3885 13.4408C17.3885 15.5944 15.689 17.3464 13.6 17.3464Z" fill="#373737"/><path d="M10.8955 12.6943V13.577V14.3175H16.3734V12.6943H10.8955Z" fill="#373737"/></svg></span><span class="tlbl">Delete Block</span></div>
+              <div class="fbp-tool"><span class="tic"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clipCA)"><path d="M13.5472 6.69923C14.4208 6.69923 15.2529 6.87323 16.0157 7.18218C16.0177 7.18304 16.0199 7.18364 16.022 7.1845C16.4152 7.34428 16.7807 7.55285 17.1318 7.78199V1.51488H10.0732V7.71468C10.4087 7.51015 10.7603 7.33001 11.1297 7.18218C11.8798 6.88195 12.6893 6.69923 13.5472 6.69923Z" fill="#373737"/><path d="M7.5504 15.912C7.25017 15.235 7.05867 14.504 7.00455 13.7296C6.99803 13.6363 6.9836 13.5456 6.98117 13.4512C6.97967 13.3937 6.9641 13.3401 6.9641 13.2823C6.9641 12.6798 7.05479 12.1006 7.20784 11.5471C7.29142 11.2448 7.3883 10.9479 7.51162 10.6643C7.56074 10.5512 7.62412 10.4469 7.68029 10.3381H1.25V17.3967H8.30859V17.2118C8.07702 16.9071 7.86969 16.583 7.69505 16.2382C7.64141 16.1323 7.59865 16.0207 7.5504 15.912Z" fill="#373737"/><path d="M8.30859 1.51488H1.25V8.57347H8.30859V1.51488Z" fill="#373737"/><path d="M15.7263 8.57347C15.6508 8.53847 15.5805 8.49442 15.5031 8.46297C15.5014 8.46232 15.4998 8.46184 15.4981 8.46119C14.8953 8.21697 14.2377 8.07948 13.5472 8.07948C12.8692 8.07948 12.2294 8.22386 11.6365 8.46119C11.552 8.49501 11.4718 8.53648 11.3889 8.57347C11.1089 8.69863 10.8364 8.83714 10.5868 9.01044C10.123 9.33248 9.72299 9.73432 9.38587 10.186C9.14833 10.5044 8.93744 10.844 8.77707 11.2132C8.67959 11.4374 8.60302 11.6719 8.53699 11.9109C8.41598 12.3483 8.34436 12.8061 8.34436 13.2823C8.34436 13.328 8.35664 13.3703 8.35782 13.4158C8.35971 13.4904 8.37113 13.5621 8.3763 13.6358C8.41905 14.2478 8.57043 14.8256 8.80771 15.3606C8.84584 15.4466 8.8796 15.5348 8.92199 15.6184C9.20331 16.1738 9.58691 16.6651 10.0367 17.0855C10.0484 17.0964 10.0615 17.106 10.0733 17.1168C10.1792 17.2141 10.288 17.3082 10.4015 17.3967C11.2715 18.0747 12.3563 18.4851 13.5472 18.4851C14.7446 18.4851 15.8442 18.0765 16.7234 17.3967C16.8655 17.2869 17.002 17.1706 17.1318 17.0469C18.1268 16.0992 18.75 14.7649 18.75 13.2823C18.75 11.1899 17.5075 9.39931 15.7263 8.57347ZM17.1318 14.5823C16.5969 16.0516 15.1992 17.1096 13.5472 17.1096C12.3203 17.1096 11.2384 16.5191 10.5376 15.6184C10.3491 15.3763 10.1977 15.1079 10.0733 14.8251C9.91035 14.4547 9.79866 14.0571 9.75897 13.6358C9.75196 13.5619 9.73602 13.4909 9.73339 13.4158C9.73177 13.3704 9.71987 13.3279 9.71987 13.2823C9.71987 12.7967 9.8216 12.3376 9.98892 11.9109C10.0121 11.8517 10.048 11.7998 10.0733 11.7417C10.1521 11.5602 10.2302 11.3779 10.3368 11.2132C10.5531 10.8786 10.8293 10.5906 11.1355 10.3381C11.1948 10.2892 11.2463 10.2314 11.3084 10.186C11.9375 9.72727 12.71 9.45499 13.5472 9.45499C13.9161 9.45499 14.2659 9.52398 14.6037 9.62188C14.9246 9.71483 15.2222 9.8577 15.5031 10.0255C15.6592 10.1187 15.8062 10.2248 15.9472 10.3381C16.4783 10.7649 16.8897 11.3277 17.1318 11.9747C17.2843 12.3821 17.3745 12.82 17.3745 13.2823C17.3745 13.7407 17.2803 14.1746 17.1318 14.5823Z" fill="#373737"/><path d="M14.9761 10.827L13.582 12.2212L12.1878 10.827L11.063 11.9518L12.4572 13.346L11.063 14.7402L11.6747 15.3519L12.1878 15.865L13.582 14.4708L14.9761 15.865L15.5879 15.2533L16.101 14.7402L14.7068 13.346L16.101 11.9518L14.9761 10.827Z" fill="#373737"/></g><defs><clipPath id="clipCA"><rect width="17.5" height="16.9703" fill="white" transform="translate(1.25 1.51488)"/></clipPath></defs></svg></span><span class="tlbl">Clear All Blocks</span></div>
+            </div>
+            <div class="fbp-blocks">
+              <span class="fbp-grip"><i></i><i></i><i></i></span>
+              <div class="fbp-blk g">FTE</div>
+              <span class="fbp-grip"><i></i><i></i><i></i></span>
+              <div class="fbp-blk b">*</div>
+              <span class="fbp-grip"><i></i><i></i><i></i></span>
+              <div class="fbp-blk g">Salary</div>
+              <span class="fbp-grip"><i></i><i></i><i></i></span>
+              <div class="fbp-blk u">/12</div>
+              <span class="fbp-grip"><i></i><i></i><i></i></span>
+              <div class="fbp-blk empty"><span class="fbp-grip"><i></i><i></i><i></i></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="fb-operators">
+          <span class="fb-op">+</span>
+          <span class="fb-op">-</span>
+          <span class="fb-op">*</span>
+          <span class="fb-op">/</span>
+          <span class="fb-op">=</span>
+          <span class="fb-op">(</span>
+          <span class="fb-op">)</span>
+          <span class="fb-op">&lt;</span>
+          <span class="fb-op">&gt;</span>
+          <span class="fb-op">&lt;=</span>
+          <span class="fb-op">&gt;=</span>
+          <span class="fb-op">&lt;&gt;</span>
+          <span class="fb-op">,</span>
+        </div>
+        <div class="fb-tile">
+          <div class="fb-tabbar">
+            <div class="fb-ftab ft-text">Text</div>
+            <div class="fb-ftab ft-register">Register</div>
+            <div class="fb-ftab ft-globals">Globals</div>
+            <div class="fb-ftab ft-cube">Cube</div>
+            <div class="fb-ftab ft-lookup">Lookup</div>
+            <div class="fb-ftab ft-functions">Functions</div>
+            <div class="fb-ftab ft-accounts active">Accounts</div>
+          </div>
+          <div class="fb-tabact">
+            <div class="fb-acctname">
+              <span class="lb">Account Name</span>
+              <div class="fb-acctdd">
+                <select class="fb-acctsel" id="fbAcct" aria-label="Account Name">
+                  <option value="" disabled selected hidden>Select account name</option>
+                  <option>1</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                  <option>5</option>
+                  <option>6</option>
+                </select>
+                <span class="cr"><svg viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="currentColor"/></svg></span>
+              </div>
+            </div>
+            <div class="fb-acctname fb-lb-group is-disabled">
+              <span class="lb">Look Back Period</span>
+              <div class="fb-acctdd lb">
+                <select class="fb-acctsel" id="fbLookback" aria-label="Look Back Period" disabled>
+                  <option value="" disabled selected hidden>—</option>
+                  <option>0 - Current period</option>
+                  <option>1 period</option>
+                  <option>2 periods</option>
+                  <option>3 periods</option>
+                  <option>6 periods</option>
+                  <option>12 periods</option>
+                </select>
+                <span class="cr"><svg viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="currentColor"/></svg></span>
+              </div>
+            </div>
+            <button class="fb-addblk" type="button">Add Block</button>
+          </div>
+          <div class="fb-tbl">
+            <div class="fb-thead">
+              <div class="fb-th"><span class="thl">Account Name</span><span class="thf"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"><path d="M1.5 2.5h11L8 7.5v4L6 10.5v-3L1.5 2.5z"/></svg></span></div>
+              <div class="fb-th"><span class="thl">Calculation Name</span><span class="thf"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"><path d="M1.5 2.5h11L8 7.5v4L6 10.5v-3L1.5 2.5z"/></svg></span></div>
+              <div class="fb-th"><span class="thl">Description</span><span class="thf"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"><path d="M1.5 2.5h11L8 7.5v4L6 10.5v-3L1.5 2.5z"/></svg></span></div>
+              <div class="fb-th"><span class="thl">Register Group</span><span class="thf"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"><path d="M1.5 2.5h11L8 7.5v4L6 10.5v-3L1.5 2.5z"/></svg></span></div>
+              <div class="fb-th"><span class="thl">Calculation Definition</span><span class="thf"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"><path d="M1.5 2.5h11L8 7.5v4L6 10.5v-3L1.5 2.5z"/></svg></span></div>
+              <div class="fb-th"><span class="thl">Period</span><span class="thf"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"><path d="M1.5 2.5h11L8 7.5v4L6 10.5v-3L1.5 2.5z"/></svg></span></div>
+            </div>
+            <div class="fb-tbody"></div>
+          </div>
+        </div>
+        </div>
+        <div class="fb-recently">
+          <div class="fb-ru-head">
+            <span class="fb-ru-title">Recently Used</span>
+            <span class="fb-ru-gear"><svg viewBox="0 0 18 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M1 4h11M15 4h2M1 12h2M6 12h11"/><circle cx="13.5" cy="4" r="2" fill="#f0f0f0"/><circle cx="4.5" cy="12" r="2" fill="#f0f0f0"/></svg></span>
+          </div>
+          <div class="fb-ru-body"></div>
+        </div>
+        </div>
+      </div>
+      <div id="page-home" class="page">
+      <div class="welcome">
+        <h1>Welcome back, Alex</h1>
+        <p>Manage and complete your assigned data collection responsibilities</p>
+      </div>
+      <div class="kpis" id="kpis"></div>
+      <div class="split">
+        <section class="grid">
+          <div class="grid-head">
+            <div class="cell c-status">Status</div>
+            <div class="cell c-name">Name</div>
+            <div class="cell c-desc">Description</div>
+          </div>
+          <div class="grid-body" id="rows"></div>
+        </section>
+        <aside class="detail" id="detail">
+          <div class="d-title" id="d-title">Climate Change Activities</div>
+          <div class="d-tabs">
+            <button class="d-tab active" data-tab="workflow">Workflow</button>
+            <button class="d-tab" data-tab="breakdown">Breakdown</button>
+            <button class="d-tab" data-tab="audit">Audit</button>
+          </div>
+          <div class="d-sep"></div>
+          <div class="d-body">
+            <div class="d-pane" data-pane="workflow"><div class="timeline" id="timeline"></div></div>
+            <div class="d-pane" data-pane="breakdown" hidden><div class="d-placeholder">No breakdown available for this task.</div></div>
+            <div class="d-pane" data-pane="audit" hidden><div class="d-placeholder">No audit history for this task.</div></div>
+          </div>
+          <div class="d-foot"><button class="btn btn-primary">Details</button></div>
+        </aside>
+      </div>
+      </div>
+      <div id="page-section" class="page" hidden></div>
+    </main>
+  </div>
+</div>
+
+<div class="side-scrim" id="mkt-scrim"></div>
+<aside class="side-panel" id="mkt-panel" role="dialog" aria-label="Module details" aria-hidden="true">
+  <div class="sp-head">
+    <div><div class="sp-title" id="mkt-title"></div><div class="sp-sub" id="mkt-sub"></div></div>
+    <button class="sp-close" id="mkt-close" type="button" aria-label="Close panel"><svg viewBox="0 0 16 16" fill="none"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+  </div>
+  <div class="sp-body" id="mkt-body"></div>
+</aside>
+
+<script>
+/* ══ Real ODS icons (currentColor so nav states recolor) ══ */
+const I = {
+ home:`<svg viewBox="0 0 16 16" fill="none"><path d="M6.7 13.525V9.62501H9.3V13.525H12.55V8.32501H14.5L8 2.47501L1.5 8.32501H3.45V13.525H6.7Z" fill="currentColor"/></svg>`,
+ reports_v:`<svg viewBox="0 0 16 16" fill="none"><path d="M9.26835 9.2963L12.198 6.36667L11.4461 5.61482L9.25539 7.80556L8.1665 6.71667L7.42762 7.45556L9.26835 9.2963ZM5.66466 11.3704V1H10.8498L13.9609 4.11111V11.3704H5.66466ZM10.3313 4.62963V2.03704H6.70169V10.3333H12.9239V4.62963H10.3313Z" fill="currentColor"/><path d="M4.88676 2.29627V12.1481H12.9936V13.1852H3.84973V2.29627H4.88676Z" fill="currentColor"/><path d="M3.07204 4.1111V13.963H11.1789V15H2.035V4.1111H3.07204Z" fill="currentColor"/></svg>`,
+ chevron:`<svg viewBox="0 0 8 8" fill="none"><path d="M3.97745 6.17746L7.47745 2.67746L6.62256 1.82257L3.97745 4.46769L1.33233 1.82257L0.477448 2.67746L3.97745 6.17746Z" fill="currentColor"/></svg>`,
+ calculate:`<svg viewBox="0 0 16 16" fill="none"><path d="M5.11111 12.3333H6.19444V10.8889H7.63889V9.80556H6.19444V8.36111H5.11111V9.80556H3.66667V10.8889H5.11111V12.3333ZM8.72222 11.7917H12.3333V10.7083H8.72222V11.7917ZM8.72222 9.98611H12.3333V8.90278H8.72222V9.98611ZM3.84722 5.97778H7.45833V4.89444H3.84722V5.97778ZM1.5 14.5V1.5H14.5V14.5H1.5ZM2.94444 13.0556H13.0556V2.94444H2.94444V13.0556ZM9.51667 7.24167L10.5278 6.23056L11.5389 7.24167L12.2972 6.48333L11.2861 5.43611L12.2972 4.425L11.5389 3.66667L10.5278 4.67778L9.51667 3.66667L8.75833 4.425L9.76944 5.43611L8.75833 6.48333L9.51667 7.24167Z" fill="currentColor"/></svg>`,
+ showreport:`<svg viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M11.25 1.5H1.5V14.5H14.5V4.75L11.25 1.5ZM10.4375 3.125H9.625V6.375H12.875V5.5625L10.4375 3.125ZM4.34375 8H3.125V6.78125H4.34375V8ZM5.5625 8H8.8125V6.78125H5.5625V8ZM4.34375 10.4375H3.125V9.21875H4.34375V10.4375ZM5.5625 10.4375H10.4375V9.21875H5.5625V10.4375ZM4.34375 12.875H3.125V11.6562H4.34375V12.875ZM5.5625 12.875H10.4375V11.6562H5.5625V12.875Z" fill="currentColor"/></svg>`,
+ content:`<svg viewBox="0 0 16 16" fill="none"><path d="M13.5294 1.5L16 3.97059L11.0589 8.91177H8.58827V6.44118L13.5294 1.5Z" fill="currentColor"/><path d="M2 5.12402H4.58388C5.23637 5.12402 5.86214 5.38323 6.32353 5.84461C6.78491 6.306 7.04412 6.93177 7.04412 7.58427V11.6093H8.48529V10.1475H11.8824L13.5294 8.08871V13.0505H9.92647L8.48529 14.4917H7.04412L5.60294 13.0505H2V5.12402Z" fill="currentColor"/></svg>`,
+ book:`<svg viewBox="0 0 16 16" fill="none"><path d="M1 2.40039H4.13756C4.92988 2.40039 5.68975 2.71514 6.25 3.27539C6.81025 3.83564 7.125 4.59551 7.125 5.38783V10.2754H8.875V5.38783C8.875 4.59551 9.18975 3.83564 9.75 3.27539C10.3103 2.71514 11.0701 2.40039 11.8624 2.40039H15V12.0254H10.625L8.875 13.7754H7.125L5.375 12.0254H1V2.40039Z" fill="currentColor"/></svg>`,
+ reports:`<svg viewBox="0 0 16 16" fill="none"><path d="M11.7143 5.21429H9.85714V11.8175H11.7143V5.21429Z" fill="currentColor"/><path d="M7.07143 7.10091H8.92857V11.8175H7.07143V7.10091Z" fill="currentColor"/><path d="M6.14286 8.98753H4.28571V11.8175H6.14286V8.98753Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 1.5V14.5H14.5V1.5H1.5ZM13.1071 13.1071H2.89286V2.89286H13.1071V13.1071Z" fill="currentColor"/></svg>`,
+ leaf:`<svg viewBox="0 0 16 16" fill="none"><path d="M11.2683 1C6.11367 1 1.935 4.76081 1.935 9.4V15H3.80166L3.80167 9.94672L7.80837 5.94002L9.1283 7.25995L5.66833 10.7199V13.0919C10.3848 12.6704 14.0683 9.08903 14.0683 4.73333L14.0683 1H11.2683Z" fill="currentColor"/></svg>`,
+ database:`<svg viewBox="0 0 16 16" fill="none"><path d="M14.5 6.38801V8.26C14.5 9.3 11.5 10.275 8 10.275C4.41015 10.275 1.5 9.3 1.5 8.26V6.18C4.00024 7.74 6 7.74 8 7.74C10.0584 7.74 12.0002 7.74 14.5 6.38801Z" fill="currentColor"/><path d="M1.5 10.613V12.42C1.5 13.46 4.5 14.5 8 14.5C11.5 14.5 14.5 13.46 14.5 12.42V10.613C12.0002 11.9 10.0584 11.965 8 11.965C5.94164 11.965 4.00024 11.9 1.5 10.613Z" fill="currentColor"/><path d="M8 1.5C11.5898 1.5 14.5 2.54 14.5 3.515C14.5 4.49 11.5898 5.66 8 5.66C4.41015 5.66 1.5 4.62 1.5 3.515C1.5 2.54 4.41015 1.5 8 1.5Z" fill="currentColor"/></svg>`,
+ trend:`<svg viewBox="0 0 24 24" fill="none"><path d="M16 18l2.29-2.29-4.88-4.88-4 4L2 7.41 3.41 6l6 6 4-4 6.3 6.29L22 12v6z" fill="currentColor"/></svg>`,
+ gear:`<svg viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M6.68028 1H9.34137L9.86815 3.07854C10.4303 3.28506 10.9475 3.58261 11.4014 3.95302L13.4911 3.36334L14.8216 5.63666L13.2597 7.12645C13.3079 7.41055 13.333 7.70238 13.333 8C13.333 8.29762 13.3079 8.58945 13.2597 8.87355L14.8216 10.3633L13.4911 12.6367L11.4014 12.047C10.9475 12.4174 10.4303 12.7149 9.86815 12.9215L9.34137 15H6.68028L6.15349 12.9215C5.59136 12.7149 5.07415 12.4174 4.62029 12.047L2.53056 12.6367L1.20001 10.3633L2.76197 8.87355C2.71374 8.58945 2.68863 8.29762 2.68863 8C2.68863 7.70238 2.71374 7.41055 2.76197 7.12645L1.20001 5.63666L2.53056 3.36334L4.62029 3.95302C5.07415 3.58261 5.59136 3.28506 6.15349 3.07854L6.68028 1ZM8.01082 9.75C8.99061 9.75 9.78489 8.9665 9.78489 8C9.78489 7.0335 8.99061 6.25 8.01082 6.25C7.03104 6.25 6.23676 7.0335 6.23676 8C6.23676 8.9665 7.03104 9.75 8.01082 9.75Z" fill="currentColor"/></svg>`,
+ tag:`<svg viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M14.5 8L8 1.5H1.5V8L8 14.5L14.5 8ZM5.15625 6.375C5.82935 6.375 6.375 5.82935 6.375 5.15625C6.375 4.48315 5.82935 3.9375 5.15625 3.9375C4.48315 3.9375 3.9375 4.48315 3.9375 5.15625C3.9375 5.82935 4.48315 6.375 5.15625 6.375Z" fill="currentColor"/></svg>`,
+ help:`<svg viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 15C11.866 15 15 11.866 15 8C15 4.13401 11.866 1 8 1C4.13401 1 1 4.13401 1 8C1 11.866 4.13401 15 8 15ZM8 5.375C7.27513 5.375 6.6875 5.96263 6.6875 6.6875V7.125H4.9375V6.6875C4.9375 4.99613 6.30863 3.625 8 3.625C9.69137 3.625 11.0625 4.99613 11.0625 6.6875C11.0625 8.37887 9.69137 9.75 8 9.75H7.125V8H8C8.72487 8 9.3125 7.41237 9.3125 6.6875C9.3125 5.96263 8.72487 5.375 8 5.375ZM8.875 10.625V12.375H7.125V10.625H8.875Z" fill="currentColor"/></svg>`,
+ collapse:`<svg viewBox="0 0 16 16" fill="none"><path d="M11.25 10.3889V4.61111L8.36111 7.5L11.25 10.3889ZM2.94444 12.5556H5.11111V2.44444H2.94444V12.5556ZM6.55556 12.5556H13.0556V2.44444H6.55556V12.5556ZM1.5 14V1H14.5V14H1.5Z" fill="currentColor"/></svg>`,
+ // ── menu child icons (from 2.0) ──
+ visibility:`<svg viewBox="0 -960 960 960"><path fill="currentColor" d="M607.5-372.5Q660-425 660-500t-52.5-127.5Q555-680 480-680t-127.5 52.5Q300-575 300-500t52.5 127.5Q405-320 480-320t127.5-52.5Zm-204-51Q372-455 372-500t31.5-76.5Q435-608 480-608t76.5 31.5Q588-545 588-500t-31.5 76.5Q525-392 480-392t-76.5-31.5ZM214-281.5Q94-363 40-500q54-137 174-218.5T480-800q146 0 266 81.5T920-500q-54 137-174 218.5T480-200q-146 0-266-81.5Z"/></svg>`,
+ paid:`<svg viewBox="0 -960 960 960"><path fill="currentColor" d="M444-200h70v-50q50-9 86-39t36-89q0-42-24-77t-96-61q-60-20-83-35t-23-41q0-26 18.5-41t53.5-15q32 0 50 15.5t26 38.5l64-26q-11-35-40.5-61T516-710v-50h-70v50q-50 11-78 44t-28 74q0 47 27.5 76t86.5 50q63 23 87.5 41t24.5 47q0 33-23.5 48.5T486-314q-33 0-58.5-20.5T390-396l-66 26q14 48 43.5 77.5T444-252v52Zm36 120q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg>`,
+ task_alt:`<svg viewBox="0 -960 960 960"><path fill="currentColor" d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q65 0 123 19t107 53l-58 59q-38-24-81-37.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160q133 0 226.5-93.5T800-480q0-18-2-36t-6-35l65-65q11 32 17 66t6 70q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm-56-216L254-466l56-56 114 114 400-401 56 56-456 457Z"/></svg>`,
+ flag:`<svg viewBox="0 -960 960 960"><path fill="currentColor" d="M200-120v-680h360l16 80h224v400H520l-16-80H280v280h-80Z"/></svg>`,
+ summarize:`<svg viewBox="0 -960 960 960"><path fill="currentColor" d="M280-600h80v-80h-80v80Zm0 160h80v-80h-80v80Zm0 160h80v-80h-80v80ZM120-120v-720h520l200 200v520H120Zm480-640v160h160L600-760Z"/></svg>`,
+ account_tree:`<svg viewBox="0 -960 960 960"><path fill="currentColor" d="M600-120v-120H440v-400h-80v120H80v-320h280v120h240v-120h280v320H600v-120h-80v320h80v-120h280v320H600Z"/></svg>`,
+ article:`<svg viewBox="0 -960 960 960"><path fill="currentColor" d="M280-280h280v-80H280v80Zm0-160h400v-80H280v80Zm0-160h400v-80H280v80ZM120-120v-720h720v720H120Z"/></svg>`,
+ donut_large:`<svg viewBox="0 -960 960 960"><path fill="currentColor" d="M441-82Q287-97 184-211T81-480q0-155 103-269t257-129v120q-104 14-172 93t-68 185q0 106 68 185t172 93v120Zm80 0v-120q94-12 159-78t79-160h120q-14 143-114.5 243.5T521-82Zm238-438q-14-94-79-160t-159-78v-120q143 14 243.5 114.5T879-520H759Z"/></svg>`,
+ whatshot:`<svg viewBox="0 -960 960 960"><path fill="currentColor" d="M480-80q-100 0-183.5-44T158-242l164-164 120 100 198-198v104h80v-240H480v80h104L438-414 318-514 116-312q-17-38-26.5-80.5T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg>`,
+ category:`<svg viewBox="0 -960 960 960"><path fill="currentColor" d="m260-520 220-360 220 360H260ZM700-80q-75 0-127.5-52.5T520-260q0-75 52.5-127.5T700-440q75 0 127.5 52.5T880-260q0 75-52.5 127.5T700-80Zm-580-20v-320h320v320H120Z"/></svg>`,
+ inventory_2:`<svg viewBox="0 -960 960 960"><path fill="currentColor" d="M120-80v-520H80v-280h800v280h-40v520H120Zm40-600h640v-120H160v120Zm200 280h240v-80H360v80Z"/></svg>`,
+ adjust:`<svg viewBox="0 -960 960 960"><path fill="currentColor" d="M565-395q35-35 35-85t-35-85q-35-35-85-35t-85 35q-35 35-35 85t35 85q35 35 85 35t85-35ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg>`,
+ contract:`<svg viewBox="0 -960 960 960"><path fill="currentColor" d="M240-80q-50 0-85-35t-35-85v-120h120v-560h600v680q0 50-35 85t-85 35H240Zm480-80q17 0 28.5-11.5T760-200v-600H320v480h360v120q0 17 11.5 28.5T720-160ZM360-600v-80h360v80H360Zm0 120v-80h360v80H360Z"/></svg>`,
+ build:`<svg viewBox="0 -960 960 960"><path fill="currentColor" d="M715-103 444-376q-20 8-40.5 12t-43.5 4q-100 0-170-70t-70-170q0-36 10-68.5t28-61.5l146 146 72-72-146-146q29-18 61.5-28t68.5-10q100 0 170 70t70 170q0 23-4 43.5T584-516l273 271-142 142Z"/></svg>`,
+ shield:`<svg viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 1.5L13.5 3.9V8.2C13.5 11.2 11.1 13.7 8 14.5C4.9 13.7 2.5 11.2 2.5 8.2V3.9L8 1.5ZM5.2 8.2L7 10L10.8 6.2L9.9 5.3L7 8.2L6.1 7.3L5.2 8.2Z" fill="currentColor"/></svg>`,
+ logic:`<svg viewBox="0 -960 960 960"><path fill="currentColor" d="M280-160v-320h-80v-320h240v320h-80v240h280v-160h-80v-320h240v320h-80v240H280Z"/></svg>`,
+ trash:`<svg viewBox="0 0 16 16" fill="none"><path d="M6.3 1.8H9.7V2.6H13.2V3.9H2.8V2.6H6.3V1.8Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M3.9 4.7H12.1L11.4 14.2H4.6L3.9 4.7ZM6.4 6.4L6.7 12.5H5.8L5.5 6.4H6.4ZM9.6 6.4L9.3 12.5H10.2L10.5 6.4H9.6Z" fill="currentColor"/></svg>`,
+ extension:`<svg viewBox="0 -960 960 960"><path fill="currentColor" d="M120-120v-232q48 0 84-30.5t36-77.5q0-46-36-76t-84-32v-232h202q7-51 46-85.5t92-34.5q52 0 91 34.5t47 85.5h202v214q36 18 58 52t22 74q0 41-22 75t-58 51v214H120Z"/></svg>`,
+ badge:`<svg viewBox="0 -960 960 960"><path fill="currentColor" d="M240-240h240v-18q0-17-9.5-31.5T444-312q-20-9-40.5-13.5T360-330q-23 0-43.5 4.5T276-312q-17 8-26.5 22.5T240-258v18Zm320-60h160v-60H560v60Zm-157.5-77.5Q420-395 420-420t-17.5-42.5Q385-480 360-480t-42.5 17.5Q300-445 300-420t17.5 42.5Q335-360 360-360t42.5-17.5ZM560-420h160v-60H560v60ZM80-80v-600h280v-200h240v200h280v600H80Zm360-520h80v-200h-80v200Z"/></svg>`,
+ list_alt:`<svg viewBox="0 -960 960 960"><path fill="currentColor" d="M280-280h80v-80h-80v80Zm0-160h80v-80h-80v80Zm0-160h80v-80h-80v80Zm160 320h240v-80H440v80Zm0-160h240v-80H440v80Zm0-160h240v-80H440v80ZM120-120v-720h720v720H120Z"/></svg>`,
+ pin_drop:`<svg viewBox="0 -960 960 960"><path fill="currentColor" d="M480-200Q339-304 269.5-402T200-594q0-125 78-205.5T480-880q124 0 202 80.5T760-594q0 94-69.5 192T480-200Zm0-320q33 0 56.5-23.5T560-600q0-33-23.5-56.5T480-680q-33 0-56.5 23.5T400-600q0 33 23.5 56.5T480-520ZM200-80v-80h560v80H200Z"/></svg>`,
+ workflow:`<svg viewBox="0 0 22 21" fill="none"><path d="M14.0415 17.7624V16.1957H11.672C11.4151 16.1997 11.16 16.152 10.9226 16.0556C10.6851 15.9593 10.4704 15.8163 10.2916 15.6355C10.107 15.4604 9.96094 15.2501 9.86253 15.0176C9.76412 14.7851 9.71541 14.5353 9.71943 14.2837V5.61858H7.02088V7.18521C7.02477 7.39688 6.98425 7.60707 6.90184 7.80279C6.81942 7.9985 6.69685 8.17555 6.54172 8.32301C6.39115 8.47491 6.21033 8.59498 6.01047 8.67569C5.81061 8.7564 5.59596 8.79605 5.37981 8.79224H1.64133C1.42518 8.79605 1.21052 8.7564 1.01066 8.67569C0.810804 8.59498 0.629987 8.47491 0.479411 8.32301C0.324286 8.17555 0.20172 7.9985 0.1193 7.80279C0.0368805 7.60707 -0.00363603 7.39688 0.000256044 7.18521V2.46636C-0.00363603 2.25469 0.0368805 2.04451 0.1193 1.84879C0.20172 1.65308 0.324286 1.47602 0.479411 1.32857C0.630013 1.1764 0.810942 1.05617 1.01096 0.975308C1.21099 0.894445 1.42584 0.854678 1.64221 0.858497H5.38068C5.59684 0.854686 5.81149 0.894388 6.01135 0.975098C6.21121 1.05581 6.39203 1.17583 6.5426 1.32773C6.69768 1.47536 6.82014 1.65256 6.90241 1.84843C6.98468 2.04429 7.02501 2.25461 7.02088 2.46636V4.033H14.0415V2.46636C14.0376 2.25469 14.0781 2.04451 14.1605 1.84879C14.243 1.65308 14.3655 1.47602 14.5207 1.32857C14.6712 1.17666 14.852 1.05665 15.0519 0.975937C15.2518 0.895227 15.4664 0.855525 15.6826 0.859336H19.4211C19.6372 0.855525 19.8519 0.895227 20.0517 0.975937C20.2516 1.05665 20.4324 1.17666 20.583 1.32857C20.7381 1.47602 20.8607 1.65308 20.9431 1.84879C21.0255 2.04451 21.066 2.25469 21.0621 2.46636V7.18521C21.066 7.39688 21.0255 7.60707 20.9431 7.80279C20.8607 7.9985 20.7381 8.17555 20.583 8.32301C20.4324 8.47491 20.2516 8.59498 20.0517 8.67569C19.8519 8.7564 19.6372 8.79605 19.4211 8.79224H15.6826C15.4664 8.79605 15.2518 8.7564 15.0519 8.67569C14.852 8.59498 14.6712 8.47491 14.5207 8.32301C14.3655 8.17555 14.243 7.9985 14.1605 7.80279C14.0781 7.60707 14.0376 7.39688 14.0415 7.18521V5.61858H11.3412V14.2837C11.3398 14.3268 11.3474 14.3698 11.3635 14.41C11.3796 14.4502 11.404 14.4867 11.4351 14.5174C11.4664 14.5478 11.5037 14.5717 11.5448 14.5875C11.5858 14.6033 11.6297 14.6107 11.6738 14.6093H14.0415V13.0427C14.0376 12.831 14.0781 12.6208 14.1605 12.4251C14.243 12.2294 14.3655 12.0524 14.5207 11.9049C14.6712 11.753 14.852 11.633 15.0519 11.5523C15.2518 11.4716 15.4664 11.4319 15.6826 11.4357H19.4211C19.6372 11.4319 19.8519 11.4716 20.0517 11.5523C20.2516 11.633 20.4324 11.753 20.583 11.9049C20.7381 12.0524 20.8607 12.2294 20.9431 12.4251C21.0255 12.6208 21.066 12.831 21.0621 13.0427V17.7615C21.066 17.9732 21.0255 18.1834 20.9431 18.3791C20.8607 18.5748 20.7381 18.7519 20.583 18.8993C20.4324 19.0512 20.2516 19.1713 20.0517 19.252C19.8519 19.3327 19.6372 19.3724 19.4211 19.3686H15.6826C15.4664 19.3724 15.2518 19.3327 15.0519 19.252C14.852 19.1713 14.6712 19.0512 14.5207 18.8993C14.3656 18.752 14.2431 18.5751 14.1607 18.3795C14.0783 18.184 14.0377 17.9739 14.0415 17.7624ZM15.6624 7.20583H19.443V2.44575H15.6624V7.20583ZM15.6624 17.783H19.443V13.023H15.6624V17.783ZM1.62114 7.20583H5.40175V2.44575H1.62114V7.20583Z" fill="currentColor"/></svg>`,
+ // ── OnePlace rail icons (match 2.0, static/never changes) ──
+ cube:`<svg viewBox="10 10 21 21" fill="none"><path d="M20.0431 28.8837V21.0952L13.0795 17.1464V24.7458C13.0794 24.801 13.0942 24.8553 13.1225 24.9031C13.1539 24.9547 13.198 24.9978 13.2507 25.0285L20.0431 28.8837ZM21.7105 28.8837L28.503 25.0294C28.5557 24.9986 28.5997 24.9555 28.6311 24.9039C28.6594 24.8561 28.6742 24.8019 28.6741 24.7467V17.1472L21.7105 21.096V28.8837ZM20.8751 19.6884L27.7553 15.7946L21.0471 11.9944C20.995 11.9606 20.934 11.9423 20.8715 11.9419C20.8091 11.9423 20.7481 11.9606 20.696 11.9944L13.9878 15.7946L20.8751 19.6884ZM12.4117 26.4697C12.1036 26.2995 11.8476 26.0518 11.6701 25.7521C11.4937 25.4523 11.4028 25.1115 11.4069 24.7655V16.4906C11.403 16.1449 11.4939 15.8045 11.6701 15.5049C11.8476 15.2052 12.1036 14.9575 12.4117 14.7874L19.8711 10.585C20.1764 10.4089 20.5243 10.316 20.8786 10.316C21.2329 10.316 21.5807 10.4089 21.886 10.585L29.3454 14.7874C29.6536 14.9575 29.9096 15.2052 30.087 15.5049C30.2632 15.8045 30.3542 16.1449 30.3503 16.4906V24.7655C30.3543 25.1115 30.2634 25.4523 30.087 25.7521C29.9096 26.0518 29.6535 26.2995 29.3454 26.4697L21.886 30.6721C21.5807 30.8482 21.2329 30.941 20.8786 30.941C20.5243 30.9413 20.1765 30.8487 19.8711 30.6729L12.4117 26.4697Z" fill="currentColor"/></svg>`,
+ dashboard:`<svg viewBox="0 0 16 16" fill="none"><path d="M1.5 1.5H7.1875V7.1875H1.5V1.5Z" fill="currentColor"/><path d="M8.8125 1.5H14.5V7.1875H8.8125V1.5Z" fill="currentColor"/><path d="M1.5 8.8125H7.1875V14.5H1.5V8.8125Z" fill="currentColor"/><path d="M8.8125 8.8125H14.5V14.5H8.8125V8.8125Z" fill="currentColor"/></svg>`,
+ documents:`<svg viewBox="0 0 22 21" fill="none"><path d="M7.62091 16.5547H14.2721C14.3819 16.5574 14.4911 16.538 14.593 16.4978C14.6948 16.4576 14.7872 16.3974 14.8644 16.3209C14.9425 16.2453 15.004 16.1548 15.0451 16.0551C15.0861 15.9553 15.1059 15.8484 15.1031 15.7409C15.1059 15.6333 15.0861 15.5264 15.0451 15.4266C15.004 15.3269 14.9425 15.2364 14.8644 15.1608C14.7872 15.0843 14.6948 15.0241 14.593 14.9839C14.4911 14.9437 14.3819 14.9243 14.2721 14.927H7.62091C7.51111 14.9243 7.40192 14.9437 7.30004 14.9839C7.19817 15.0241 7.10576 15.0843 7.02854 15.1608C6.95044 15.2364 6.88897 15.3269 6.84792 15.4266C6.80686 15.5264 6.78711 15.6333 6.78985 15.7409C6.78711 15.8484 6.80686 15.9553 6.84792 16.0551C6.88897 16.1548 6.95044 16.2453 7.02854 16.3209C7.10576 16.3974 7.19817 16.4576 7.30004 16.4978C7.40192 16.538 7.51111 16.5574 7.62091 16.5547ZM7.62091 12.2123H14.2721C14.3819 12.2149 14.4911 12.1956 14.593 12.1554C14.6948 12.1152 14.7872 12.055 14.8644 11.9785C14.9425 11.9029 15.004 11.8124 15.0451 11.7127C15.0861 11.6129 15.1059 11.5059 15.1031 11.3984C15.1059 11.2909 15.0861 11.184 15.0451 11.0842C15.004 10.9845 14.9425 10.894 14.8644 10.8183C14.7872 10.7419 14.6948 10.6817 14.593 10.6415C14.4911 10.6013 14.3819 10.5819 14.2721 10.5846H7.62091C7.51111 10.5819 7.40192 10.6013 7.30004 10.6415C7.19817 10.6817 7.10576 10.7419 7.02854 10.8183C6.95044 10.894 6.88897 10.9845 6.84792 11.0842C6.80686 11.184 6.78711 11.2909 6.78985 11.3984C6.78711 11.5059 6.80686 11.6129 6.84792 11.7127C6.88897 11.8124 6.95044 11.9029 7.02854 11.9785C7.10576 12.055 7.19817 12.1152 7.30004 12.1554C7.40192 12.1956 7.51111 12.2149 7.62091 12.2123ZM4.63715 20.6247C4.37298 20.63 4.11049 20.5822 3.86595 20.4842C3.62141 20.3862 3.40001 20.2401 3.21547 20.0549C3.02636 19.8742 2.87716 19.6574 2.77708 19.4179C2.677 19.1785 2.62817 18.9214 2.63364 18.6627V1.9625C2.62817 1.7038 2.677 1.44676 2.77708 1.20729C2.87716 0.967822 3.02636 0.751029 3.21547 0.570313C3.40001 0.385131 3.62141 0.238998 3.86595 0.140993C4.11049 0.042988 4.37298 -0.00482408 4.63715 0.000526306H12.6117C12.8764 -3.63614e-05 13.1384 0.0517006 13.3822 0.152637C13.6223 0.250011 13.8405 0.392517 14.0246 0.572044L18.6758 5.12672C18.8591 5.30701 19.0046 5.52072 19.104 5.75578C19.2071 5.9945 19.2599 6.25112 19.2594 6.5103V18.6619C19.2648 18.9206 19.216 19.1776 19.1159 19.4171C19.0158 19.6566 18.8666 19.8733 18.6775 20.0541C18.493 20.2392 18.2716 20.3854 18.027 20.4834C17.7825 20.5814 17.52 20.6292 17.2558 20.6238L4.63715 20.6247ZM12.6099 5.53149V1.63252H4.63715C4.59293 1.63336 4.54934 1.64297 4.50906 1.66084C4.46877 1.67872 4.43264 1.70447 4.40284 1.73648C4.37015 1.76566 4.34387 1.80104 4.32562 1.84049C4.30736 1.87994 4.29751 1.92265 4.29665 1.96596V18.6662C4.29756 18.7095 4.30743 18.7521 4.32568 18.7916C4.34394 18.831 4.37019 18.8664 4.40284 18.8956C4.43264 18.9276 4.46877 18.9534 4.50906 18.9712C4.54934 18.9891 4.59293 18.9988 4.63715 18.9996H17.2576C17.3018 18.9988 17.3454 18.9891 17.3857 18.9712C17.426 18.9534 17.4621 18.9276 17.4919 18.8956C17.5246 18.8664 17.5509 18.831 17.5691 18.7916C17.5874 18.7521 17.5972 18.7095 17.5981 18.6662V6.51376H13.6121C13.4796 6.51723 13.3478 6.49406 13.2248 6.44573C13.1018 6.3974 12.9902 6.3249 12.8969 6.23273C12.8026 6.14143 12.7284 6.03218 12.6789 5.91172C12.6294 5.79126 12.6056 5.66214 12.6091 5.53233L12.6099 5.53149Z" fill="currentColor"/></svg>`,
+ pov:`<svg viewBox="0 0 22 21" fill="none"><path d="M1.01916 15.5743C0.884718 15.5777 0.750997 15.5541 0.626197 15.505C0.501397 15.456 0.388146 15.3824 0.293396 15.289C0.197703 15.197 0.122311 15.0868 0.0718921 14.9652C0.0214733 14.8435 -0.00289794 14.713 0.000284904 14.5817V6.63681C-0.00295029 6.50554 0.0213966 6.37505 0.0718184 6.25338C0.12224 6.13172 0.197661 6.02148 0.293396 5.92954C0.388146 5.83609 0.501397 5.76256 0.626197 5.71349C0.750997 5.66443 0.884718 5.64085 1.01916 5.64421H2.75237C2.88681 5.64085 3.02053 5.66443 3.14533 5.71349C3.27013 5.76256 3.38337 5.83609 3.47812 5.92954C3.57382 6.02151 3.64921 6.13173 3.69963 6.25338C3.75005 6.37504 3.77442 6.50555 3.77124 6.63681V14.5817C3.77448 14.713 3.75012 14.8435 3.6997 14.9652C3.64928 15.0869 3.57386 15.1971 3.47812 15.289C3.38334 15.3824 3.27009 15.4559 3.1453 15.5049C3.0205 15.554 2.8868 15.5776 2.75237 15.5743H1.01916ZM6.47505 17.7812C6.34101 17.7844 6.20773 17.7605 6.08349 17.7111C5.95924 17.6617 5.84669 17.5879 5.75281 17.4941C5.65738 17.4013 5.5823 17.2905 5.5322 17.1682C5.4821 17.046 5.45803 16.9151 5.46145 16.7835V4.43424C5.45803 4.30259 5.4821 4.17161 5.5322 4.0494C5.5823 3.92719 5.65738 3.8163 5.75281 3.72351C5.84672 3.62981 5.95928 3.556 6.08351 3.50663C6.20775 3.45725 6.34101 3.43338 6.47505 3.4365H14.5883C14.7223 3.43333 14.8556 3.4572 14.9798 3.50657C15.1041 3.55595 15.2166 3.62977 15.3105 3.72351C15.4059 3.81633 15.4809 3.92725 15.531 4.04945C15.5811 4.17166 15.6052 4.3026 15.6019 4.43424V16.7835C15.6053 16.9151 15.5812 17.046 15.5311 17.1682C15.481 17.2905 15.4059 17.4013 15.3105 17.4941C15.2166 17.5878 15.104 17.6617 14.9798 17.7111C14.8556 17.7604 14.7223 17.7843 14.5883 17.7812H6.47505ZM18.3109 15.576C18.1765 15.5794 18.0428 15.5558 17.918 15.5067C17.7932 15.4577 17.6799 15.3842 17.5852 15.2907C17.4895 15.1988 17.4141 15.0885 17.3637 14.9669C17.3133 14.8452 17.2889 14.7147 17.2921 14.5835V6.63854C17.2888 6.50727 17.3132 6.37673 17.3636 6.25506C17.414 6.1334 17.4895 6.02321 17.5852 5.93128C17.6799 5.83782 17.7932 5.76429 17.918 5.71523C18.0428 5.66616 18.1765 5.64258 18.3109 5.64594H20.0486C20.183 5.64258 20.3167 5.66616 20.4415 5.71523C20.5663 5.76429 20.6796 5.83782 20.7743 5.93128C20.87 6.02324 20.9454 6.13346 20.9958 6.25511C21.0462 6.37677 21.0706 6.50728 21.0674 6.63854V14.5835C21.0707 14.7147 21.0463 14.8452 20.9959 14.9669C20.9455 15.0885 20.87 15.1988 20.7743 15.2907C20.6795 15.3841 20.5663 15.4576 20.4415 15.5067C20.3167 15.5557 20.183 15.5793 20.0486 15.576H18.3109ZM7.15167 5.09168V16.126H13.909V5.09168H7.15167Z" fill="currentColor" fill-opacity="0.9"/></svg>`,
+ hdr_settings:`<svg viewBox="0 0 24 24" fill="none"><path d="M22.8109 9.9226L20.2289 9.14254C20.0503 8.51166 19.8047 7.90225 19.4965 7.32499L20.7601 4.93019C20.8075 4.83979 20.8248 4.73633 20.8096 4.63515C20.7943 4.53398 20.7473 4.44048 20.6754 4.36854L18.8344 2.49639C18.7632 2.4235 18.6708 2.37579 18.5708 2.36033C18.4708 2.34488 18.3685 2.3625 18.2791 2.41058L15.929 3.67818C15.353 3.35104 14.743 3.08943 14.1101 2.89812L13.3403 0.316104C13.307 0.221515 13.245 0.140015 13.1633 0.0832683C13.0815 0.0265214 12.9841 -0.00256311 12.8851 0.000177316H10.2799C10.18 0.000648922 10.0827 0.033435 10.0024 0.0937641C9.92212 0.154093 9.8629 0.238817 9.8334 0.335605L9.06351 2.90982C8.42543 3.10011 7.81022 3.36174 7.22924 3.68988L4.91957 2.42228C4.83021 2.3742 4.72793 2.35658 4.62791 2.37204C4.52788 2.38749 4.43544 2.4352 4.36429 2.50809L2.49152 4.36074C2.41967 4.43268 2.37262 4.52618 2.35737 4.62735C2.34211 4.72853 2.35946 4.83199 2.40684 4.92239L3.65791 7.26258C3.33431 7.84932 3.07609 8.47069 2.88802 9.11524L0.336791 9.8953C0.241265 9.92519 0.157646 9.98519 0.0981036 10.0666C0.0385612 10.1479 0.00620276 10.2464 0.0057373 10.3477V12.9805C0.00620276 13.0818 0.0385612 13.1803 0.0981036 13.2616C0.157646 13.343 0.241265 13.403 0.336791 13.4329L2.90342 14.213C3.09381 14.8455 3.35198 15.4549 3.67331 16.0305L2.40395 18.4799C2.35657 18.5703 2.33922 18.6738 2.35448 18.775C2.36974 18.8761 2.41678 18.9696 2.48864 19.0416L4.3306 20.9059C4.40176 20.9788 4.4942 21.0265 4.59422 21.042C4.69425 21.0574 4.79652 21.0398 4.88589 20.9917L7.26678 19.7046C7.8302 20.0123 8.42446 20.2581 9.03945 20.4379L9.80934 23.0706C9.83884 23.1674 9.89806 23.2521 9.97837 23.3124C10.0587 23.3728 10.1559 23.4056 10.2559 23.406H12.861C12.961 23.4056 13.0582 23.3728 13.1385 23.3124C13.2188 23.2521 13.278 23.1674 13.3075 23.0706L14.0774 20.4379C14.6872 20.2572 15.2762 20.0114 15.8347 19.7046L18.231 20.9995C18.3204 21.0476 18.4226 21.0652 18.5227 21.0498C18.6227 21.0343 18.7151 20.9866 18.7863 20.9137L20.6282 19.0494C20.7001 18.9774 20.7471 18.8839 20.7624 18.7828C20.7777 18.6816 20.7603 18.5781 20.7129 18.4877L19.4339 16.0695C19.7402 15.5022 19.9857 14.9034 20.1663 14.2832L22.7647 13.5031C22.8602 13.4732 22.9438 13.4132 23.0034 13.3318C23.0629 13.2505 23.0953 13.152 23.0957 13.0507V10.3828C23.1 10.2854 23.0746 10.189 23.0229 10.1067C22.9713 10.0243 22.8959 9.96009 22.807 9.9226H22.8109ZM11.583 15.9915C10.7455 15.9915 9.92682 15.7399 9.23047 15.2685C8.53413 14.797 7.99139 14.127 7.6709 13.343C7.35041 12.559 7.26655 11.6964 7.42994 10.8641C7.59333 10.0319 7.99661 9.26743 8.58881 8.66741C9.181 8.06739 9.9355 7.65878 10.7569 7.49323C11.5783 7.32769 12.4297 7.41265 13.2034 7.73738C13.9772 8.06211 14.6385 8.61201 15.1038 9.31756C15.569 10.0231 15.8174 10.8526 15.8174 11.7012C15.8174 12.839 15.3713 13.9303 14.5772 14.7349C13.7831 15.5395 12.706 15.9915 11.583 15.9915Z" fill="currentColor"/></svg>`,
+ hdr_user:`<svg viewBox="0 0 24 24" fill="none"><path d="M11.5565 8.52359e-06C8.61977 -0.00358175 5.79211 1.12716 3.64935 3.16196C1.50659 5.19675 0.209907 7.98258 0.0233342 10.9521C-0.163238 13.9217 0.774331 16.8516 2.64514 19.1453C4.51594 21.439 7.17928 22.9239 10.0928 23.2976C10.5319 23.3635 10.975 23.3983 11.4189 23.402C11.4439 23.402 11.467 23.402 11.4901 23.402C11.5132 23.402 11.5334 23.402 11.5556 23.402C14.6184 23.402 17.5558 22.1692 19.7215 19.9748C21.8872 17.7805 23.104 14.8043 23.104 11.701C23.104 8.59769 21.8872 5.62151 19.7215 3.42715C17.5558 1.23279 14.6193 8.52359e-06 11.5565 8.52359e-06ZM18.7637 19.7942C17.8447 18.039 16.3942 16.6289 14.6255 15.771C15.21 15.1703 15.6702 14.4574 15.9792 13.6741C16.2882 12.8908 16.4398 12.0529 16.4251 11.2095C16.4251 7.97813 14.2685 5.35906 11.6133 5.35906C8.95816 5.35906 6.8015 7.97813 6.8015 11.2095C6.78653 12.0533 6.938 12.8915 7.24703 13.6752C7.55606 14.4588 8.01643 15.172 8.60112 15.7729C6.77714 16.5883 5.2771 18.002 4.34264 19.7864C2.72323 18.3076 1.58445 16.3661 1.07657 14.2181C0.568685 12.07 0.715581 9.81647 1.49789 7.75477C2.28021 5.69308 3.66116 3.9202 5.45845 2.67014C7.25575 1.42007 9.38491 0.751589 11.5649 0.752916C13.7449 0.754242 15.8733 1.42532 17.6691 2.67757C19.4649 3.92982 20.8438 5.70437 21.6236 7.76702C22.4035 9.82966 22.5478 12.0834 22.0373 14.2308C21.5269 16.3783 20.3858 18.3184 18.7646 19.7951L18.7637 19.7942Z" fill="currentColor"/></svg>`,
+ symbol:`<svg viewBox="0 0 207 207"><path fill="#fff" d="M201.9,72.69h-19.89c3.74,9.55,5.82,19.94,5.82,30.81,0,46.69-37.85,84.54-84.54,84.54-15.65,0-30.3-4.26-42.87-11.68,23.53-9.06,42.32-29.22,48.42-55.58l7.03-30.38c3.2-13.85,11-25.46,21.42-33.6,4-3.13,8.42-5.61,13.09-7.48,6.34-2.54,14.76-4.4,23.8-4.4l14.13-.03C169.66,17.97,138.52.21,103.29.21,46.24.21,0,46.46,0,103.5c0,10.73,1.64,21.07,4.67,30.8h19.89c-3.74-9.55-5.81-19.93-5.81-30.8,0-46.69,37.85-84.54,84.54-84.54,15.65,0,30.3,4.26,42.87,11.68-23.53,9.06-42.32,29.22-48.42,55.58l-7.03,30.38c-3.2,13.85-11.01,25.46-21.42,33.6-4,3.13-8.42,5.61-13.08,7.48-6.34,2.54-14.24,4.39-24.84,4.39l-13.1.02c18.64,26.94,49.78,44.71,85.03,44.71,57.04,0,103.29-46.24,103.29-103.29,0-10.73-1.64-21.08-4.68-30.81Z"/></svg>`,
+ dchev:`<svg viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="#757575" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+ more:`<svg viewBox="0 0 16 4"><circle cx="2" cy="2" r="1.5" fill="#757575"/><circle cx="8" cy="2" r="1.5" fill="#757575"/><circle cx="14" cy="2" r="1.5" fill="#757575"/></svg>`
+};
+const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
+document.getElementById('logo').innerHTML=I.symbol;
+document.getElementById('hicon-settings').innerHTML=I.hdr_settings;
+document.getElementById('hicon-user').innerHTML=I.hdr_user;
+// OnePlace rail — fixed set of 5 icons, identical to 2.0 (workflow active); never changes
+const RAIL_TIPS={workflow:'Workflow',cube:'Cube Views',dashboard:'Dashboards',documents:'Documents',pov:'Point of View'};
+['workflow','cube','dashboard','documents','pov'].forEach((k,i)=>{
+  const b=document.createElement('div'); b.className='rbtn'+(i===2?' active':''); b.innerHTML=I[k];
+  b.setAttribute('data-tip',RAIL_TIPS[k]);
+  document.getElementById('rail').appendChild(b);
+});
+$$('[data-ic]').forEach(el=>{ el.innerHTML=I[el.dataset.ic]||''; });
+
+/* ══ Side nav ══ */
+const NAV=[
+ {key:'home', icon:'home', label:'Home'},
+ {key:'reports', icon:'reports_v', label:'Reports', children:[
+   {key:'cc', icon:'calculate', label:'Carbon Calculation'},
+   {key:'rc', icon:'showreport', label:'Reporting & Compliance'},
+   {key:'eut', icon:'content', label:'EU Taxonomy'} ]},
+ {divider:true},
+ {key:'eutax', icon:'book', label:'EU Taxonomy', collapsed:true, children:[
+   {icon:'visibility', label:'Overview'},
+   {icon:'paid', label:'Financial Metrics'},
+   {icon:'task_alt', label:'Activities'},
+   {icon:'flag', label:'Objectives'} ]},
+ {key:'repmgr', icon:'reports', label:'Reporting Manager', collapsed:true, children:[
+   {icon:'summarize', label:'Overview'},
+   {icon:'account_tree', label:'Frameworks'},
+   {icon:'article', label:'Definitions'} ]},
+ {key:'carbon', icon:'leaf', label:'Carbon Manager', collapsed:true, children:[
+   {icon:'donut_large', label:'Overview'},
+   {icon:'whatshot', label:'Factors'},
+   {icon:'category', label:'Factor Groups'},
+   {icon:'inventory_2', label:'Factor Sources'},
+   {icon:'adjust', label:'Scope'},
+   {icon:'contract', label:'Contracts'} ]},
+ {key:'data', icon:'database', label:'Data Collection', collapsed:true, children:[
+   {icon:'extension', label:'Integrations'},
+   {icon:'home', label:'Sites'},
+   {icon:'badge', label:'Profiles'},
+   {icon:'list_alt', label:'Control Lists'},
+   {icon:'pin_drop', label:'Collection Points'} ]},
+ {divider:true},
+ {key:'settings', icon:'gear', label:'Settings', collapsed:true, children:[
+   {icon:'build', label:'Global Options'},
+   {icon:'shield', label:'Security'},
+   {icon:'logic', label:'Logic'},
+   {icon:'trash', label:'Uninstall'} ]},
+ {key:'modules', icon:'tag', label:'Modules', collapsed:true, children:[
+   {label:'All'},
+   {label:'Installed'},
+   {label:'Uninstalled'} ]}
+];
+const list=document.getElementById('nav-list');
+function navItem(it, sub){
+  const d=document.createElement('div');
+  d.className='nav-item'+(sub?' nav-sub':''); d.dataset.key=it.key;
+  d.innerHTML=(sub?'':`<span class="ic">${I[it.icon]||''}</span>`)+`<span class="lbl">${it.label}</span>`
+    + (it.children?`<span class="chev chev-reports">${I.chevron}</span>`:'')
+    + (it.chevron?`<span class="chev">${I.chevron}</span>`:'');
+  return d;
+}
+const groupByParent={}, headByParent={}, childByPath={}, leafByLabel={}, childrenByParent={};
+NAV.forEach(it=>{
+  if(it.divider){ const dv=document.createElement('div'); dv.className='nav-divider'; list.appendChild(dv); return; }
+  if(it.children){
+    childrenByParent[it.label]=it.children.map(c=>c.label);
+    const grp=document.createElement('div'); grp.className='nav-group'; grp.dataset.open=it.collapsed?'false':'true'; grp.dataset.parent=it.label;
+    const head=navItem(it); grp.appendChild(head); headByParent[it.label]=head;
+    head.addEventListener('click',()=> goParent(it.label));
+    const kids=document.createElement('div'); kids.className='nav-children';
+    it.children.forEach(c=>{ const ci=navItem(c,true); childByPath[it.label+'|'+c.label]=ci; ci.addEventListener('click',()=>goSection(it.label,c.label)); kids.appendChild(ci); });
+    grp.appendChild(kids); list.appendChild(grp); groupByParent[it.label]=grp;
+    if(it.collapsed){ kids.style.maxHeight='0px'; }
+    else { requestAnimationFrame(()=>{ if(grp.dataset.open==='true') kids.style.maxHeight=kids.scrollHeight+'px'; }); }  /* don't re-open if already collapsed by a click */
+  } else {
+    const li=navItem(it); leafByLabel[it.label]=li; li.addEventListener('click',()=> goParent(it.label)); list.appendChild(li);
+  }
+});
+function openGroup(parent){                             // accordion: only the target group stays open
+  document.querySelectorAll('.nav-group').forEach(g=>{
+    const on = g.dataset.parent===parent;
+    g.dataset.open = on?'true':'false';
+    const k=g.querySelector('.nav-children'); if(k) k.style.maxHeight = on ? k.scrollHeight+'px' : '0px';
+  });
+}
+function highlightEl(el){ $$('.nav-item').forEach(n=>n.classList.remove('active')); if(el) el.classList.add('active'); }
+function toggleGroup(parent){                            // expand/collapse in place (accordion), no navigation
+  const grp=groupByParent[parent]; const wasOpen=grp.dataset.open==='true';
+  document.querySelectorAll('.nav-group').forEach(g=>{ g.dataset.open='false'; const k=g.querySelector('.nav-children'); if(k) k.style.maxHeight='0px'; });
+  if(!wasOpen){ grp.dataset.open='true'; const k=grp.querySelector('.nav-children'); if(k) k.style.maxHeight=k.scrollHeight+'px'; }
+}
+function goParent(parent){
+  if(groupByParent[parent]){
+    if(document.getElementById('app').classList.contains('nav-min')) goSection(parent, childrenByParent[parent][0]);  // minimized: only the parent icon shows → jump to its first section
+    else toggleGroup(parent);                                // expanded: just expand its section in place, stay on the current page
+  }
+  else if(parent==='Home'){ highlightEl(leafByLabel[parent]); showHome(); }
+  else { highlightEl(leafByLabel[parent]); showLeaf(parent); }
+}
+function goSection(parent, child){ if(groupByParent[parent]) openGroup(parent); highlightEl(childByPath[parent+'|'+child]); showSection(parent, child); }
+
+/* ══ Page routing / content ══ */
+const pageHome=document.getElementById('page-home'), pageSection=document.getElementById('page-section');
+function showHome(){ pageHome.hidden=false; pageSection.hidden=true; }
+function showSection(parent, child){ pageHome.hidden=true; pageSection.hidden=false; renderSection(parent, child); }
+function showLeaf(parent){ pageHome.hidden=true; pageSection.hidden=false; pageSection.innerHTML=leafPage(parent); }
+function renderSection(parent, child){
+  const kids=childrenByParent[parent];
+  if(!child || kids.indexOf(child)<0) child=kids[0];
+  const tabs=kids.map(l=>`<button type="button" class="stab${l===child?' active':''}">${escapeHtml(l)}</button>`).join('');
+  pageSection.innerHTML=`<div class="page-head"><div class="page-eyebrow">${escapeHtml(parent)}</div><h1>${escapeHtml(child)}</h1></div>`
+    +`<div class="subtabs">${tabs}</div><div class="section-body">${pageContent(parent,child)}</div>`;
+  pageSection.querySelectorAll('.stab').forEach((t,i)=> t.addEventListener('click',()=> goSection(parent, kids[i])));
+  if(parent==='Modules') wireMarketplace();
+  if(parent==='Settings' && child==='Global Options') wireGlobalOptions();
+  if(parent==='Reporting Manager' && child==='Definitions') wireDefinitions();
+  if(parent==='Reporting Manager' && child==='Frameworks') wireFrameworks();
+  pageSection.classList.toggle('sec-fill', parent==='Reporting Manager' && (child==='Definitions'||child==='Frameworks'));
+  pageSection.scrollTop=0;
+}
+/* content builders (reuse the design-system components) */
+function gridHtml(cols,rows){
+  const head=cols.map(c=>`<div class="cell">${escapeHtml(c)}</div>`).join('');
+  const body=rows.map(r=>`<div class="grid-row">${r.map(v=>`<div class="cell">${escapeHtml(v)}</div>`).join('')}</div>`).join('');
+  return `<div class="grid page-grid"><div class="grid-head">${head}</div><div class="grid-body">${body}</div></div>`;
+}
+function ovHtml(spec){
+  const tiles=spec.kpis.map(k=>`<div class="kpi" style="--accent:${k.color}"><span class="bar"></span><div class="k-label">${escapeHtml(k.label)}</div><div class="k-row"><span class="k-num">${escapeHtml(k.num)}</span><span class="k-pct">${escapeHtml(k.pct||'')}</span></div></div>`).join('');
+  return `<div class="kpis ov-kpis">${tiles}</div>`+(spec.cols?gridHtml(spec.cols,buildRows(spec)):'');
+}
+function formHtml(spec){
+  const fields=spec.fields.map(f=>{
+    if(f.type==='select') return `<div class="d-field"><div class="d-label">${escapeHtml(f.label)}</div><div class="d-select"><select>${f.options.map(o=>`<option>${escapeHtml(o)}</option>`).join('')}</select><span class="dchev">${I.dchev}</span></div></div>`;
+    if(f.type==='textarea') return `<div class="d-field"><div class="d-label">${escapeHtml(f.label)}</div><textarea class="d-textarea" style="min-height:96px;font-family:inherit;">${escapeHtml(f.value||'')}</textarea></div>`;
+    return `<div class="d-field"><div class="d-label">${escapeHtml(f.label)}</div><input class="f-input" value="${escapeHtml(f.value||'')}"></div>`;
+  }).join('');
+  return `<div class="form-panel">${fields}<div class="d-actions"><button class="btn btn-primary">Save</button><button class="btn btn-secondary">Cancel</button></div></div>`;
+}
+function dangerHtml(parent){
+  return `<div class="danger-card"><h3>Uninstall ${escapeHtml(parent.replace(' > Uninstall',''))}</h3><p>Uninstalling removes this solution and its configuration from your environment. Collected data is retained but the collection experience, factors, and reports will no longer be available. This action cannot be undone.</p><button class="btn btn-danger" type="button">Uninstall solution</button></div>`;
+}
+function buildRows(spec){ if(spec.rows) return spec.rows; const n=spec.n||7,out=[]; for(let i=0;i<n;i++) out.push(spec.gen(i)); return out; }
+/* ── Modules marketplace ── */
+const MODULES=[
+ {t:'Data Collection', ic:'database', cat:'Collection', d:'Build and manage the data-collection experience — integrations, sites, control lists, collection points and profiles.', inst:true},
+ {t:'EU Taxonomy', ic:'book', cat:'Reporting', d:'Align your activities with EU Taxonomy regulations and classification standards for sustainable finance.', inst:true},
+ {t:'Reporting Manager', ic:'reports', cat:'Reporting', d:'Comprehensive ESG reporting tools covering GRI, TCFD, SASB, CDP, and CSRD frameworks.', inst:true},
+ {t:'Carbon Manager', ic:'leaf', cat:'Planning', d:'Calculate, track, and reduce your organisation’s carbon footprint across all emission scopes.', inst:true},
+ {t:'Carbon Strategy Planner', ic:'trend', cat:'Planning', d:'End-to-end carbon accounting and offset management to support net-zero commitments.', inst:false}
+];
+function marketplaceHtml(child){
+  const items = child==='Installed' ? MODULES.filter(m=>m.inst)
+              : child==='Uninstalled' ? MODULES.filter(m=>!m.inst)
+              : MODULES;
+  const cards=items.map(m=>{
+    const btn = m.inst ? '<button class="mkt-btn mkt-uninstall" type="button">Uninstall</button>'
+                       : '<button class="mkt-btn mkt-install" type="button">Install</button>';
+    return `<div class="mkt-card" data-name="${escapeHtml(m.t)}">`
+      +`<span class="mkt-ico">${I[m.ic]||''}</span>`
+      +`<div class="mkt-title">${escapeHtml(m.t)}</div>`
+      +`<span class="mkt-cat">${escapeHtml(m.cat)}</span>`
+      +`<div class="mkt-desc">${escapeHtml(m.d)}</div>`
+      +`<div class="mkt-foot"><span class="mkt-code">PV900SV200</span>${btn}</div>`
+      +`</div>`;
+  }).join('');
+  return `<div class="mkt-grid">${cards}</div>`;
+}
+function wireMarketplace(){
+  pageSection.querySelectorAll('.mkt-btn').forEach(b=>{
+    b.addEventListener('click',e=>{ e.stopPropagation();
+      if(b.classList.contains('mkt-install')){ b.classList.replace('mkt-install','mkt-uninstall'); b.textContent='Uninstall'; }
+      else { b.classList.replace('mkt-uninstall','mkt-install'); b.textContent='Install'; }
+    });
+  });
+  pageSection.querySelectorAll('.mkt-card').forEach(card=>{
+    card.style.cursor='pointer';
+    card.addEventListener('click',e=>{ if(e.target.closest('.mkt-btn')) return; openMktPanel(card.getAttribute('data-name')); });
+  });
+}
+/* ── Modules detail — DS slide-out side panel (release notes) ── */
+const MKT_REL={
+ 'Data Collection':{ver:'PV900SV200',date:'14 Mar 2025',notes:['New integrations catalog with SAP and Workday connectors.','Collection Points now support monthly and quarterly cadences.','Site profiles assign preparers and control lists per region.']},
+ 'EU Taxonomy':{ver:'PV900SV200',date:'14 Mar 2025',notes:['Added Article 8 alignment summary with per-activity DNSH / MSS capture.','New Compass activity library with Excel import.','Objectives page now assigns a Control List per activity.']},
+ 'Reporting Manager':{ver:'PV900SV200',date:'14 Mar 2025',notes:['Expanded framework coverage for CSRD and ISSB.','Disclosure mapping now links definitions across frameworks.','Bulk status roll-forward for prior-period reports.']},
+ 'Carbon Manager':{ver:'PV900SV200',date:'14 Mar 2025',notes:['Refreshed DEFRA 2025 and EPA eGRID emission factors.','Scope 3 category breakdown with share-of-total analysis.','Factor Groups can now be scoped by region and owner.']},
+ 'Carbon Strategy Planner':{ver:'PV900SV200',date:'14 Mar 2025',notes:['Net-zero pathway modeling with interim targets.','Offset and REC portfolio tracking.','Scenario comparison against SBTi trajectories.']}
+};
+function openMktPanel(name){
+  const r=MKT_REL[name]||{ver:'PV900SV200',date:'14 Mar 2025',notes:[]};
+  document.getElementById('mkt-title').textContent=name;
+  document.getElementById('mkt-sub').textContent=r.ver;
+  document.getElementById('mkt-body').innerHTML='<div class="rp-rtitle">Version '+escapeHtml(r.ver)+'</div><div class="rp-rmeta">Released '+escapeHtml(r.date)+' &middot; OneStream ESG</div><div class="rp-rhead">Release notes</div><ul class="rp-rlist">'+r.notes.map(n=>'<li>'+escapeHtml(n)+'</li>').join('')+'</ul>';
+  document.getElementById('mkt-scrim').classList.add('open');
+  const p=document.getElementById('mkt-panel'); p.classList.add('open'); p.setAttribute('aria-hidden','false');
+}
+function closeMktPanel(){ document.getElementById('mkt-scrim').classList.remove('open'); const p=document.getElementById('mkt-panel'); p.classList.remove('open'); p.setAttribute('aria-hidden','true'); }
+document.getElementById('mkt-close').addEventListener('click',closeMktPanel);
+document.getElementById('mkt-scrim').addEventListener('click',closeMktPanel);
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeMktPanel(); });
+function pageContent(parent,child){ if(parent==='Modules') return marketplaceHtml(child); if(parent==='Settings' && child==='Global Options') return globalOptionsHtml(); if(parent==='Reporting Manager' && child==='Definitions') return definitionsHtml(); if(parent==='Reporting Manager' && child==='Frameworks') return frameworksHtml(); return ''; }
+/* ── Reporting Manager ▸ Definitions (grid + detail panel; reuses homepage grid + DS) ── */
+const DEFS=[
+ {n:'BP_1_02',d:'Scope of consolidation of consolidated sustainability statement',it:'Narrative',fr:'12'},
+ {n:'BP_1_03',d:'Indication of subsidiary undertakings included in consolidation',it:'Narrative',fr:'12'},
+ {n:'BP_1_04',d:'Disclosure of extent to which sustainability statement covers value chain',it:'Narrative',fr:'12'},
+ {n:'BP_1_05',d:'Option to omit specific piece of information corresponding to intellectual property',it:'Narrative',fr:'12'},
+ {n:'BP_1_06',d:'Option allowed by Member State to omit disclosure of impending developments',it:'Narrative',fr:'12'},
+ {n:'BP_2_01',d:'Disclosure of definitions of medium- or long-term time horizons',it:'Narrative',fr:'12'},
+ {n:'BP_2_02',d:'Disclosure of reasons for applying different definitions of time horizons',it:'Narrative',fr:'12'},
+ {n:'BP_2_03',d:'Disclosure of metrics that include value chain data estimated using indirect sources',it:'Narrative',fr:'12'},
+ {n:'BP_2_04',d:'Description of basis for preparation of metrics that include value chain data',it:'Narrative',fr:'12'},
+ {n:'BP_2_05',d:'Description of resulting level of accuracy of metrics that include value chain data',it:'Narrative',fr:'12'},
+ {n:'BP_2_06',d:'Description of planned actions to improve accuracy in future periods',it:'Narrative',fr:'12'},
+ {n:'BP_2_08',d:'Disclosure of sources of measurement uncertainty',it:'Narrative',fr:'12'},
+ {n:'BP_1_01',d:'Basis for preparation of sustainability statement',it:'Narrative',fr:'12'},
+ {n:'BP_2_09',d:'Disclosure of assumptions, approximations and judgements',it:'Narrative',fr:'12'},
+ {n:'BP_2_10',d:'Explanation of changes in preparation and presentation of sustainability information',it:'Narrative',fr:'12'},
+ {n:'BP_2_11',d:'Adjustment of comparative information for one or more prior periods',it:'Narrative',fr:'12'},
+ {n:'BP_2_12',d:'Disclosure of difference between figures disclosed in preceding period and revised figures',it:'Numerical',fr:'1-12'},
+ {n:'BP_2_13',d:'Disclosure of nature of prior period material errors',it:'Narrative',fr:'12'}
+];
+function defCell(content,flex,center){ return '<div class="cell" style="flex:'+flex+(center?';justify-content:center':'')+'">'+content+'</div>'; }
+function defRow(d,i){
+  return '<div class="grid-row" data-i="'+i+'">'
+   +defCell('<input type="checkbox" style="accent-color:var(--accent-blue)">','0 0 34px',true)
+   +defCell(escapeHtml(d.n),'0 0 92px')+defCell(escapeHtml(d.d),'1 1 0')+defCell('General Disclosures','0 0 130px')
+   +defCell(escapeHtml(d.it),'0 0 92px')+defCell(escapeHtml(d.fr),'0 0 74px')
+   +defCell('<input type="checkbox" style="accent-color:var(--accent-blue)">','0 0 120px',true)+'</div>';
+}
+function dSel(label,options,value,id){
+  const opts=options.map(o=>'<option'+(o===value?' selected':'')+'>'+escapeHtml(o)+'</option>').join('');
+  return '<div class="d-field"><div class="d-label">'+label+'</div><div class="d-select"><select id="'+id+'">'+opts+'</select><span class="dchev">'+I.dchev+'</span></div></div>';
+}
+function defChk(id,label,checked){ return '<label style="display:flex;align-items:center;gap:9px;margin:16px 0;font-size:13px;color:var(--label)"><input type="checkbox" id="'+id+'"'+(checked?' checked':'')+' style="accent-color:var(--accent-blue)">'+label+'</label>'; }
+function definitionsHtml(){
+  const PENCIL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
+  const PLUS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg>';
+  const filters='<div style="display:flex;gap:18px;margin-bottom:14px">'
+    +'<div class="d-field" style="width:220px;margin-bottom:0"><div class="d-label">Categories</div><div class="d-select"><select><option>(All)</option><option>General Disclosures</option></select><span class="dchev">'+I.dchev+'</span></div></div>'
+    +'<div class="d-field" style="width:220px;margin-bottom:0"><div class="d-label">Status</div><div class="d-select"><select><option>Both</option><option>Active</option><option>Inactive</option></select><span class="dchev">'+I.dchev+'</span></div></div></div>';
+  const toolbar='<div style="display:flex;gap:22px;margin-bottom:12px">'
+    +'<button type="button" style="display:inline-flex;align-items:center;gap:7px;background:none;border:0;font-family:inherit;font-size:13px;color:var(--label);cursor:pointer"><span style="width:16px;height:16px;display:flex;color:var(--icon)">'+PENCIL+'</span>Categories</button>'
+    +'<button type="button" style="display:inline-flex;align-items:center;gap:7px;background:none;border:0;font-family:inherit;font-size:13px;color:var(--label);cursor:pointer"><span style="width:17px;height:17px;display:flex;color:var(--accent-blue)">'+PLUS+'</span>New</button></div>';
+  const head='<div class="grid-head">'
+    +defCell('<input type="checkbox" id="def-all" style="accent-color:var(--accent-blue)">','0 0 34px',true)
+    +defCell('Name','0 0 92px')+defCell('Definition','1 1 0')+defCell('Category','0 0 130px')
+    +defCell('Input Type','0 0 92px')+defCell('Frequency','0 0 74px')+defCell('Attachment Required','0 0 120px')+'</div>';
+  const detail='<aside class="detail def-detail" style="flex:0 0 360px;width:360px">'
+    +'<div class="d-title" id="def-title"></div>'
+    +'<div id="def-sub" style="font-size:13px;font-style:italic;color:var(--muted);margin-top:3px">External</div>'
+    +'<div class="d-tabs"><button class="d-tab active" type="button">General</button><button class="d-tab" type="button">Frameworks</button><button class="d-tab" type="button">Control Lists</button><button class="d-tab" type="button">Cube</button></div>'
+    +'<div class="d-sep"></div><div class="d-body">'
+      +'<div class="d-field"><div class="d-label">Name</div><input class="go-input" id="def-name" type="text"></div>'
+      +'<div class="d-field"><div class="d-label">Definition</div><input class="go-input" id="def-def" type="text"></div>'
+      +dSel('Categories',['General Disclosures','Environmental','Social','Governance'],'General Disclosures','def-cat')
+      +dSel('Input Type',['Narrative','Numerical'],'Narrative','def-it')
+      +'<div class="d-field"><div class="d-label">Frequency</div><input class="go-input" id="def-freq" type="text"></div>'
+      +defChk('def-active','Active',true)+defChk('def-attach','Attachment Required',false)+defChk('def-base','Baseline',false)+defChk('def-py','Prior Year',false)
+    +'</div><div class="d-foot" style="display:flex;gap:12px"><button class="btn btn-primary" type="button">Save</button><button class="btn btn-secondary" type="button">Cancel</button></div></aside>';
+  return filters+toolbar+'<div class="split"><section class="grid">'+head+'<div class="grid-body">'+DEFS.map(defRow).join('')+'</div></section>'+detail+'</div>';
+}
+function selectDef(i){
+  const d=DEFS[i]; if(!d) return;
+  pageSection.querySelectorAll('.grid-row').forEach(r=>r.classList.remove('selected'));
+  const row=pageSection.querySelector('.grid-row[data-i="'+i+'"]'); if(row) row.classList.add('selected');
+  const g=id=>pageSection.querySelector('#'+id);
+  if(g('def-title')) g('def-title').textContent=d.d;
+  if(g('def-name')) g('def-name').value=d.n;
+  if(g('def-def')) g('def-def').value=d.d;
+  if(g('def-freq')) g('def-freq').value=d.fr;
+  if(g('def-cat')) g('def-cat').value='General Disclosures';
+  if(g('def-it')) g('def-it').value=d.it;
+  if(g('def-active')) g('def-active').checked=true;
+}
+function wireDefinitions(){
+  const root=pageSection;
+  root.querySelectorAll('.grid-row').forEach(r=>r.addEventListener('click',e=>{ if(e.target.closest('input')) return; selectDef(+r.getAttribute('data-i')); }));
+  const all=root.querySelector('#def-all'); if(all) all.addEventListener('change',()=>{ root.querySelectorAll('.grid-body .grid-row .cell:first-child input[type=checkbox]').forEach(c=>c.checked=all.checked); });
+  root.querySelectorAll('.detail .d-tab').forEach(t=>t.addEventListener('click',()=>{ root.querySelectorAll('.detail .d-tab').forEach(x=>x.classList.remove('active')); t.classList.add('active'); }));
+  selectDef(0);
+  const first=root.querySelector('.grid-row[data-i="0"] .cell:first-child input[type=checkbox]'); if(first) first.checked=true;
+  if(window.__initTableMenus) window.__initTableMenus();
+}
+/* ── Reporting Manager ▸ Frameworks (per OneStream ESG: External/Internal, tree + table) ── */
+const FRAMEWORKS=[
+ {n:'BP-1_01',d:'Basis for preparation of sustainability statement',ut:'semi-narrative',mat:'Material',pk:'BP-1',src:'ESGeo'},
+ {n:'BP-1_02',d:'Scope of consolidation of consolidated sustainability statement is same as for financial statements',ut:'narrative',mat:'Material',pk:'BP-1',src:'ESGeo'},
+ {n:'BP-1_03',d:'Indication of subsidiary undertakings included in consolidation that are exempted from individual reporting',ut:'narrative',mat:'Material',pk:'BP-1',src:'ESGeo'},
+ {n:'BP-1_04',d:'Disclosure of extent to which sustainability statement covers upstream and downstream value chain',ut:'narrative',mat:'Material',pk:'BP-1',src:'ESGeo',gd:true},
+ {n:'BP-1_05',d:'Option to omit specific piece of information corresponding to intellectual property, know-how or innovation',ut:'semi-narrative',mat:'Material',pk:'BP-1',src:'ESGeo'},
+ {n:'BP-1_06',d:'Option allowed by Member State to omit disclosure of impending developments or matters in negotiation',ut:'semi-narrative',mat:'Material',pk:'BP-1',src:'ESGeo'},
+ {n:'BP-2_01',d:'Disclosure of definitions of medium- or long-term time horizons',ut:'narrative',mat:'Material',pk:'BP-2',src:'ESGeo'},
+ {n:'BP-2_02',d:'Disclosure of reasons for applying different definitions of time horizons',ut:'narrative',mat:'Material',pk:'BP-2',src:'ESGeo'},
+ {n:'BP-2_03',d:'Disclosure of metrics that include value chain data estimated using indirect sources',ut:'narrative',mat:'Material',pk:'BP-2',src:'ESGeo'},
+ {n:'BP-2_04',d:'Description of basis for preparation of metrics that include value chain data estimated using indirect sources',ut:'narrative',mat:'Material',pk:'BP-2',src:'ESGeo'},
+ {n:'BP-2_05',d:'Description of resulting level of accuracy of metrics that include value chain data estimated using indirect sources',ut:'narrative',mat:'Material',pk:'BP-2',src:'ESGeo'},
+ {n:'BP-2_06',d:'Description of planned actions to improve accuracy in future of metrics that include value chain data',ut:'narrative',mat:'Material',pk:'BP-2',src:'ESGeo'},
+ {n:'BP-2_07_0A',d:'Disclosure of quantitative metrics and monetary amounts disclosed that are subject to high measurement uncertainty',ut:'narrative',mat:'Material',pk:'BP-2',src:'ESGeo'},
+ {n:'BP-2_07_0B',d:'Disclosure of quantitative metrics and monetary amounts disclosed that are subject to high measurement uncertainty',ut:'numerical',mat:'Material',pk:'BP-2',src:'ESGeo'},
+ {n:'BP-2_08',d:'Disclosure of sources of measurement uncertainty',ut:'narrative',mat:'Material',pk:'BP-2',src:'ESGeo'},
+ {n:'BP-2_09',d:'Disclosure of assumptions, approximations and judgements made in measurement',ut:'narrative',mat:'Material',pk:'BP-2',src:'ESGeo'}
+];
+const FW_TOPICS=['ESRS 2 - GENERAL DISCLOSURE','ESRS E1 - CLIMATE CHANGE','ESRS E2 - POLLUTION','ESRS E3 - WATER AND MARINE RESOURCES','ESRS E4 - BIODIVERSITY AND ECOSYSTEMS','ESRS E5 - RESOURCE USE AND CIRCULAR ECONOMY','ESRS G1 - BUSINESS CONDUCT','ESRS S1 - OWN WORKFORCE','ESRS S2 - WORKERS IN THE VALUE CHAIN','ESRS S3 - AFFECTED COMMUNITIES','ESRS S4 - CONSUMERS AND END-USERS'];
+const FW_TOPIC_KIDS={'ESRS 2 - GENERAL DISCLOSURE':['BP-1 - General basis for preparation of sustainability statement','BP-2 - Disclosures in relation to specific circumstances','GOV-1 - The role of the administrative, management and supervisory bodies','GOV-2 - Information provided to and sustainability matters addressed','GOV-3 - Integration of sustainability-related performance in incentive schemes','GOV-4 - Statement on due diligence','GOV-5 - Risk management and internal controls over sustainability reporting','IRO-1 - Description of the process to identify and assess material impacts, risks and opportunities','IRO-2 - Disclosure Requirements in ESRS covered by the sustainability statement','MDR-A - Actions and resources in relation to material sustainability matters','MDR-M - Metrics in relation to material sustainability matters','MDR-P - Policies adopted to manage material sustainability matters','MDR-T - Tracking effectiveness of policies and actions through targets']};
+const ODS={
+ add:'<svg viewBox="0 0 20 20" fill="none"><path d="M11.0408 8.95921H14.4966V11.0408H11.0408V14.4966H8.95921V11.0408H5.50336V8.95921H8.95921V5.50336H11.0408V8.95921Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10 1.25C14.8324 1.25 18.75 5.16764 18.75 10C18.75 14.8324 14.8324 18.75 10 18.75C5.16764 18.75 1.25 14.8324 1.25 10C1.25 5.16764 5.16764 1.25 10 1.25ZM10 3.33158C6.317 3.33158 3.33158 6.317 3.33158 10C3.33158 13.683 6.317 16.6684 10 16.6684C13.683 16.6684 16.6684 13.683 16.6684 10C16.6684 6.317 13.683 3.33158 10 3.33158Z" fill="currentColor"/></svg>',
+ del:'<svg viewBox="0 0 16 16" fill="none"><path d="M4.625 2.75H2V4.5H14.25V2.75H11.625V1H4.625V2.75Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M3.75 6.25H12.5V15H3.75V6.25ZM7.25 8.875H9V12.375H7.25V8.875Z" fill="currentColor"/></svg>',
+ download:'<svg viewBox="0 0 16 16" fill="none"><path d="M12.375 7.125H9.75V1H6.25V7.125L3.625 7.125V8L8 12.375L12.375 8V7.125Z" fill="currentColor"/><path d="M13.25 13.25H2.75V15H13.25V13.25Z" fill="currentColor"/></svg>',
+ insert:'<svg viewBox="0 0 16 16" fill="none"><path d="M1.5 14.0683V8.86833H8.43333V14.0683H1.5ZM1.5 7.135V1.935L14.5 1.935V7.135H1.5ZM3.23333 12.335H6.7V10.6017H3.23333V12.335Z" fill="currentColor"/><path d="M12.55 8.86833H11.25V10.8183H9.3V12.1183H11.25V14.0683H12.55V12.1183H14.5V10.8183H12.55V8.86833Z" fill="currentColor"/></svg>',
+ check:'<svg viewBox="0 0 16 16" fill="none"><path d="M15 4.38977L13.2902 2.68L6.06561 9.90462L2.70977 6.54877L1 8.25855L6.06561 13.3242L15 4.38977Z" fill="currentColor"/></svg>',
+ help:'<svg viewBox="0 0 16 16" fill="none"><path d="M7.11494 12.2398V13.9998H14.0345V12.0798H15V7.93582H14.0214L13.9853 7.28938L13.9841 7.28033C13.8839 6.52767 13.6608 5.82785 13.314 5.18269C12.9683 4.53955 12.5269 3.98084 11.9899 3.50813C11.4533 3.03577 10.8443 2.66652 10.1642 2.40048C9.48063 2.13306 8.7586 1.99982 8 1.99982C7.24139 1.99982 6.51692 2.13306 5.82834 2.40024C5.14208 2.66652 4.53207 3.03905 4.00008 3.51789C3.46971 3.99527 3.02922 4.55555 2.67869 5.19727C2.32556 5.84377 2.10472 6.54528 2.01545 7.29978L2.01459 7.307L1.97879 7.93582H1V12.0798H3.73563V7.93582C3.73563 6.75039 4.14813 5.75309 4.97643 4.92952C5.80473 4.10596 6.80776 3.69582 8 3.69582C9.19224 3.69582 10.1953 4.10596 11.0236 4.92952C11.8519 5.75309 12.2644 6.75039 12.2644 7.93582V12.2398H7.11494Z" fill="currentColor"/></svg>'
+};
+const FW_CHECK=ODS.check;
+const FW_INT=[
+ {n:'Test',p:'',d:'Test Top Member',ut:'Numerical',uom:'',mat:true,ip:true},
+ {n:'Test_Revenue',p:'Test',d:'Total revenue for the period',ut:'Numerical',uom:'USD',mat:true,ip:false},
+ {n:'Test_Headcount',p:'Test',d:'Total headcount',ut:'Numerical',uom:'FTE',mat:true,ip:false},
+ {n:'Test_Emissions',p:'Test',d:'Scope 1 emissions',ut:'Numerical',uom:'tCO2e',mat:true,ip:false},
+ {n:'Test_Policy',p:'Test',d:'Climate policy narrative',ut:'Narrative',uom:'',mat:false,ip:false}
+];
+function fwIntRow(f,i){
+  return '<div class="grid-row" data-i="'+i+'">'
+   +defCell(escapeHtml(f.n),'0 0 140px')+defCell(escapeHtml(f.p),'0 0 120px')+defCell(escapeHtml(f.d),'1 1 0')
+   +defCell(escapeHtml(f.ut),'0 0 120px')+defCell(escapeHtml(f.uom),'0 0 130px')
+   +defCell('<input type="checkbox"'+(f.mat?' checked':'')+' style="accent-color:var(--accent-blue)">','0 0 90px',true)
+   +defCell('<input type="checkbox"'+(f.ip?' checked':'')+' style="accent-color:var(--accent-blue)">','0 0 90px',true)+'</div>';
+}
+function fwTBtn(icon){ return '<button type="button" style="width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;background:none;border:0;color:var(--icon);cursor:pointer;padding:0"><span style="width:17px;height:17px;display:flex">'+icon+'</span></button>'; }
+let fwView='External';
+function fwRow(f,i){
+  return '<div class="grid-row" data-i="'+i+'">'
+   +defCell('<input type="checkbox" style="accent-color:var(--accent-blue)">','0 0 34px',true)
+   +defCell(escapeHtml(f.n),'0 0 95px')+defCell(escapeHtml(f.d),'1 1 0')+defCell(escapeHtml(f.ut),'0 0 100px')
+   +defCell(escapeHtml(f.mat),'0 0 88px')+defCell(escapeHtml(f.pk),'0 0 110px')
+   +defCell(f.gd?'<span style="color:#16794a;display:flex">'+FW_CHECK+'</span>':'','0 0 70px',true)
+   +defCell(escapeHtml(f.src),'0 0 80px')+'</div>';
+}
+function fwVBtn(icon,label,color,tip){ return '<button type="button" class="fw-act" data-tip="'+escapeHtml(tip||label)+'" style="display:inline-flex;flex-direction:column;align-items:center;gap:3px;background:none;border:0;font-family:inherit;font-size:12px;color:var(--label);cursor:pointer;padding:0"><span class="fw-ic" style="width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:6px;color:'+(color||'var(--icon)')+'"><span style="width:20px;height:20px;display:flex">'+icon+'</span></span>'+escapeHtml(label)+'</button>'; }
+function fwTree(){
+  const CH='<svg viewBox="0 0 8 8" width="9" height="9"><path d="M2 1l3 3-3 3" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>';
+  var h='<div class="fwt-row" style="display:flex;align-items:center;gap:8px;height:32px;padding:0 10px;cursor:pointer"><span class="fwt-c" style="display:flex;color:var(--muted);transform:rotate(90deg)">'+CH+'</span><span style="font-size:13px;font-weight:700;color:var(--label)">ESRS</span></div><div class="fwt-g">';
+  FW_TOPICS.forEach(function(t){ var kids=FW_TOPIC_KIDS[t]||[];
+    h+='<div class="fwt-row" style="display:flex;align-items:center;gap:8px;height:32px;padding:0 10px 0 26px;cursor:pointer"><span class="fwt-c" style="display:flex;color:var(--muted)">'+CH+'</span><span style="font-size:13px;font-weight:700;color:var(--label);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+escapeHtml(t)+'</span></div><div class="fwt-g" style="display:none">';
+    kids.forEach(function(k){ h+='<div style="height:30px;display:flex;align-items:center;padding:0 10px 0 48px;font-size:13px;color:var(--label);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer">'+escapeHtml(k)+'</div>'; });
+    h+='</div>';
+  });
+  return h+'</div>';
+}
+function fwR1(){
+  const dd=function(label,opts){ return '<div class="d-field" style="width:200px;margin-bottom:0"><div class="d-label">'+label+'</div><div class="d-select"><select>'+opts+'</select><span class="dchev">'+I.dchev+'</span></div></div>'; };
+  return '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px"><div style="display:flex;align-items:flex-end;gap:22px">'+fwVBtn(ODS.add,'New')+dd('Framework','<option>ESRS</option><option>GRI</option><option>TCFD</option>')+dd('Materiality','<option>Both</option><option>Material</option><option>Not Material</option>')+'</div><div style="font-size:12px;color:var(--muted);padding-top:6px">Last Updated 7/29/2026 by ESG_AlexKahan</div></div>';
+}
+function fwExternalHtml(){
+  const INFO='<svg viewBox="0 0 20 20" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M18.75 10C18.75 14.8325 14.8325 18.75 10 18.75C5.16751 18.75 1.25 14.8325 1.25 10C1.25 5.16751 5.16751 1.25 10 1.25C14.8325 1.25 18.75 5.16751 18.75 10ZM8.90625 10H7.8125V7.8125H11.0938V13.2812H12.1875V15.4688H8.90625V10ZM11.0938 6.71875V4.53125H8.90625V6.71875H11.0938Z" fill="currentColor"/></svg>';
+  const GUIDE='<svg viewBox="0 0 20 20" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 18.75C14.8325 18.75 18.75 14.8325 18.75 10C18.75 5.16751 14.8325 1.25 10 1.25C5.16751 1.25 1.25 5.16751 1.25 10C1.25 14.8325 5.16751 18.75 10 18.75ZM10 6.71875C9.09391 6.71875 8.35938 7.45328 8.35938 8.35938V8.90625H6.17188V8.35938C6.17188 6.24516 7.88578 4.53125 10 4.53125C12.1142 4.53125 13.8281 6.24516 13.8281 8.35938C13.8281 10.4736 12.1142 12.1875 10 12.1875H8.90625V10H10C10.9061 10 11.6406 9.26547 11.6406 8.35938C11.6406 7.45328 10.9061 6.71875 10 6.71875ZM11.0938 13.2812V15.4688H8.90625V13.2812H11.0938Z" fill="currentColor"/></svg>';
+  const MAT='<svg viewBox="0 0 20 20" fill="none"><path d="M13.7804 6.45944L15.0803 7.75934L8.28768 14.5519L4.43642 10.7007L5.73631 9.40077L8.28768 11.9521L13.7804 6.45944Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10 1.25C5.16751 1.25 1.25 5.16751 1.25 10C1.25 14.8325 5.16751 18.75 10 18.75C14.8325 18.75 18.75 14.8325 18.75 10C18.75 5.16751 14.8325 1.25 10 1.25ZM3.57659 10C3.57659 6.45245 6.45245 3.57659 10 3.57659C13.5476 3.57659 16.4234 6.45245 16.4234 10C16.4234 13.5476 13.5476 16.4234 10 16.4234C6.45245 16.4234 3.57659 13.5476 3.57659 10Z" fill="currentColor"/></svg>';
+  const NOTMAT='<svg viewBox="0 0 20 20" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 1.25C8.79207 1.25 7.65291 1.47945 6.58562 1.94C5.52421 2.398 4.59791 3.02108 3.80949 3.80949C3.02108 4.59791 2.398 5.52421 1.94 6.58562C1.47945 7.65291 1.25 8.79207 1.25 10C1.25 11.2079 1.47945 12.3471 1.94 13.4144C2.398 14.4758 3.02108 15.4021 3.80949 16.1905C4.59791 16.9789 5.52421 17.602 6.58562 18.06C7.65291 18.5205 8.79207 18.75 10 18.75C11.2079 18.75 12.3471 18.5205 13.4144 18.06C14.4758 17.602 15.4021 16.9789 16.1905 16.1905C16.9789 15.4021 17.602 14.4758 18.06 13.4144C18.5205 12.3471 18.75 11.2079 18.75 10C18.75 8.79207 18.5205 7.65291 18.06 6.58562C17.602 5.52421 16.9789 4.59791 16.1905 3.80949C15.4021 3.02108 14.4758 2.398 13.4144 1.94C12.3471 1.47945 11.2079 1.25 10 1.25ZM7.90411 3.89861C8.57515 3.66374 9.27326 3.5461 10 3.5461C11.8076 3.5461 13.3278 4.16994 14.5789 5.42108C15.8301 6.67221 16.4539 8.19235 16.4539 10C16.4539 10.7267 16.3363 11.4249 16.1014 12.0959C15.9038 12.6606 15.6327 13.1871 15.2878 13.6762L6.32379 4.71221C6.81286 4.36728 7.33942 4.09625 7.90411 3.89861ZM3.89861 7.90411C4.09625 7.33942 4.36728 6.81286 4.71221 6.32379L13.6762 15.2878C13.1871 15.6327 12.6606 15.9038 12.0959 16.1014C11.4249 16.3363 10.7267 16.4539 10 16.4539C8.19235 16.4539 6.67221 15.8301 5.42108 14.5789C4.16994 13.3278 3.5461 11.8076 3.5461 10C3.5461 9.27326 3.66374 8.57515 3.89861 7.90411Z" fill="currentColor"/></svg>';
+  const r2='<div style="display:flex;align-items:flex-end;margin-bottom:14px"><div style="flex:0 0 340px">'+fwVBtn(INFO,'Info',null,'Show Info')+'</div><div style="display:flex;align-items:flex-end;gap:24px">'+fwVBtn(GUIDE,'Guidance',null,'Show KPI Guidance')+fwVBtn(MAT,'Material',null,'Show Material')+fwVBtn(NOTMAT,'Not Material',null,'Show Not Material')+'</div></div>';
+  const head='<div class="grid-head">'
+    +defCell('<input type="checkbox" id="fw-all" style="accent-color:var(--accent-blue)">','0 0 34px',true)
+    +defCell('Name','0 0 95px')+defCell('Description','1 1 0')+defCell('Unit Type','0 0 100px')
+    +defCell('Materiality','0 0 88px')+defCell('Parent KPI Code','0 0 110px')+defCell('Guidance','0 0 70px')+defCell('Source','0 0 80px')+'</div>';
+  return r2+'<div style="display:flex;gap:20px;flex:1 1 auto;min-height:0"><aside class="detail" id="fw-tree" style="flex:0 0 320px;width:auto;min-height:0;padding:8px 0">'+fwTree()+'</aside><section class="grid" style="flex:1 1 auto;min-height:0">'+head+'<div class="grid-body">'+FRAMEWORKS.map(fwRow).join('')+'</div></section></div>';
+}
+function fwInternalHtml(){
+  const tb='<div style="display:flex;align-items:flex-end;gap:24px;margin-bottom:14px">'+fwVBtn(ODS.add,'Add')+fwVBtn(ODS.del,'Delete')+fwVBtn(ODS.download,'Download')+fwVBtn(ODS.insert,'Insert')+'</div>';
+  const head='<div class="grid-head">'+defCell('Name','0 0 140px')+defCell('Parent','0 0 120px')+defCell('Description','1 1 0')+defCell('Unit Type','0 0 120px')+defCell('Unit of Measure','0 0 130px')+defCell('Material','0 0 90px')+defCell('Is Parent','0 0 90px')+'</div>';
+  const detail='<aside class="detail def-detail" style="flex:0 0 360px;width:360px"><div class="d-title" id="fwi-title"></div><div style="font-size:13px;color:var(--muted);margin:8px 0 2px">General</div><div class="d-sep"></div><div class="d-body"><div class="d-field"><div class="d-label">Name</div><input class="go-input" id="fwi-name" type="text"></div><div class="d-field"><div class="d-label">Parent</div><input class="go-input" id="fwi-parent" type="text"></div><div class="d-field"><div class="d-label">Description</div><input class="go-input" id="fwi-desc" type="text"></div>'+dSel('Unit Type',['Numerical','Narrative','Semi-narrative'],'Numerical','fwi-ut')+dSel('Unit of Measure',['','USD','FTE','tCO2e','MWh'],'','fwi-uom')+defChk('fwi-mat','Is Material',true)+'</div><div class="d-foot" style="display:flex;gap:12px"><button class="btn btn-primary" type="button">Save</button><button class="btn btn-secondary" type="button">Cancel</button></div></aside>';
+  return tb+'<div style="display:flex;gap:20px;flex:1 1 auto;min-height:0"><section class="grid" style="flex:1 1 auto;min-height:0">'+head+'<div class="grid-body">'+FW_INT.map(fwIntRow).join('')+'</div></section>'+detail+'</div>';
+}
+function fwViewHtml(){ return fwView==='Internal'?fwInternalHtml():fwExternalHtml(); }
+function frameworksHtml(){
+  const tabs='<div class="d-tabs" style="margin-top:0;margin-bottom:16px"><button class="d-tab'+(fwView==='External'?' active':'')+'" type="button">External</button><button class="d-tab'+(fwView==='Internal'?' active':'')+'" type="button">Internal</button></div>';
+  return tabs+fwR1()+'<div id="fw-view" style="display:flex;flex-direction:column;flex:1 1 auto;min-height:0">'+fwViewHtml()+'</div>';
+}
+function selectFwInt(i){
+  const f=FW_INT[i]; if(!f) return;
+  pageSection.querySelectorAll('.grid-row').forEach(r=>r.classList.remove('selected'));
+  var row=pageSection.querySelector('.grid-row[data-i="'+i+'"]'); if(row) row.classList.add('selected');
+  var g=id=>pageSection.querySelector('#'+id);
+  if(g('fwi-title')) g('fwi-title').textContent=f.n;
+  if(g('fwi-name')) g('fwi-name').value=f.n;
+  if(g('fwi-parent')) g('fwi-parent').value=f.p;
+  if(g('fwi-desc')) g('fwi-desc').value=f.d;
+  if(g('fwi-ut')) g('fwi-ut').value=f.ut;
+  if(g('fwi-uom')) g('fwi-uom').value=f.uom;
+  if(g('fwi-mat')) g('fwi-mat').checked=f.mat;
+}
+function wireFwView(){
+  const root=pageSection;
+  if(fwView==='Internal'){
+    root.querySelectorAll('.grid-row').forEach(function(r){ r.addEventListener('click',function(e){ if(e.target.closest('input')) return; selectFwInt(+r.getAttribute('data-i')); }); });
+    selectFwInt(0);
+  } else {
+    root.querySelectorAll('.fwt-row').forEach(function(r){ r.addEventListener('click',function(){ var g=r.nextElementSibling; if(!g||!g.classList.contains('fwt-g')) return; var open=g.style.display!=='none'; g.style.display=open?'none':''; var c=r.querySelector('.fwt-c'); if(c) c.style.transform=open?'':'rotate(90deg)'; }); });
+    root.querySelectorAll('.grid-row').forEach(function(r){ r.addEventListener('click',function(e){ if(e.target.closest('input')) return; root.querySelectorAll('.grid-row').forEach(x=>x.classList.remove('selected')); r.classList.add('selected'); }); });
+    var all=root.querySelector('#fw-all'); if(all) all.addEventListener('change',function(){ root.querySelectorAll('.grid-body .grid-row .cell:first-child input[type=checkbox]').forEach(c=>c.checked=all.checked); });
+  }
+  if(window.__initTableMenus) window.__initTableMenus();
+}
+function wireFrameworks(){
+  pageSection.querySelectorAll('.d-tabs .d-tab').forEach(function(t){ t.addEventListener('click',function(){ pageSection.querySelectorAll('.d-tabs .d-tab').forEach(x=>x.classList.remove('active')); t.classList.add('active'); fwView=t.textContent.trim(); var v=document.getElementById('fw-view'); if(v){ v.innerHTML=fwViewHtml(); wireFwView(); } }); });
+  wireFwView();
+}
+/* ── Settings ▸ Global Options form (DS inputs) ── */
+function goSelect(label, options, value){
+  const opts=(options||['']).map(o=>'<option'+(o===value?' selected':'')+'>'+escapeHtml(o)+'</option>').join('');
+  return '<div class="go-field"><div class="go-label">'+escapeHtml(label)+'</div><div class="go-select"><select>'+opts+'</select><span class="go-chev">'+I.dchev+'</span></div></div>';
+}
+function globalOptionsHtml(){
+  const CHIPX='<svg viewBox="0 0 16 16" fill="none"><path d="M5 5l6 6M11 5l-6 6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>';
+  const CLEARX='<svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="#737373" stroke-width="1.3" stroke-linecap="round"/></svg>';
+  const years=['2025','2030','2050'].map(y=>'<span class="go-chip">'+y+'<span class="x" role="button" aria-label="Remove '+y+'">'+CHIPX+'</span></span>').join('');
+  return '<div class="go-form">'
+    + goSelect('ESG Solution Administrator', ['','ESG Admins','Global Admins'], '')
+    + goSelect('Advanced Contract Data Entry', ['','Enabled','Disabled'], '')
+    + goSelect('Reporting Currency', ['','USD','EUR','GBP'], '')
+    + goSelect('FX Rate', ['','Period End','Average','Historical'], '')
+    + goSelect('Cube', ['','ESG','Financial'], '')
+    + goSelect('Control List Scenario Type', ['(Default)','Actual','Budget','Forecast'], '(Default)')
+    + goSelect('Baseline Year', ['','2020','2021','2022','2023'], '')
+    + '<div class="go-field"><div class="go-label">Milestone Years</div><div class="go-chips"><div class="go-chipwrap">'+years+'</div><span class="clear-all" role="button" aria-label="Clear all">'+CLEARX+'</span></div></div>'
+    + '<div class="go-field"><div class="go-label">Milestone Scenario</div><div class="go-scenario"><input class="go-input" type="text"><button class="go-picker" type="button" aria-label="Choose">&hellip;</button></div></div>'
+    + '<div class="go-actions"><button class="btn btn-primary" type="button">Save</button><button class="btn btn-secondary" type="button">Cancel</button></div>'
+    + '</div>';
+}
+function wireGlobalOptions(){
+  const form=pageSection.querySelector('.go-form'); if(!form) return;
+  form.querySelectorAll('.go-chip .x').forEach(x=>x.addEventListener('click',()=>x.closest('.go-chip').remove()));
+  const clr=form.querySelector('.clear-all'); if(clr) clr.addEventListener('click',()=>{ const w=form.querySelector('.go-chipwrap'); if(w) w.innerHTML=''; });
+}
+function leafPage(parent){ return `<div class="page-head"><h1>${escapeHtml(parent)}</h1></div>`; }   // blank for now
+/* shared sample pools + page data */
+const _own=['Alex Kahan','Jordan Lee','Sam Rivera','Priya Nair','Chris Doyle','Morgan Fox','Dana Wu','Ravi Patel'];
+const _dt=['Jan 12, 2026','Feb 03, 2026','Feb 20, 2026','Mar 08, 2026','Mar 29, 2026','Apr 15, 2026','May 06, 2026'];
+const _st=['Not Started','In Process','Submitted','Completed'];
+const _scope=['Scope 1','Scope 2','Scope 3'];
+const _fw=['GRI','TCFD','SASB','CDP','CSRD','ISSB'];
+const _region=['EMEA','Americas','APAC','Global'];
+const _sector=['Energy','Manufacturing','Transport','Buildings','Agriculture'];
+function P(a,i){return a[i%a.length];}
+const PAGE_DATA={
+ 'Reports|Carbon Calculation':{kind:'grid',cols:['Calculation','Scope','Period','Status','Owner'],n:7,gen:i=>['GHG Calculation '+(i+1),P(_scope,i),P(['Q1','Q2','Q3','Q4'],i)+' 2026',P(_st,i+1),P(_own,i)]},
+ 'Reports|Reporting & Compliance':{kind:'grid',cols:['Report','Framework','Due','Status','Owner'],n:7,gen:i=>[P(_fw,i)+' Disclosure',P(_fw,i),P(_dt,i),P(_st,i),P(_own,i+2)]},
+ 'Reports|EU Taxonomy':{kind:'grid',cols:['Activity','Objective','Eligible','Aligned','Status'],n:7,gen:i=>['Activity '+(i+1),P(['Climate mitigation','Climate adaptation','Water','Circular economy'],i),P(['Yes','No'],i),P(['Yes','No','Partial'],i),P(_st,i)]},
+ 'EU Taxonomy|Overview':{kind:'overview',kpis:[{label:'Activities',color:'#6e26c1',num:'42'},{label:'Eligible',color:'#0a5dff',num:'31',pct:'74%'},{label:'Aligned',color:'#009858',num:'18',pct:'43%'},{label:'Non-eligible',color:'#c4c4c4',num:'11',pct:'26%'}],cols:['Objective','Activities','Aligned','Alignment %'],n:6,gen:i=>[P(['Climate change mitigation','Climate change adaptation','Water & marine','Circular economy','Pollution prevention','Biodiversity'],i),String(6+i),String(3+(i%4)),(30+i*7)+'%']},
+ 'EU Taxonomy|Financial Metrics':{kind:'grid',cols:['Metric','Turnover %','CapEx %','OpEx %','Period'],n:6,gen:i=>[P(['Revenue','Investments','Operating costs','R&D','Green bonds','Total'],i),(20+i*9)+'%',(10+i*7)+'%',(5+i*4)+'%','FY 2025']},
+ 'EU Taxonomy|Activities':{kind:'grid',cols:['Activity','Sector','Objective','Eligible','Aligned'],n:7,gen:i=>['Activity '+(i+1),P(_sector,i),P(['Mitigation','Adaptation','Water','Circular'],i),P(['Yes','No'],i),P(['Yes','No','Partial'],i+1)]},
+ 'EU Taxonomy|Objectives':{kind:'grid',cols:['Objective','Description','Activities','Alignment %'],n:6,gen:i=>[P(['Climate mitigation','Climate adaptation','Water & marine','Circular economy','Pollution','Biodiversity'],i),'Environmental objective under the EU Taxonomy',String(4+i),(35+i*8)+'%']},
+ 'Reporting Manager|Overview':{kind:'overview',kpis:[{label:'Frameworks',color:'#6e26c1',num:'6'},{label:'Disclosures',color:'#0a5dff',num:'184'},{label:'Complete',color:'#009858',num:'132',pct:'72%'},{label:'Open',color:'#c4c4c4',num:'52',pct:'28%'}],cols:['Framework','Disclosures','Complete','Status'],n:6,gen:i=>[P(_fw,i),String(20+i*6),String(12+i*5),P(_st,i)]},
+ 'Reporting Manager|Frameworks':{kind:'grid',cols:['Framework','Coverage','Disclosures','Status','Updated'],n:6,gen:i=>[P(_fw,i),P(['Full','Partial','Planned'],i),String(18+i*7),P(_st,i),P(_dt,i)]},
+ 'Reporting Manager|Definitions':{kind:'grid',cols:['Definition','Type','Unit','Scale','Status'],n:8,gen:i=>[P(['Scope 1 Emissions','Scope 2 Emissions','Energy Consumption','Water Withdrawal','Waste Generated','Renewable %','FTE Headcount','Revenue'],i),P(['Numeric','Percent','Currency','Text'],i),P(['tCO2e','kWh','m³','FTE','USD','%'],i),P(['Units','Thousands','Millions'],i),P(_st,i)]},
+ 'Carbon Manager|Overview':{kind:'overview',kpis:[{label:'Scope 1',color:'#6e26c1',num:'12,480'},{label:'Scope 2',color:'#0a5dff',num:'8,210'},{label:'Scope 3',color:'#f67d02',num:'41,900'},{label:'Total tCO2e',color:'#009858',num:'62,590'}],cols:['Category','Scope','Emissions tCO2e','Share %'],n:6,gen:i=>[P(['Stationary combustion','Mobile combustion','Purchased electricity','Business travel','Purchased goods','Waste'],i),P(_scope,i),String((3+i)*1200),(5+i*6)+'%']},
+ 'Carbon Manager|Factors':{kind:'grid',cols:['Factor','Source','Unit','Value','Year'],n:8,gen:i=>[P(['Natural gas','Diesel','Grid electricity','Petrol','District heating','Jet fuel','LPG','Coal'],i),P(['DEFRA','EPA','IEA','GHG Protocol'],i),'kgCO2e/'+P(['kWh','L','km','kg'],i),(0.18+i*0.07).toFixed(3),String(2024+(i%2))]},
+ 'Carbon Manager|Factor Groups':{kind:'grid',cols:['Group','Factors','Region','Owner'],n:6,gen:i=>[P(['Energy','Transport','Fugitive','Purchased goods','Waste','Water'],i)+' Factors',String(8+i*3),P(_region,i),P(_own,i)]},
+ 'Carbon Manager|Factor Sources':{kind:'grid',cols:['Source','Publisher','Year','Factors','Status'],n:6,gen:i=>[P(['DEFRA 2025','EPA eGRID','IEA Emission Factors','GHG Protocol','Ecoinvent','IPCC AR6'],i),P(['DEFRA','EPA','IEA','WRI','Ecoinvent','IPCC'],i),String(2023+(i%3)),String(40+i*12),P(_st,i)]},
+ 'Carbon Manager|Scope':{kind:'grid',cols:['Scope','Category','Emissions tCO2e','Share %'],n:6,gen:i=>[P(_scope,i),P(['Combustion','Electricity','Travel','Goods','Waste','Logistics'],i),String((2+i)*1500),(6+i*5)+'%']},
+ 'Carbon Manager|Contracts':{kind:'grid',cols:['Contract','Counterparty','Type','Start','End','Status'],n:6,gen:i=>['PPA-'+(2400+i),P(['GreenGrid Co','SolarWorks','WindCo','EnerGen','HydroPlus'],i),P(['REC','PPA','Offset','Carbon credit'],i),P(_dt,i),'Dec 31, 2027',P(_st,i)]},
+ 'Data Collection|Integrations':{kind:'grid',cols:['Integration','Type','Status','Last Sync','Owner'],n:6,gen:i=>[P(['SAP','Workday','Salesforce','Snowflake','Azure','NetSuite'],i),P(['ERP','HR','CRM','Warehouse','Cloud','ERP'],i),P(['Connected','Error','Syncing','Disabled'],i),P(_dt,i),P(_own,i)]},
+ 'Data Collection|Sites':{kind:'grid',cols:['Site','Region','Type','Preparer','Status'],n:7,gen:i=>[P(['London HQ','Berlin Plant','Austin Office','Singapore DC','São Paulo','Toronto','Mumbai'],i),P(_region,i),P(['Office','Plant','Data Center','Warehouse'],i),P(_own,i),P(_st,i)]},
+ 'Data Collection|Profiles':{kind:'grid',cols:['Profile','Sites','Forms','Owner','Status'],n:6,gen:i=>[P(['Energy Preparer','Emissions Lead','Water Steward','Waste Coordinator','Social Data','Governance'],i),String(2+i),String(3+i%4),P(_own,i),P(_st,i)]},
+ 'Data Collection|Control Lists':{kind:'grid',cols:['List','Items','Used By','Updated'],n:6,gen:i=>[P(['Units of Measure','Emission Scopes','Fuel Types','Regions','Frameworks','Cost Centers'],i),String(6+i*4),(2+i)+' forms',P(_dt,i)]},
+ 'Data Collection|Collection Points':{kind:'grid',cols:['Point','Site','Metric','Frequency','Status'],n:7,gen:i=>['CP-'+(100+i),P(['London HQ','Berlin Plant','Austin Office','Singapore DC'],i),P(['Electricity','Gas','Water','Waste','Fuel','Travel'],i),P(['Monthly','Quarterly','Annual'],i),P(_st,i)]},
+ 'Settings|Global Options':{kind:'form',fields:[{label:'Default unit',type:'select',options:['tCO2e','kgCO2e','MWh']},{label:'Fiscal year start',type:'select',options:['January','April','July','October']},{label:'Decimal precision',type:'input',value:'2'},{label:'Locale',type:'select',options:['English (US)','English (UK)','Deutsch','Français']}]},
+ 'Settings|Security':{kind:'grid',cols:['Role','Members','Scope','Permissions'],n:6,gen:i=>[P(['Administrator','Preparer','Reviewer','Approver','Auditor','Viewer'],i),String(2+i*2),P(['Global','Region','Site'],i),P(['Full','Read/Write','Read only'],i)]},
+ 'Settings|Logic':{kind:'form',fields:[{label:'Business rule',type:'textarea',value:'IF status = "Submitted" AND reviewer_signoff = true\n  THEN advance to "Approved"\nELSE keep "In Process"'},{label:'Run schedule',type:'select',options:['On submit','Nightly','Manual']}]},
+ 'Settings|Uninstall':{kind:'danger'}
+};
+
+// collapse
+document.getElementById('collapse').innerHTML=I.collapse;
+document.getElementById('collapse').addEventListener('click',()=>{
+  const app=document.getElementById('app'); app.classList.toggle('nav-min');
+  if(!app.classList.contains('nav-min')){   // re-expanded: recompute open-group heights (children were hidden on the rail)
+    document.querySelectorAll('.nav-group').forEach(g=>{ const k=g.querySelector('.nav-children'); if(k) k.style.maxHeight = g.dataset.open==='true' ? k.scrollHeight+'px' : '0px'; });
+  }
+});
+
+/* ══ Icon hover tooltips — dark chips (rail always; side-nav only when minimized, since labels show when expanded) ══ */
+document.querySelectorAll('.nav-item:not(.nav-sub)').forEach(it=>{ const l=it.querySelector('.lbl'); if(l) it.setAttribute('data-tip', l.textContent.trim()); });
+(function(){
+  const tip=document.createElement('div'); tip.className='tip'; document.body.appendChild(tip);
+  var timer=null, curEl=null;
+  function show(el){
+    var t=el.getAttribute('data-tip'); if(!t) return;
+    if(el.classList.contains('nav-item') && !document.getElementById('app').classList.contains('nav-min')) return;   // expanded nav already shows labels
+    clearTimeout(timer);
+    timer=setTimeout(function(){
+      tip.textContent=t; var r=el.getBoundingClientRect();
+      if(el.classList.contains('fw-act')){ tip.style.top=(r.bottom+6)+'px'; tip.style.left=(r.left+r.width/2)+'px'; tip.style.transform='translateX(-50%)'; }
+      else { tip.style.top=(r.top+r.height/2)+'px'; tip.style.left=(r.right+8)+'px'; tip.style.transform='translateY(-50%)'; }
+      tip.classList.add('show');
+    },250);
+  }
+  function hide(){ clearTimeout(timer); tip.classList.remove('show'); }
+  document.addEventListener('mouseover', function(e){ var el=e.target.closest('[data-tip]'); if(el){ if(el!==curEl){ curEl=el; show(el); } } else if(curEl){ curEl=null; hide(); } });
+  document.addEventListener('mousedown', function(){ curEl=null; hide(); });
+})();
+
+/* ══ Table header column menu (⋮) — sort + column tools ══ */
+(function(){
+  const IC={
+    dots:'<svg viewBox="0 0 16 16" fill="none"><path d="M8 11.25C8.89746 11.25 9.625 11.9775 9.625 12.875C9.625 13.7725 8.89746 14.5 8 14.5C7.10254 14.5 6.375 13.7725 6.375 12.875C6.375 11.9775 7.10254 11.25 8 11.25Z" fill="currentColor"/><path d="M8 6.375C8.89746 6.375 9.625 7.10254 9.625 8C9.625 8.89746 8.89746 9.625 8 9.625C7.10254 9.625 6.375 8.89746 6.375 8C6.375 7.10254 7.10254 6.375 8 6.375Z" fill="currentColor"/><path d="M9.625 3.125C9.625 2.22754 8.89746 1.5 8 1.5C7.10254 1.5 6.375 2.22754 6.375 3.125C6.375 4.02246 7.10254 4.75 8 4.75C8.89746 4.75 9.625 4.02246 9.625 3.125Z" fill="currentColor"/></svg>',
+    asc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V6M6 12l6-6 6 6"/></svg>',
+    desc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v13M6 12l6 6 6-6"/></svg>',
+    columns:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M9 4v16M15 4v16"/></svg>',
+    filter:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></svg>',
+    position:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M3 9h18M9 9v11"/></svg>',
+    chev:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>'
+  };
+  const pop=document.createElement('div'); pop.className='thm-pop'; pop.id='thm-pop';
+  pop.innerHTML=
+    '<button class="thm-item" data-act="asc"><span class="thm-ic">'+IC.asc+'</span>Sort Ascending</button>'+
+    '<button class="thm-item" data-act="desc"><span class="thm-ic">'+IC.desc+'</span>Sort Descending</button>'+
+    '<div class="thm-sep"></div>'+
+    '<button class="thm-item" data-act="columns"><span class="thm-ic">'+IC.columns+'</span>Columns<span class="thm-chev">'+IC.chev+'</span></button>'+
+    '<button class="thm-item" data-act="filter"><span class="thm-ic">'+IC.filter+'</span>Filter<span class="thm-chev">'+IC.chev+'</span></button>'+
+    '<button class="thm-item" data-act="position"><span class="thm-ic">'+IC.position+'</span>Set column position<span class="thm-chev">'+IC.chev+'</span></button>';
+  document.body.appendChild(pop);
+  let curGrid=null, curCol=0, curBtn=null;
+  function close(){ pop.classList.remove('open'); if(curBtn) curBtn.classList.remove('open'); curBtn=null; }
+  function open(btn, grid, col){
+    if(curBtn===btn && pop.classList.contains('open')){ close(); return; }
+    close(); curGrid=grid; curCol=col; curBtn=btn; btn.classList.add('open'); pop.classList.add('open');
+    const r=btn.getBoundingClientRect();
+    pop.style.top=(r.bottom+3)+'px';
+    pop.style.left=Math.min(r.left, window.innerWidth-pop.offsetWidth-8)+'px';
+  }
+  function sortGrid(grid, col, asc){
+    if(!grid) return; const body=grid.querySelector('.grid-body'); if(!body) return;
+    const rows=[].slice.call(body.querySelectorAll('.grid-row'));
+    rows.sort((a,b)=>{ const ta=((a.children[col]||{}).textContent||'').trim(), tb=((b.children[col]||{}).textContent||'').trim();
+      const na=parseFloat(ta.replace(/[^0-9.\-]/g,'')), nb=parseFloat(tb.replace(/[^0-9.\-]/g,''));
+      let c; if(!isNaN(na)&&!isNaN(nb)&&ta!==''&&tb!=='') c=na-nb; else c=ta.localeCompare(tb); return asc?c:-c; });
+    rows.forEach(r=>body.appendChild(r));
+  }
+  pop.addEventListener('click',e=>{ const it=e.target.closest('.thm-item'); if(!it) return; if(it.dataset.act==='asc'||it.dataset.act==='desc') sortGrid(curGrid,curCol,it.dataset.act==='asc'); close(); });
+  document.addEventListener('click',e=>{ if(!e.target.closest('#thm-pop') && !e.target.closest('.th-menu')) close(); });
+  window.addEventListener('resize',close);
+  function setColWidth(grid, idx, w){
+    var head=grid.querySelector('.grid-head'); if(head && head.children[idx]) head.children[idx].style.flex='0 0 '+w+'px';
+    grid.querySelectorAll('.grid-body .grid-row').forEach(function(r){ if(r.children[idx]) r.children[idx].style.flex='0 0 '+w+'px'; });
+  }
+  function startColResize(e, grid, cell, idx){
+    e.preventDefault(); e.stopPropagation();
+    var startX=e.clientX, startW=cell.getBoundingClientRect().width;
+    function mv(ev){ setColWidth(grid, idx, Math.max(48, Math.round(startW+(ev.clientX-startX)))); }
+    function up(){ document.removeEventListener('mousemove',mv); document.removeEventListener('mouseup',up); document.body.style.cursor=''; document.body.style.userSelect=''; }
+    document.addEventListener('mousemove',mv); document.addEventListener('mouseup',up); document.body.style.cursor='col-resize'; document.body.style.userSelect='none';
+  }
+  function initTableMenus(){
+    document.querySelectorAll('.grid-head').forEach(function(head){
+      var grid=head.closest('.grid'); var cells=head.querySelectorAll('.cell');
+      [].forEach.call(cells, function(cell,idx){
+        if(!cell.querySelector('.th-menu') && !cell.querySelector('input')){
+          cell.innerHTML='<span class="th-label">'+cell.textContent+'</span><button class="th-menu" type="button" aria-label="Column options">'+IC.dots+'</button>';
+          cell.querySelector('.th-menu').addEventListener('click',function(e){ e.stopPropagation(); open(e.currentTarget, grid, idx); });
+        }
+        if(!cell.querySelector('.col-resize') && idx<cells.length-1){
+          var rh=document.createElement('span'); rh.className='col-resize';
+          rh.addEventListener('mousedown', function(e){ startColResize(e, grid, cell, idx); });
+          cell.appendChild(rh);
+        }
+      });
+    });
+  }
+  window.__initTableMenus=initTableMenus;
+  initTableMenus();
+})();
+
+/* ══ Statuses (4) — order + accent color, matching Figma ══ */
+const STATUSES=[
+ {name:'Not Started', color:'#c4c4c4'},
+ {name:'In Process',  color:'#6e26c1'},
+ {name:'Submitted',   color:'#0a5dff'},
+ {name:'Completed',   color:'#009858'}
+];
+let activeFilter=null;   // default: Total selected (show all tasks)
+
+/* ══ KPI tiles — counts from the data; click a tile to filter the grid ══ */
+const kbox=document.getElementById('kpis');
+function renderKPIs(){
+  kbox.innerHTML='';
+  const total=TASKS.length;
+  // Total tile (leftmost, branded orange) — clears the filter (shows all)
+  const tot=document.createElement('div');
+  tot.className='kpi'+(activeFilter===null?' selected':'');
+  tot.style.setProperty('--accent','#f67d02');
+  tot.innerHTML=`<span class="bar"></span><div class="k-label">Total</div>`
+    +`<div class="k-row"><span class="k-num">${total}</span><span class="k-pct">100%</span></div>`;
+  tot.addEventListener('click',()=>{ activeFilter=null; renderKPIs(); renderRows(); });
+  kbox.appendChild(tot);
+  STATUSES.forEach(s=>{
+    const count=TASKS.filter(t=>t[0]===s.name).length;
+    const pct=Math.round(count/total*100)+'%';
+    const d=document.createElement('div');
+    d.className='kpi'+(activeFilter===s.name?' selected':'');
+    d.style.setProperty('--accent',s.color);
+    d.innerHTML=`<span class="bar"></span><div class="k-label">${s.name}</div>`
+      +`<div class="k-row"><span class="k-num">${count}</span><span class="k-pct">${pct}</span></div>`;
+    d.addEventListener('click',()=>{
+      activeFilter = (activeFilter===s.name) ? null : s.name;   // click again to clear
+      renderKPIs(); renderRows();
+    });
+    kbox.appendChild(d);
+  });
+}
+
+/* ══ Assigned tasks grid ══ */
+const SCOPES=['Scope 1 — Direct emissions','Scope 2 — Indirect (energy)','Scope 3 — Value chain'];
+const UNITS=['tCO2e','kWh','m³','MWh'];
+const TASKS=[
+ ['In Process','Climate Change Activities','Track climate-related activities and mitigation efforts'],
+ ['Not Started','Water','Monitor water consumption and conservation metrics'],
+ ['Completed','Circular Economy','Evaluate circular economy practices and initiatives'],
+ ['In Process','Waste','Track waste generation and management practices'],
+ ['Submitted','Biodiversity','Assess impact on biodiversity and natural habitats'],
+ ['In Process','Renewable Energy','Monitor renewable energy usage and generation'],
+ ['Completed','Utilities','Track utility consumption across all facilities'],
+ ['Submitted','Fuel','Measure fuel consumption and emissions data'],
+ ['Submitted','GHG Scope 1 Reporting','Direct emissions from owned or controlled sources'],
+ ['Not Started','CSRD Framework Mapping','Map disclosures to ESRS requirements'],
+ ['In Process','Social Metrics','Track workforce diversity and social impact data'],
+ ['Completed','EU Taxonomy Alignment','Classify activities against EU Taxonomy criteria'],
+ ['In Process','GHG Scope 2 Reporting','Indirect emissions from purchased electricity and heat'],
+ ['Not Started','GHG Scope 3 Reporting','Value chain emissions across upstream and downstream categories'],
+ ['In Process','Air Quality','Monitor air pollutant emissions against regulatory thresholds'],
+ ['Completed','Land Use','Assess land use change and habitat restoration efforts'],
+ ['Submitted','Supply Chain Due Diligence','Evaluate supplier ESG compliance and risk exposure'],
+ ['Not Started','Human Rights','Track human rights impact assessments and remediation'],
+ ['Submitted','Health & Safety','Record workplace incidents and safety performance metrics'],
+ ['In Process','Diversity & Inclusion','Monitor workforce diversity and inclusion indicators'],
+ ['Completed','Community Engagement','Track community investment and stakeholder outreach'],
+ ['Not Started','Anti-Corruption','Monitor anti-bribery and corruption controls and training'],
+ ['Submitted','Board Governance','Report board composition, independence and diversity'],
+ ['In Process','Data Privacy','Assess data protection and privacy management controls'],
+ ['Not Started','Product Stewardship','Evaluate product lifecycle and end-of-life impacts'],
+ ['Submitted','Energy Efficiency','Track energy efficiency improvement initiatives'],
+ ['In Process','Emissions Reduction Targets','Monitor progress against science-based targets'],
+ ['Completed','Water Discharge','Measure water discharge quality and volume by site'],
+ ['Not Started','Hazardous Materials','Track hazardous substance handling and disposal'],
+ ['Submitted','Climate Risk Assessment','Assess physical and transition climate-related risks']
+];
+function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+const rows=document.getElementById('rows');
+const dTitle=document.getElementById('d-title'), timelineEl=document.getElementById('timeline');
+/* workflow stages = the Homepage KPI statuses */
+const STAGES=['Not Started','In Process','Submitted','Completed'];
+const STAGE_META={
+ 'Not Started':{done:'Task assigned to <b>Preparer</b>', active:'Awaiting preparer to begin', due:'Jan 15, 2026'},
+ 'In Process':{done:'Data entered by <b>Preparer</b>', active:'Data entry in progress by <b>Preparer</b>', due:'Jan 20, 2026'},
+ 'Submitted':{done:'Submitted by <b>Preparer</b>', active:'Awaiting preparer submission', due:'Jan 26, 2026'},
+ 'Completed':{done:'Approved &amp; signed off', active:'Pending review &amp; sign-off', due:'Feb 10, 2026'}
+};
+const CHK='<svg viewBox="0 0 16 16" fill="none"><path d="M3.5 8.5l3 3 6-6.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function renderTimeline(status){
+  const idx=STAGES.indexOf(status), cur=(idx<0?1:idx);
+  timelineEl.innerHTML=STAGES.map((st,i)=>{
+    const state = i<cur ? 's-done' : (i===cur ? (status==='Completed'?'s-done':'s-active') : 's-todo');
+    const meta=STAGE_META[st];
+    const sub = state==='s-done' ? meta.done : meta.active;
+    const dot = state==='s-done' ? `<span class="tl-dot s-done">${CHK}</span>` : `<span class="tl-dot ${state}"></span>`;
+    return `<div class="tl-item ${state}"><div class="tl-rail">${dot}</div><div class="tl-content"><div class="tl-title">${st}</div><div class="tl-sub">${sub}</div><div class="tl-due">Due: ${meta.due}</div></div></div>`;
+  }).join('');
+}
+let selectedIdx=0;   // default selected row = Climate Change Activities
+
+function renderRows(){
+  rows.innerHTML='';
+  const visible=TASKS.map((t,i)=>({t,i})).filter(o=> !activeFilter || o.t[0]===activeFilter);
+  if(!visible.some(o=>o.i===selectedIdx)) selectedIdx = visible.length ? visible[0].i : null;
+  visible.forEach(o=>{
+    const r=document.createElement('div');
+    r.className='grid-row'+(o.i===selectedIdx?' selected':'');
+    r.dataset.i=o.i;
+    r.innerHTML=`<div class="cell c-status">${escapeHtml(o.t[0])}</div>`
+      +`<div class="cell c-name">${escapeHtml(o.t[1])}</div>`
+      +`<div class="cell c-desc">${escapeHtml(o.t[2])}</div>`;
+    r.addEventListener('click',()=> selectRow(o.i));
+    rows.appendChild(r);
+  });
+  if(selectedIdx!=null) updatePanel(selectedIdx);
+}
+function selectRow(i){
+  selectedIdx=i;
+  $$('.grid-row').forEach(x=> x.classList.toggle('selected', +x.dataset.i===i));
+  updatePanel(i);
+}
+function updatePanel(i){
+  const t=TASKS[i];
+  dTitle.textContent=t[1];
+  renderTimeline(t[0]);   // t[0] = status -> stepper reflects the task's stage
+}
+
+/* initial render — Total selected (all tasks), topmost row selected */
+renderKPIs();
+renderRows();
+goParent('Home');   // land on the Home dashboard
+
+/* ══ Detail tabs ══ */
+$$('.d-tab').forEach(tab=> tab.addEventListener('click',()=>{
+  $$('.d-tab').forEach(t=>t.classList.remove('active')); tab.classList.add('active');
+  $$('.d-pane').forEach(p=> p.hidden = p.dataset.pane!==tab.dataset.tab);
+}));
+</script>
+<script>
+  (function(){
+    var acct = document.getElementById('fbAcct');
+    var lb   = document.getElementById('fbLookback');
+    var lbGroup = lb && lb.closest('.fb-lb-group');
+    var addBtn = document.querySelector('.fb-addblk');
+    var tbody  = document.querySelector('.fb-tbody');
+    if(!acct) return;
+
+    var P = 'M1,M2,M3,M4,M5,M6,M7,M8,M9,M10,M11,M12';
+    var ACCOUNTS = {};
+    ['1','2','3','4','5','6'].forEach(function(n){
+      ACCOUNTS[n] = {
+        name:n+' - '+n, calc:'Formula'+n, desc:'Formula'+n, reg:'All Employees',
+        def:'IIF(A#'+n+'>100,000, A#'+n+'*0.05, A#'+n+'*0.03)', period:P
+      };
+    });
+
+    // Selecting an account populates the grid with just that one account (replaces prior rows)
+    function setRow(key){
+      if(!tbody) return;
+      tbody.innerHTML = '';
+      var d = ACCOUNTS[key];
+      if(!d) return;
+      var cell = function(t){ return '<div class="fb-td"><span>'+t+'</span></div>'; };
+      var row = document.createElement('div');
+      row.className = 'fb-trow';
+      row.innerHTML = cell(d.name)+cell(d.calc)+cell(d.desc)+cell(d.reg)+cell(d.def)+cell(d.period);
+      tbody.appendChild(row);
+    }
+
+    // Button label reflects whether a non-default look-back period is chosen
+    function updateAddBtn(){
+      if(!addBtn) return;
+      var isLookBack = lb.value && lb.value !== '0 - Current period';
+      addBtn.textContent = isLookBack ? 'Add Look-Back Block' : 'Add Block';
+    }
+
+    // Selecting an account: activate Look Back (default to Current period) AND show that account's row
+    acct.addEventListener('change', function(){
+      var on = !!acct.value;
+      lb.disabled = !on;
+      if(lbGroup) lbGroup.classList.toggle('is-disabled', !on);
+      if(on){ lb.value = '0 - Current period'; setRow(acct.value); }
+      else  { lb.selectedIndex = 0; tbody.innerHTML = ''; }
+      updateAddBtn();
+    });
+
+    // Any look-back period other than the default -> button says "Add Look-Back Block"
+    lb.addEventListener('change', updateAddBtn);
+
+    // ---- Look-back block on the formula canvas ----
+    var blocksRow = document.querySelector('.fbp-blocks');
+    var emptyBlk  = blocksRow && blocksRow.querySelector('.fbp-blk.empty');
+    function makeGrip(){ var g=document.createElement('span'); g.className='fbp-grip'; g.innerHTML='<i></i><i></i><i></i>'; return g; }
+    function addLookBackBlock(text){
+      if(!blocksRow || !emptyBlk) return;
+      var gripBeforeEmpty = emptyBlk.previousElementSibling;  // keep empty slot last
+      var blk = document.createElement('div');
+      blk.className = 'fbp-blk acc lookback-block';
+      blk.textContent = text;
+      blocksRow.insertBefore(makeGrip(), gripBeforeEmpty);
+      blocksRow.insertBefore(blk, gripBeforeEmpty);
+    }
+    function deleteLastLookBack(){
+      if(!blocksRow) return;
+      var blocks = blocksRow.querySelectorAll('.fbp-blk.lookback-block');
+      if(!blocks.length) return;
+      var last = blocks[blocks.length-1];
+      var grip = last.previousElementSibling;
+      if(grip && grip.classList.contains('fbp-grip')) grip.remove();
+      last.remove();
+    }
+    // Delete Block toolbar icon removes the added look-back block (so you can do it over)
+    var delTool = [].slice.call(document.querySelectorAll('.fbp-tool')).filter(function(t){
+      var l=t.querySelector('.tlbl'); return l && l.textContent.trim()==='Delete Block';
+    })[0];
+    if(delTool){ delTool.style.cursor='pointer'; delTool.addEventListener('click', deleteLastLookBack); }
+
+    if(addBtn){
+      addBtn.addEventListener('click', function(){
+        if(!acct.value) return;
+        var n = parseInt(lb.value, 10);
+        if(lb.value && lb.value !== '0 - Current period' && !isNaN(n)){
+          addLookBackBlock('A#'+acct.value+'-'+n);   // e.g. A#3-12
+        } else {
+          setRow(acct.value);
+        }
+      });
+    }
+
+    // Clicking a row shows a selected state (single selection)
+    if(tbody){
+      tbody.addEventListener('click', function(e){
+        var row = e.target.closest('.fb-trow');
+        if(!row || !tbody.contains(row)) return;
+        var sel = tbody.querySelectorAll('.fb-trow.selected');
+        for(var i=0;i<sel.length;i++) sel[i].classList.remove('selected');
+        row.classList.add('selected');
+      });
+    }
+  })();
+</script>
+</body>
+</html>
