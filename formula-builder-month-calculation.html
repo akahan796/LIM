@@ -355,6 +355,7 @@
   .fb-ctrl.dd .cv{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .fb-ctrl.dd .cr{flex:0 0 auto;display:flex;align-items:center;justify-content:center;margin-left:6px;color:#000;}
   .fb-ctrl.dd .cr svg{width:8px;height:5px;display:block;}
+  .fb-ctrl.dd select.fb-sel{flex:1;min-width:0;border:0;background:transparent;font-family:inherit;font-size:14px;color:#000;height:100%;padding:0;margin:0;-webkit-appearance:none;appearance:none;outline:none;cursor:pointer;}
   .fb-link{font-size:12px;font-weight:700;color:var(--accent-blue);cursor:pointer;height:22px;
            display:flex;align-items:center;text-decoration:underline;}
   .fb-body{display:flex;align-items:flex-start;gap:24px;}
@@ -483,6 +484,7 @@
           <div class="fb-field fb-acct"><span class="fb-label">Account</span><div class="fb-ctrl dd"><span class="cv">50200 - Monthly Salary</span><span class="cr"><svg viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="currentColor"/></svg></span></div></div>
           <div class="fb-field"><span class="fb-label">Scenario Type</span><span class="fb-link">All Scenario Types</span></div>
           <div class="fb-field"><span class="fb-label">Periods</span><span class="fb-link">Period(s) Selected</span></div>
+          <div class="fb-field"><span class="fb-label">Month Calculation</span><div class="fb-ctrl dd"><select class="fb-sel"><option value="Full" selected>Full</option><option value="Partial">Partial</option></select><span class="cr"><svg viewBox="0 0 8 5"><path d="M0 0h8L4 5z" fill="currentColor"/></svg></span></div></div>
         </div>
         <div class="fb-actions">
           <button class="fb-btn ghost" type="button">Cancel</button>
