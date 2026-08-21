@@ -324,6 +324,7 @@
   @media (max-width:1000px){
     .fb-mainrow{flex-direction:column;}
     .fb-recently{flex:0 0 auto;width:100%;min-height:220px;}
+    .fb-grid{flex-basis:100%;max-width:100%;}
   }
 
   /* ---- Formula Builder header (Figma node 1998-10298) ---- */
@@ -346,7 +347,8 @@
   .fb-form{padding:0 22px 24px;font-family:Arial,Helvetica,sans-serif;}
   .fb-sub{font-size:14px;font-weight:700;color:#373737;margin:18px 0 16px;}
   .fb-grid{display:grid;gap:16px 15px;align-items:start;justify-content:start;
-           grid-template-columns:repeat(5,minmax(0,200px));}
+           flex:0 0 calc(100% - 346px);max-width:calc(100% - 346px);
+           grid-template-columns:repeat(5,minmax(0,1fr));}
   .fb-field{display:flex;flex-direction:column;gap:6px;min-width:0;}
   .fb-acct .fb-ctrl{max-width:250px;}
   .fb-label{font-size:14px;color:#666e7f;}
